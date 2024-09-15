@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+<head>
+    <title>여행지 정보</title>
+</head>
+<div layout:fragment="content">
+    <form action="/place/list" method="get">
+        <input type="hidden" name="size" th:value="${pageRequestDTO.size}">
+        <div class="search-bar">
+            <div class="form-group">
+                <select class="form-select" name="type">
+                    <option value="">---</option>
+                    <option value="t" th:selected="${pageRequestDTO.type =='t'}">제목</option>
+                    <option value="c" th:selected="${pageRequestDTO.type =='c'}">내용</option>
+                    <option value="w" th:selected="${pageRequestDTO.type =='w'}">작성자</option>
+                    <option value="tc" th:selected="${pageRequestDTO.type =='tc'}">제목 내용</option>
+                    <option value="tcw" th:selected="${pageRequestDTO.type =='tcw'}">제목 내용 작성자</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <select class="form-select" name="location">
+                    <option value="">---</option>
+                    <option value="seoul" th:selected="${pageRequestDTO.local =='seoul'}">서울</option>
+                    <option value="gg" th:selected="${pageRequestDTO.local =='gg'}">경기도</option>
+                    <option value="gwd" th:selected="${pageRequestDTO.local =='gwd'}">강원도</option>
+                    <option value="incheon" th:selected="${pageRequestDTO.local =='inch'}">인천</option>
+                    <option value="chungbuk" th:selected="${pageRequestDTO.local =='chb'}">충청북도</option>
+                    <option value="chungnam" th:selected="${pageRequestDTO.local =='chn'}">충청남도</option>
+                    <option value="jeonbuk" th:selected="${pageRequestDTO.local =='jnb'}">전라북도</option>
+                    <option value="jeonnam" th:selected="${pageRequestDTO.local =='jnn'}">전라남도</option>
+                    <option value="gb" th:selected="${pageRequestDTO.local =='gb'}">경상북도</option>
+                    <option value="gn" th:selected="${pageRequestDTO.local =='gn'}">경상남도</option>
+                    <option value="sejong" th:selected="${pageRequestDTO.local =='sj'}">세종특별자치시</option>
+                    <option value="jeju" th:selected="${pageRequestDTO.local =='jj'}">제주특별자치도</option>
+                </select>
+            </div>
+            <input type="text" placeholder="지역 또는 가게 유형 검색" class="form-control" name="keyword" th:value="${pageRequestDTO.keyword}">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary searchBtn" type="submit">검색</button>
+            </div>
+        </div>
+    </form>
+    <div class="store-grid" th:with="link = ${pageRequestDTO.getLink()}">
+        <div class="store-card" th:each="dto:${responseDTO.dtoList}">
+            <div th:if="${dto.placeImages != null && dto.placeImages.size() > 0}">
+                <img alt="가게 사진" style="width:100px" th:each="placeImage: ${dto.placeImages}" th:src="|/view/s_${placeImage.uuid}_${placeImage.fileName}|">
+            </div>
+            <h3><a th:href="|@{/place/read(bno =${dto.bno})}&${link}|" class="text-decoration-none"> [[${dto.title}]] </a></h3>
+            <span class="badge progress-bar-success" style="background-color: #0a53be">[[${dto.replyCount}]]</span>
+            <p>카페</p>
+        </div>
+    </div>
+    <div class="float-end">
+        <ul class="pagination flex-wrap">
+            <li class="page-item" th:if="${responseDTO.prev}">
+                <a class="page-link" th:data-num="${responseDTO.start -1}">Previous</a>
+            </li>
+            <th:block th:each="i: ${#numbers.sequence(responseDTO.start, responseDTO.end)}">
+                <li th:class="${responseDTO.page == i}?'page-item active':'page-item'" >
+                    <a class="page-link"  th:data-num="${i}">[[${i}]]</a>
+                </li>
+            </th:block>
+            <li class="page-item" th:if="${responseDTO.next}">
+                <a class="page-link"  th:data-num="${responseDTO.end + 1}">Next</a>
+            </li>
+        </ul>
+    </div>
+    <div class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Modal body text goes here.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script layout:fragment="script" th:inline="javascript">
+    document.querySelector(".pagination").addEventListener("click", function (e) {
+        e.preventDefault()
+        e.stopPropagation()
+
+        const target = e.target
+
+        if(target.tagName !== 'A') {
+            return
+        }
+
+        const num = target.getAttribute("data-num")
+
+        const formObj = document.querySelector("form")
+
+        formObj.innerHTML += `<input type='hidden' name='page' value='${num}'>`
+
+        formObj.submit();
+
+    },false)
+
+    document.querySelector(".clearBtn").addEventListener("click", function (e){
+        e.preventDefault()
+        e.stopPropagation()
+
+        self.location ='/place/list'
+
+    },false)
+
+    //show modal
+    const result = [[${result}]]
+
+    const modal = new bootstrap.Modal(document.querySelector(".modal"))
+
+    if(result){
+        modal.show()
+    }
+</script>

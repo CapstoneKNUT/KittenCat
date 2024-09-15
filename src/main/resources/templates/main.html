@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}"
+      lang="ko">
+
+<div layout:fragment="content">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>여행 웹페이지</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="layout-container"></div>
+<main>
+    <div class="search-bar">
+        <input type="text" placeholder="Hinted search text" />
+        <button class="search-button">🔍</button>
+    </div>
+    <div class="carousel">
+        <div class="slides">
+            <a href="방콕.html"><img th:src="@{/assets/지역/방콕.jpg}" alt="Profile" class="icon"></a>
+            <a href="서울.html"><img th:src="@{/assets/지역/서울.jpg}" alt="Profile" class="icon"></a>
+            <a href="청주.html"><img th:src="@{/assets/지역/청주.jpg}" alt="Profile" class="icon"></a>
+        </div>
+    </div>
+    <div class="button-container">
+        <button class="prev-button">◀</button>
+        <button class="next-button">▶</button>
+    </div>
+    <div class="actions">
+        <button class="interest-button">관심여행지(1)</button>
+        <button class="plan-button">계획짜기</button>
+    </div>
+</main>
+<script src="script.js"></script>
+</body>
+</div>
+</html>

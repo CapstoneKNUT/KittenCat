@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+
+<head>
+    <title>Member Join Page</title>
+</head>
+
+<div layout:fragment="content">
+    <div class="row mt-3">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    JOIN
+                </div>
+                <div class="card-body">
+                    <form id="registerForm" action="/member/join" method="post">
+                        <div class="form-group">
+                            <span class="label">아이디</span>
+                            <input class="input" id="mid" name="mid" type="text" required>
+                        </div>
+                        <div class="form-group">
+                            <span class="label">비밀번호</span>
+                            <input class="input" id="mpw" name="mpw" type="password" required>
+                        </div>
+                        <div class="form-group">
+                            <span class="label">비밀번호 확인</span>
+                            <input class="input" id="mpwc" name="mpwc" type="password" required>
+                        </div>
+                        <div id="errorMessage" class="error"></div>
+                        <div class="form-group">
+                            <span class="label">이름</span>
+                            <input class="input" id="name" name="name" type="text" required>
+                        </div>
+                        <div class="form-group">
+                            <span class="label">이메일</span>
+                            <input class="input" id="email" name="email" type="email" required>
+                        </div>
+                        <div class="form-group">
+                            <span class="label">전화번호</span>
+                            <input class="input" id="phone" name="phone" type="text" required>
+                        </div>
+                        <div class="form-group">
+                            <span class="label">집주소</span>
+                            <input class="input" id="address" name="address" type="text" required>
+                        </div>
+                        <div class="form-group">
+                            <span class="label">생년월일</span>
+                            <input class="input" id="birth" name="birth" type="date" required>
+                        </div>
+                        <span class="label">성별</span>
+                        <fieldset>
+                            <legend>성별</legend>
+                            <input class="radio" value="man" name="gender" type="radio" checked>남성
+                            <input class="radio" value="woman" name="gender" type="radio">여성
+                        </fieldset>
+                        <div class="form-group">
+                            <span class="label">MBTI(선택)</span>
+                        </div>
+                        <div class="input-group-prepend">
+                            <select class="form-select" name="mbti">
+                                <option value="">---</option>
+                                <option value="ISTJ" >ISTJ</option>
+                                <option value="ISTP" >ISTP</option>
+                                <option value="ISFJ" >ISFJ</option>
+                                <option value="ISFP" >ISFP</option>
+                                <option value="INTJ" >INTJ</option>
+                                <option value="INTP" >INTP</option>
+                                <option value="INFJ" >INFJ</option>
+                                <option value="INFP" >INFP</option>
+                                <option value="ESTJ" >ESTJ</option>
+                                <option value="ESTP" >ESTP</option>
+                                <option value="ESFJ" >ESFJ</option>
+                                <option value="ESFP" >ESFP</option>
+                                <option value="ENTJ" >ENTJ</option>
+                                <option value="ENTP" >ENTP</option>
+                                <option value="ENFJ" >ENFJ</option>
+                                <option value="ENFP" >ENFP</option>
+                            </select>
+                        </div>
+                        <div class="my-4">
+                            <div class="float-end">
+                                <button type="submit" class="btn-submit">등록하기</button>
+                                <button type="button" class="btn-submit"><a href="/member/login">이전</a></button>
+                            </div>
+                        </div>
+                    </form>
+                </div><!--end card body-->
+            </div><!--end card-->
+        </div><!-- end col-->
+    </div><!-- end row-->
+
+
+</div>
+
+<script src="script.js"></script>
+<script layout:fragment="script" th:inline="javascript" >
+
+    const error = [[${error}]]
+
+    if(error && error === 'mid'){
+        alert("동일한 MID를 가진 계정이 존재합니다.")
+    }
+    document.getElementById('registerForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // 폼의 기본 제출 동작을 막음
+
+        var password1 = document.getElementById('mpw').value;
+        var password2 = document.getElementById('mpwc').value;
+        var errorMessage = document.getElementById('errorMessage');
+
+        // 에러 메시지 초기화
+        errorMessage.textContent = '';
+
+        // 비밀번호 일치 확인
+        if (password1 !== password2) {
+            errorMessage.textContent = "비밀번호가 서로 다릅니다.";
+            alert('비밀번호가 서로 다릅니다.');
+            return;
+        }
+
+        // 비밀번호가 문자와 숫자의 조합인지 확인
+        var passwordPattern = /^(?=.*[a-zA-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+        if (!passwordPattern.test(password1)) {
+            errorMessage.textContent = '비밀번호는 8장 이상의 문자와 숫자의 조합이 돼야합니다.';
+            alert('비밀번호는 8장 이상의 문자와 숫자의 조합이 돼야합니다.');
+            return;
+        }
+
+    // 모든 검증을 통과한 경우 폼을 제출하거나 다음 작업 수행
+
+    // 실제 폼 제출을 원할 경우 아래 코드를 사용
+    // this.submit();
+    });
+</script>
