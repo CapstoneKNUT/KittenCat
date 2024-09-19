@@ -8,38 +8,60 @@ async function get1(bno) {
 }
 
 async function getList({bno, page, size, goLast, type}){
+    try {
+        const result = await axios.get(`http://localhost:8080/api/replies/list/${bno}`, {params: {page, size, type}})
 
-    const result = await axios.get(`http://localhost:8080/api/replies/list/${bno}`, {params: {page, size, type}})
+        if(goLast){
+            const total = result.data.total
+            const lastPage = parseInt(Math.ceil(total/size))
 
-    if(goLast){
-        const total = result.data.total
-        const lastPage = parseInt(Math.ceil(total/size))
+            return getList({bno:bno, page:lastPage, size:size, type:type})
 
-        return getList({bno:bno, page:lastPage, size:size, type:type})
-
+        }
+        return result.data
+    } catch (error) {
+        console.error(error);
+        throw error;
     }
-
-    return result.data
 }
 
 
 async function addReply(replyObj) {
-    const response = await axios.post(`http://localhost:8080/api/replies/`,replyObj)
-    return response.data
+    try {
+        const response = await axios.post(`http://localhost:8080/api/replies/`,replyObj)
+        return response.data
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
 }
 
 async function getReply(rno) {
-    const response = await axios.get(`http://localhost:8080/api/replies/${rno}`)
-    return response.data
+    try {
+        const response = await axios.get(`http://localhost:8080/api/replies/${rno}`)
+        return response.data
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
 }
 
 async function modifyReply(replyObj) {
-
-    const response = await axios.put(`/api/replies/${replyObj.rno}`, replyObj)
-    return response.data
+    try {
+        const response = await axios.put(`/api/replies/${replyObj.rno}`, replyObj)
+        return response.data
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
 }
 
 async function removeReply(rno) {
-    const response = await axios.delete(`http://localhost:8080/api/replies/${rno}`)
-    return response.data
+    try {
+        const response = await axios.delete(`http://localhost:8080/api/replies/${rno}`)
+        return response.data
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
 }

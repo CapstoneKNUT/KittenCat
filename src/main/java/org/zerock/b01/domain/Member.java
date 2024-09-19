@@ -34,38 +34,10 @@ public class Member extends BaseEntity{
     @ElementCollection(fetch = FetchType.LAZY)
     @Builder.Default
     private Set<MemberRole> roleSet = new HashSet<>();
-
     public void changePassword(String mpw ){
         this.mpw = mpw;
     }
-
-    public void changeEmail(String email){
-        this.email = email;
-    }
-    public void changePhone(String phone){
-        this.phone = phone;
-    }
-    public void changeAddress(String address){
-        this.address = address;
-    }
-    public void changeBirth(String birth){
-        this.birth = birth;
-    }
-    public void changeMbti(String mbti){
-        this.mbti = mbti;
-    }
-
-    public void changeDel(boolean del){
-        this.del = del;
-    }
-
     public void addRole(MemberRole memberRole){
         this.roleSet.add(memberRole);
     }
-
-    public void clearRoles() {
-        this.roleSet.clear();
-    }
-
-    public void changeSocial(boolean social){this.social = social;}
 }

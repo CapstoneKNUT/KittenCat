@@ -27,9 +27,6 @@ public class PlaceRepositoryTests {
     @Autowired
     private PlaceRepository placeRepository;
 
-    @Autowired
-    private ReplyRepository replyRepository;
-
     @Test
     public void testInsert() {
         IntStream.rangeClosed(1,100).forEach(i -> {
@@ -245,11 +242,7 @@ public class PlaceRepositoryTests {
     public void testRemoveAll() {
 
         Long bno =61L;
-
-        replyRepository.deleteByPlace_Bno(bno);
-
         placeRepository.deleteById(bno);
-
     }
 
     @Test
