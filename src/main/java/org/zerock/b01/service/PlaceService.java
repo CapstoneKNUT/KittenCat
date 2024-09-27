@@ -8,59 +8,44 @@ import java.util.stream.Collectors;
 
 public interface PlaceService {
 
-    Long register(PlaceDTO placeDTO);
+    Integer register(PlaceDTO placeDTO);
 
-    PlaceDTO readOne(Long bno);
+    PlaceDTO readOne(Integer p_ord);
 
-    void modify(PlaceDTO placeDTO);
-
-    void remove(Long bno);
-
-    PageResponseDTO<PlaceDTO> list(PageRequestDTO pageRequestDTO);
-
-    //댓글의 숫자까지 처리
-    PageResponseDTO<PlaceListReplyCountDTO> listWithReplyCount(PageRequestDTO pageRequestDTO);
-
-    //게시글의 이미지와 댓글의 숫자까지 처리
-    PageResponseDTO<PlaceListAllDTO> listWithAll(PageRequestDTO pageRequestDTO);
+    List<PlaceListAllDTO> list();
 
     default Place dtoToEntity(PlaceDTO placeDTO){
 
         Place place = Place.builder()
-                .bno(placeDTO.getBno())
-                .title(placeDTO.getTitle())
-                .content(placeDTO.getContent())
-                .writer(placeDTO.getWriter())
-
+                .p_ord(placeDTO.getP_ord())
+                .p_name(placeDTO.getP_name())
+                .p_category(placeDTO.getP_category())
+                .p_address(placeDTO.getP_address())
+                .p_content(placeDTO.getP_content())
+                .bookmark(placeDTO.getBookmark())
+                .p_image(placeDTO.getP_image())
+                .p_call(placeDTO.getP_call())
+                .p_star(placeDTO.getP_star())
+                .p_site(placeDTO.getP_site())
                 .build();
-
-        if(placeDTO.getFileNames() != null){
-            placeDTO.getFileNames().forEach(fileName -> {
-                String[] arr = fileName.split("_");
-                place.addImage(arr[0], arr[1]);
-            });
-        }
         return place;
     }
 
     default PlaceDTO entityToDTO(Place place) {
 
         PlaceDTO placeDTO = PlaceDTO.builder()
-                .bno(place.getBno())
-                .title(place.getTitle())
-                .content(place.getContent())
-                .writer(place.getWriter())
-                .regDate(place.getRegDate())
-                .modDate(place.getModDate())
+                .p_ord(place.getP_ord())
+                .p_name(place.getP_name())
+                .p_category(place.getP_category())
+                .p_address(place.getP_address())
+                .p_content(place.getP_content())
+                .bookmark(place.getBookmark())
+                .p_image(place.getP_image())
+                .p_call(place.getP_call())
+                .p_star(place.getP_star())
+                .p_site(place.getP_site())
                 .build();
-
-        List<String> fileNames =
-        place.getImageSet().stream().sorted().map(placeImage ->
-                placeImage.getUuid()+"_"+placeImage.getFileName()).collect(Collectors.toList());
-
-        placeDTO.setFileNames(fileNames);
 
         return placeDTO;
     }
-
 }

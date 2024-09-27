@@ -12,51 +12,35 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = "imageSet")
-public class Place extends BaseEntity{
+public class Place extends BaseEntity {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long bno;
+    private Integer p_ord;
 
-    @Column(length = 500, nullable = false) //컬럼의 길이와 null허용여부
-    private String title;
+    @Column(length = 255)
+    private String p_name;
 
-    @Column(length = 2000, nullable = false)
-    private String content;
+    @Column(length = 255)
+    private String p_category;
 
-    @Column(length = 50, nullable = false)
-    private String writer;
+    @Column(length = 500)
+    private String p_address;
 
-    public void change(String title, String content){
-        this.title = title;
-        this.content = content;
-    }
+    @Column(length = 2000)
+    private String p_content;
 
+    @Column(length = 255)
+    private String bookmark;
 
-    @OneToMany(mappedBy = "place",
-            cascade = {CascadeType.ALL},
-            fetch = FetchType.LAZY,
-            orphanRemoval = true)
-    @Builder.Default
-    @BatchSize(size = 20)
-    private Set<PlaceImage> imageSet = new HashSet<>();
+    @Column(length = 255)
+    private String p_image;
 
-    public void addImage(String uuid, String fileName){
+    @Column(length = 255)
+    private String p_call;
 
-        PlaceImage placeImage = PlaceImage.builder()
-                .uuid(uuid)
-                .fileName(fileName)
-                .place(this)
-                .ord(imageSet.size())
-                .build();
-        imageSet.add(placeImage);
-    }
+    @Column(length = 255)
+    private Float p_star;
 
-    public void clearImages() {
-
-        imageSet.forEach(placeImage -> placeImage.changePlace(null));
-
-        this.imageSet.clear();
-    }
-
+    @Column(length = 255)
+    private String p_site;
 }

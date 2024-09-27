@@ -16,22 +16,23 @@ import java.util.List;
 @NoArgsConstructor
 public class PlaceDTO {
 
-    private Long bno;
+    private Integer p_ord;
 
-    @NotEmpty
-    @Size(min = 3, max = 100)
-    private String title;
+    private String p_name;
 
-    @NotEmpty
-    private String content;
+    private String p_category;
 
-    @NotEmpty
-    private String writer;
+    private String p_address;
 
-    private LocalDateTime regDate;
+    private String p_content;
 
-    private LocalDateTime modDate;
+    private String bookmark;
 
-    //첨부파일의 이름들
-    private List<String> fileNames;
+    private String p_image;
+
+    private String p_call;
+
+    private Float p_star;
+
+    private String p_site;
 }

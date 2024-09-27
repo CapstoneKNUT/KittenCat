@@ -15,17 +15,20 @@ import java.util.List;
 @Builder
 public class PlaceListAllDTO {
 
-    private Long bno;
+    private Integer p_ord;
 
-    private String title;
+    private String p_image;
 
-    private String writer;
+    private String p_name;
 
-    private LocalDateTime regDate;
+    private String p_category;
 
-    private Long replyCount;
+    private Float p_star;
 
+    private String bookmark;
 
-    private List<PlaceImageDTO> placeImages;
+    public boolean isBookmark(){
+        return bookmark != null;
+    };
 
 }

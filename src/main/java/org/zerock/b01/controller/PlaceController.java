@@ -3,20 +3,17 @@ package org.zerock.b01.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.zerock.b01.dto.PlaceDTO;
 import org.zerock.b01.dto.PlaceListAllDTO;
-import org.zerock.b01.dto.PageRequestDTO;
-import org.zerock.b01.dto.PageResponseDTO;
 import org.zerock.b01.service.PlaceService;
 
 import javax.validation.Valid;
-import java.io.File;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,14 +29,37 @@ public class PlaceController {
 
     private final PlaceService placeService;
 
+
     @GetMapping("/list")
-    public ResponseEntity<PageResponseDTO<PlaceListAllDTO>> list(PageRequestDTO pageRequestDTO) {
-        PageResponseDTO<PlaceListAllDTO> responseDTO = placeService.listWithAll(pageRequestDTO);
+    public ResponseEntity<List<PlaceListAllDTO>> list() {
+        List<PlaceListAllDTO> responseDTO = placeService.list();
         log.info(responseDTO);
         return ResponseEntity.ok(responseDTO);
     }
 
-    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/list")
+    public ResponseEntity<String> registerPost(PageRequestDTO pageRequestDTO) {
+        String p_region = pageRequestDTO.getP_region();
+        String p_category = pageRequestDTO.getP_category();
+        String p_search = pageRequestDTO.getP_search();
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        // Set the headers for the HTTP request
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // Set the request body with the JSON structure
+        String json = String.format("{ \"command\": \"run_script\", \"script_path\": \"../Python/search.py\", \"options\": {\"p_region\": \"%s\", \"p_category\": \"%s\" , \"p_search\": \"%s\"} }", p_region, p_category, p_search);
+        HttpEntity<String> entity = new HttpEntity<String>(json, headers);
+
+        // Send the HTTP request to the Python server
+        String url = "http://localhost:5000/search";
+        String responseDTO = restTemplate.postForObject(url, entity, String.class);
+
+        return ResponseEntity.ok(responseDTO);;
+    }
+
     @GetMapping("/register")
     public ResponseEntity<Map<String, String>> registerGET() {
         Map<String, String> response = new HashMap<>();
@@ -54,7 +74,7 @@ public class PlaceController {
 
         Map<String, Object> response = new HashMap<>();
         try {
-            Long bno = placeService.register(placeDTO);
+            Integer bno = placeService.register(placeDTO);
             response.put("result", "success");
             response.put("bno", bno);
             return ResponseEntity.ok(response);
@@ -65,69 +85,11 @@ public class PlaceController {
         }
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping({"/read", "/modify"})
-    public ResponseEntity<PlaceDTO> read(@RequestParam Long bno, PageRequestDTO pageRequestDTO) {
-        PlaceDTO placeDTO = placeService.readOne(bno);
+    @GetMapping({"/read"})
+    public ResponseEntity<PlaceDTO> read(@RequestParam Integer p_ord) {
+        PlaceDTO placeDTO = placeService.readOne(p_ord);
         log.info(placeDTO);
         return ResponseEntity.ok(placeDTO);
     }
 
-    @PreAuthorize("principal.username == #placeDTO.writer")
-    @PostMapping("/modify")
-    public ResponseEntity<Map<String, String>> modify(
-            @RequestBody @Valid PlaceDTO placeDTO,
-            PageRequestDTO pageRequestDTO) {
-
-        log.info("place modify post......." + placeDTO);
-
-        Map<String, String> response = new HashMap<>();
-        try {
-            placeService.modify(placeDTO);
-            response.put("result", "modified");
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            log.error("Modification error: ", e);
-            response.put("error", "Modification failed");
-            return ResponseEntity.badRequest().body(response);
-        }
-    }
-
-    @PreAuthorize("principal.username == #placeDTO.writer")
-    @PostMapping("/remove")
-    public ResponseEntity<Map<String, String>> remove(@RequestBody PlaceDTO placeDTO) {
-        Long bno = placeDTO.getBno();
-        log.info("remove post.. " + bno);
-
-        Map<String, String> response = new HashMap<>();
-        try {
-            placeService.remove(bno);
-            List<String> fileNames = placeDTO.getFileNames();
-            if (fileNames != null && !fileNames.isEmpty()) {
-                removeFiles(fileNames);
-            }
-            response.put("result", "removed");
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            log.error("Removal error: ", e);
-            response.put("error", "Removal failed");
-            return ResponseEntity.badRequest().body(response);
-        }
-    }
-
-    private void removeFiles(List<String> files) {
-        for (String fileName : files) {
-            Resource resource = new FileSystemResource(uploadPath + File.separator + fileName);
-            try {
-                String contentType = Files.probeContentType(resource.getFile().toPath());
-                resource.getFile().delete();
-                if (contentType != null && contentType.startsWith("image")) {
-                    File thumbnailFile = new File(uploadPath + File.separator + "s_" + fileName);
-                    thumbnailFile.delete();
-                }
-            } catch (Exception e) {
-                log.error(e.getMessage());
-            }
-        }
-    }
 }

@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.zerock.b01.domain.QPlace.place;
+
 
 @Service
 @Log4j2
@@ -27,20 +29,19 @@ public class PlaceServiceImpl implements PlaceService{
     private final PlaceRepository placeRepository;
 
     @Override
-    public Long register(PlaceDTO placeDTO) {
+    public Integer register(PlaceDTO placeDTO) {
 
         Place place = dtoToEntity(placeDTO);
 
-        Long bno = placeRepository.save(place).getBno();
+        Integer p_ord = placeRepository.save(place).getP_ord();
 
-        return bno;
+        return p_ord;
     }
 
     @Override
-    public PlaceDTO readOne(Long bno) {
+    public PlaceDTO readOne(Integer p_ord) {
 
-        //place_image까지 조인 처리되는 findByWithImages()를 이용
-        Optional<Place> result = placeRepository.findByIdWithImages(bno);
+        Optional<Place> result = placeRepository.findById(p_ord);
 
         Place place = result.orElseThrow();
 
@@ -48,88 +49,12 @@ public class PlaceServiceImpl implements PlaceService{
 
         return placeDTO;
     }
-
     @Override
-    public void modify(PlaceDTO placeDTO) {
+    public List<PlaceListAllDTO> list() {
+        List<Place> result = placeRepository.findAll();
 
-        Optional<Place> result = placeRepository.findById(placeDTO.getBno());
-
-        Place place = result.orElseThrow();
-
-        place.change(placeDTO.getTitle(), placeDTO.getContent());
-
-        //첨부파일의 처리
-        place.clearImages();
-
-        if(placeDTO.getFileNames() != null){
-            for (String fileName : placeDTO.getFileNames()) {
-                String[] arr = fileName.split("_");
-                place.addImage(arr[0], arr[1]);
-            }
-        }
-
-        placeRepository.save(place);
-
+        List<PlaceListAllDTO> dtoList = result.stream()
+                .map(place -> modelMapper.map(place,PlaceListAllDTO.class)).collect(Collectors.toList());
+        return dtoList;
     }
-
-    @Override
-    public void remove(Long bno) {
-
-        placeRepository.deleteById(bno);
-
-    }
-
-    @Override
-    public PageResponseDTO<PlaceDTO> list(PageRequestDTO pageRequestDTO) {
-
-        String[] types = pageRequestDTO.getTypes();
-        String keyword = pageRequestDTO.getKeyword();
-        Pageable pageable = pageRequestDTO.getPageable("bno");
-
-        Page<Place> result = placeRepository.searchAll(types, keyword, pageable);
-
-        List<PlaceDTO> dtoList = result.getContent().stream()
-                .map(place -> modelMapper.map(place,PlaceDTO.class)).collect(Collectors.toList());
-
-
-        return PageResponseDTO.<PlaceDTO>withAll()
-                .pageRequestDTO(pageRequestDTO)
-                .dtoList(dtoList)
-                .total((int)result.getTotalElements())
-                .build();
-
-    }
-
-    @Override
-    public PageResponseDTO<PlaceListReplyCountDTO> listWithReplyCount(PageRequestDTO pageRequestDTO) {
-
-        String[] types = pageRequestDTO.getTypes();
-        String keyword = pageRequestDTO.getKeyword();
-        Pageable pageable = pageRequestDTO.getPageable("bno");
-
-        Page<PlaceListReplyCountDTO> result = placeRepository.searchWithReplyCount(types, keyword, pageable);
-
-        return PageResponseDTO.<PlaceListReplyCountDTO>withAll()
-                .pageRequestDTO(pageRequestDTO)
-                .dtoList(result.getContent())
-                .total((int)result.getTotalElements())
-                .build();
-    }
-
-    @Override
-    public PageResponseDTO<PlaceListAllDTO> listWithAll(PageRequestDTO pageRequestDTO) {
-        String[] types = pageRequestDTO.getTypes();
-        String keyword = pageRequestDTO.getKeyword();
-        Pageable pageable = pageRequestDTO.getPageable("bno");
-
-        Page<PlaceListAllDTO> result = placeRepository.searchWithAll(types, keyword, pageable);
-
-        return PageResponseDTO.<PlaceListAllDTO>withAll()
-                .pageRequestDTO(pageRequestDTO)
-                .dtoList(result.getContent())
-                .total((int)result.getTotalElements())
-                .build();
-    }
-
-
 }
