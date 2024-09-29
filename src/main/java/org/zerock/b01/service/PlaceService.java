@@ -8,28 +8,9 @@ import java.util.stream.Collectors;
 
 public interface PlaceService {
 
-    Integer register(PlaceDTO placeDTO);
-
     PlaceDTO readOne(Integer p_ord);
 
-    List<PlaceListAllDTO> list();
-
-    default Place dtoToEntity(PlaceDTO placeDTO){
-
-        Place place = Place.builder()
-                .p_ord(placeDTO.getP_ord())
-                .p_name(placeDTO.getP_name())
-                .p_category(placeDTO.getP_category())
-                .p_address(placeDTO.getP_address())
-                .p_content(placeDTO.getP_content())
-                .bookmark(placeDTO.getBookmark())
-                .p_image(placeDTO.getP_image())
-                .p_call(placeDTO.getP_call())
-                .p_star(placeDTO.getP_star())
-                .p_site(placeDTO.getP_site())
-                .build();
-        return place;
-    }
+    PageResponseDTO<PlaceDTO> list(PageRequestDTO pageRequestDTO);
 
     default PlaceDTO entityToDTO(Place place) {
 
@@ -44,6 +25,8 @@ public interface PlaceService {
                 .p_call(place.getP_call())
                 .p_star(place.getP_star())
                 .p_site(place.getP_site())
+                .p_opentime(place.getP_opentime())
+                .p_park(place.getP_park())
                 .build();
 
         return placeDTO;

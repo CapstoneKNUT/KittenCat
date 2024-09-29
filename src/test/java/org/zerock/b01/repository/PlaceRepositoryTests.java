@@ -25,28 +25,8 @@ public class PlaceRepositoryTests {
     private PlaceRepository placeRepository;
 
     @Test
-    public void testInsert() {
-        IntStream.rangeClosed(1,100).forEach(i -> {
-            Place place = Place.builder()
-                    .p_name("PlaceName"+ i)
-                    .p_category("Category"+ i)
-                    .p_address("Address"+ i)
-                    .p_content("Content"+ i)
-                    .bookmark("Bookmark"+ i)
-                    .p_image("Image"+ i)
-                    .p_call("Call"+ i)
-                    .p_star((float)i)
-                    .p_site("site"+ i)
-                    .build();
-
-            Place result = placeRepository.save(place);
-            log.info("BNO: " + result.getP_ord());
-        });
-    }
-
-    @Test
     public void testSelect() {
-        Integer p_ord = 100;
+        Integer p_ord = 1;
 
         Optional<Place> result = placeRepository.findById(p_ord);
 
@@ -55,16 +35,6 @@ public class PlaceRepositoryTests {
         log.info(place);
 
     }
-
-    @Test
-    @Transactional
-    @Commit
-    public void testRemoveAll() {
-
-        Integer p_ord =61;
-        placeRepository.deleteById(p_ord);
-    }
-
 }
 
 

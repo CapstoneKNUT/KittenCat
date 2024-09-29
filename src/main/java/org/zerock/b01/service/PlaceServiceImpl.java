@@ -29,16 +29,6 @@ public class PlaceServiceImpl implements PlaceService{
     private final PlaceRepository placeRepository;
 
     @Override
-    public Integer register(PlaceDTO placeDTO) {
-
-        Place place = dtoToEntity(placeDTO);
-
-        Integer p_ord = placeRepository.save(place).getP_ord();
-
-        return p_ord;
-    }
-
-    @Override
     public PlaceDTO readOne(Integer p_ord) {
 
         Optional<Place> result = placeRepository.findById(p_ord);
@@ -50,11 +40,20 @@ public class PlaceServiceImpl implements PlaceService{
         return placeDTO;
     }
     @Override
-    public List<PlaceListAllDTO> list() {
-        List<Place> result = placeRepository.findAll();
+    public PageResponseDTO<PlaceDTO> list(PageRequestDTO pageRequestDTO) {
 
-        List<PlaceListAllDTO> dtoList = result.stream()
-                .map(place -> modelMapper.map(place,PlaceListAllDTO.class)).collect(Collectors.toList());
-        return dtoList;
+        Pageable pageable = pageRequestDTO.getPageable("p_ord");
+
+        Page<Place> result = placeRepository.searchAll(pageable);
+
+        List<PlaceDTO> dtoList = result.getContent().stream()
+                .map(place -> modelMapper.map(place,PlaceDTO.class)).collect(Collectors.toList());
+
+        return PageResponseDTO.<PlaceDTO>withAll()
+                .pageRequestDTO(pageRequestDTO)
+                .dtoList(dtoList)
+                .total((int)result.getTotalElements())
+                .build();
+
     }
 }
