@@ -2,17 +2,18 @@ package org.zerock.b01.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.zerock.b01.dto.PageRequestDTO;
 import org.zerock.b01.dto.PageResponseDTO;
 import org.zerock.b01.dto.PlaceDTO;
+import org.zerock.b01.dto.PlaceSearchDTO;
 import org.zerock.b01.service.PlaceService;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 
 @RestController
@@ -30,27 +31,32 @@ public class PlaceController {
     }
 
     @PostMapping("/list")
-    public ResponseEntity<String> registerPost(PageRequestDTO pageRequestDTO) {
-        String p_area = pageRequestDTO.getP_area();
-        String p_subArea = pageRequestDTO.getP_subArea();
-        String p_category = pageRequestDTO.getP_category();
-        String p_keyword = pageRequestDTO.getP_keyword();
+    public ResponseEntity<String> registerPost(@RequestBody PlaceSearchDTO placeSearchDTO) {
+        String p_area = placeSearchDTO.getP_area();
+        String p_subArea = placeSearchDTO.getP_subArea();
+        String p_category = placeSearchDTO.getP_category();
+        Integer p_count = placeSearchDTO.getP_count();
+        String p_keyword = placeSearchDTO.getP_keyword();
 
-        RestTemplate restTemplate = new RestTemplate();
+        try{
+            ProcessBuilder processBuilder = new ProcessBuilder(
+                    "python3", "../python/place.py", p_area, p_subArea, p_category, String.valueOf(p_count), p_keyword
+            );
+            Process process = processBuilder.start();
 
-        // Set the headers for the HTTP request
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        // Set the request body with the JSON structure
-        String json = String.format("{ \"command\": \"run_script\", \"script_path\": \"../Python/search.py\", \"options\": {\"p_area\": \"%s\", \"p_subArea\": \"%s\", \"p_category\": \"%s\" , \"p_keyword\": \"%s\"} }", p_area, p_subArea, p_category, p_keyword);
-        HttpEntity<String> entity = new HttpEntity<String>(json, headers);
-
-        // Send the HTTP request to the Python server
-        String url = "http://localhost:5000/search";
-        String responseDTO = restTemplate.postForObject(url, entity, String.class);
-
-        return ResponseEntity.ok(responseDTO);
+            int exitCode = process.waitFor();
+            if(exitCode == 0){
+                return ResponseEntity.ok("스크립트가 성공적으로 실행 완료 됨");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파이썬 실행 중 오류 발생 : " + exitCode);
+            }
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("파이썬 실행 중 예외 발생 : " + e.getMessage());
+        } catch (InterruptedException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("파이썬 실행 중 예외 발생: " + e.getMessage());
+        }
     }
 
     @GetMapping({"/read"})
