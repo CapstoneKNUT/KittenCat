@@ -1,15 +1,13 @@
 import {lazy, Suspense} from "react";
 import loginRedirect from "../components/redirect/LoginRedirect";
+import {Plan, PlanProvider} from "../pages/plan/plan";
+import PlanRegister from "../pages/plan/register";
 const {createBrowserRouter} = require("react-router-dom");
 
 const Loading = <div>Loading....</div>
 
 const App = lazy(() => import("../App"))
 const Main = lazy(() => import("../pages/main"))
-const BoardList = lazy(() => import("../pages/board/list"))
-const BoardRead = lazy(() => import("../pages/board/read"))
-const BoardRegister = lazy(() => import("../pages/board/register"))
-const BoardModify = lazy(() => import("../pages/board/modify"))
 const PlaceList = lazy(() => import("../pages/place/list"))
 const PlaceRead = lazy(() => import("../pages/place/read"))
 const MemberJoin = lazy(() => import("../pages/member/join"))
@@ -25,27 +23,6 @@ const root = createBrowserRouter([
         element: <Suspense fallback={Loading}><Main/></Suspense>,
     },
     {
-        path: "board",
-        children: [
-            {
-                path:'list',
-                element:<Suspense fallback={Loading}><BoardList/></Suspense>
-            },
-            {
-                path:'read',
-                element:<Suspense fallback={Loading}><BoardRead/></Suspense>
-            },
-            {
-                path:'register',
-                element:<Suspense fallback={Loading}><BoardRegister/></Suspense>
-            },
-            {
-                path:'modify',
-                element:<Suspense fallback={Loading}><BoardModify/></Suspense>
-            },
-        ]
-    },
-    {
         path: "place",
         children: [
             {
@@ -55,6 +32,16 @@ const root = createBrowserRouter([
             {
                 path:'read',
                 element:<Suspense fallback={Loading}><PlaceRead/></Suspense>
+            },
+        ]
+    },
+    {
+        path: "plan",
+        element:<Suspense fallback={Loading}><PlanProvider><Plan /></PlanProvider></Suspense>,
+        children: [
+            {
+                path:'register',
+                element:<Suspense fallback={Loading}><PlanProvider><PlanRegister/></PlanProvider></Suspense>
             },
         ]
     },
