@@ -11,10 +11,7 @@ import org.zerock.b01.dto.PlaceDTO;
 import org.zerock.b01.dto.PlaceSearchDTO;
 import org.zerock.b01.service.PlaceService;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/place")
