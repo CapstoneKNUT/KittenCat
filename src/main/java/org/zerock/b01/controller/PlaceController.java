@@ -14,7 +14,7 @@ import org.zerock.b01.service.PlaceService;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/placee")
+@RequestMapping("/api/place")
 @Log4j2
 @RequiredArgsConstructor
 public class PlaceController {
