@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.zerock.b01.domain.Place;
 import org.zerock.b01.domain.QPlace;
-import org.zerock.b01.domain.QReply;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,8 +26,8 @@ public class PlaceSearchImpl extends QuerydslRepositorySupport implements PlaceS
         QPlace place = QPlace.place;
         JPQLQuery<Place> query = from(place);
 
-        //bno > 0
-        query.where(place.bno.gt(0L));
+        /*//bno > 0
+        query.where(place.bno.gt(0L));*/
 
         //paging
         this.getQuerydsl().applyPagination(pageable, query);

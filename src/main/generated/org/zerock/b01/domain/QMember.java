@@ -7,7 +7,6 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
-import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -20,37 +19,27 @@ public class QMember extends EntityPathBase<Member> {
 
     public static final QMember member = new QMember("member1");
 
-    public final QBaseEntity _super = new QBaseEntity(this);
+    public final StringPath m_address = createString("m_address");
 
-    public final StringPath address = createString("address");
+    public final DateTimePath<java.util.Date> m_birth = createDateTime("m_birth", java.util.Date.class);
 
-    public final StringPath birth = createString("birth");
+    public final BooleanPath m_del = createBoolean("m_del");
 
-    public final BooleanPath del = createBoolean("del");
+    public final StringPath m_email = createString("m_email");
 
-    public final StringPath email = createString("email");
+    public final StringPath m_gender = createString("m_gender");
 
-    public final StringPath gender = createString("gender");
+    public final StringPath m_id = createString("m_id");
 
-    public final StringPath mbti = createString("mbti");
+    public final StringPath m_mbti = createString("m_mbti");
 
-    public final StringPath mid = createString("mid");
+    public final StringPath m_name = createString("m_name");
 
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> modDate = _super.modDate;
+    public final StringPath m_phone = createString("m_phone");
 
-    public final StringPath mpw = createString("mpw");
+    public final StringPath m_pw = createString("m_pw");
 
-    public final StringPath name = createString("name");
-
-    public final StringPath phone = createString("phone");
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> regDate = _super.regDate;
-
-    public final SetPath<MemberRole, EnumPath<MemberRole>> roleSet = this.<MemberRole, EnumPath<MemberRole>>createSet("roleSet", MemberRole.class, EnumPath.class, PathInits.DIRECT2);
-
-    public final BooleanPath social = createBoolean("social");
+    public final BooleanPath m_social = createBoolean("m_social");
 
     public QMember(String variable) {
         super(Member.class, forVariable(variable));

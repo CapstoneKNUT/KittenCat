@@ -7,7 +7,6 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
-import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -22,21 +21,35 @@ public class QPlace extends EntityPathBase<Place> {
 
     public final QBaseEntity _super = new QBaseEntity(this);
 
-    public final NumberPath<Long> bno = createNumber("bno", Long.class);
-
-    public final StringPath content = createString("content");
-
-    public final SetPath<PlaceImage, QPlaceImage> imageSet = this.<PlaceImage, QPlaceImage>createSet("imageSet", PlaceImage.class, QPlaceImage.class, PathInits.DIRECT2);
+    public final StringPath bookmark = createString("bookmark");
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> modDate = _super.modDate;
 
+    public final StringPath p_address = createString("p_address");
+
+    public final StringPath p_call = createString("p_call");
+
+    public final StringPath p_category = createString("p_category");
+
+    public final StringPath p_content = createString("p_content");
+
+    public final ArrayPath<byte[], Byte> p_image = createArray("p_image", byte[].class);
+
+    public final StringPath p_name = createString("p_name");
+
+    public final StringPath p_opentime = createString("p_opentime");
+
+    public final NumberPath<Integer> p_ord = createNumber("p_ord", Integer.class);
+
+    public final StringPath p_park = createString("p_park");
+
+    public final StringPath p_site = createString("p_site");
+
+    public final NumberPath<Float> p_star = createNumber("p_star", Float.class);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> regDate = _super.regDate;
-
-    public final StringPath title = createString("title");
-
-    public final StringPath writer = createString("writer");
 
     public QPlace(String variable) {
         super(Place.class, forVariable(variable));
