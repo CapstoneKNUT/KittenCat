@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
@@ -17,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 public class PlaceDTO {
 
-    private Integer p_ord;
+    private Integer pord;
 
     private String p_name;
 
@@ -29,8 +30,7 @@ public class PlaceDTO {
 
     private String bookmark;
 
-    @Lob
-    private byte[] p_image;
+    private String p_image;
 
     private String p_call;
 

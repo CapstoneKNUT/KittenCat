@@ -29,9 +29,9 @@ public class PlaceServiceImpl implements PlaceService{
     private final PlaceRepository placeRepository;
 
     @Override
-    public PlaceDTO readOne(Integer p_ord) {
+    public PlaceDTO readOne(Integer pord) {
 
-        Optional<Place> result = placeRepository.findById(p_ord);
+        Optional<Place> result = placeRepository.findById(pord);
 
         Place place = result.orElseThrow();
 
@@ -42,9 +42,9 @@ public class PlaceServiceImpl implements PlaceService{
     @Override
     public PageResponseDTO<PlaceDTO> list(PageRequestDTO pageRequestDTO) {
 
-        Pageable pageable = pageRequestDTO.getPageable("p_ord");
+        Pageable pageable = pageRequestDTO.getPageable("pord");
 
-        Page<Place> result = placeRepository.searchAll(pageable);
+        Page<Place> result = placeRepository.findAll(pageable);
 
         List<PlaceDTO> dtoList = result.getContent().stream()
                 .map(place -> modelMapper.map(place,PlaceDTO.class)).collect(Collectors.toList());
