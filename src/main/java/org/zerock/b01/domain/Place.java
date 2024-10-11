@@ -15,7 +15,7 @@ import java.util.Set;
 public class Place extends BaseEntity {
 
     @Id
-    private Integer p_ord;
+    private Integer pord;
 
     private String p_name;
 
@@ -27,8 +27,7 @@ public class Place extends BaseEntity {
 
     private String bookmark;
 
-    @Lob
-    private byte[] p_image;
+    private String p_image;
 
     private String p_call;
 

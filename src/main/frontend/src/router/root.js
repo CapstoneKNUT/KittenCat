@@ -8,10 +8,12 @@ const Loading = <div>Loading....</div>
 
 const App = lazy(() => import("../App"))
 const Main = lazy(() => import("../pages/main"))
+/*
 const PlaceList = lazy(() => import("../pages/place/list"))
 const PlaceRead = lazy(() => import("../pages/place/read"))
 const MemberJoin = lazy(() => import("../pages/member/join"))
 const MemberLogin = lazy(() => import("../pages/member/login"))
+*/
 
 const root = createBrowserRouter([
     {
@@ -22,7 +24,7 @@ const root = createBrowserRouter([
         path: "main",
         element: <Suspense fallback={Loading}><Main/></Suspense>,
     },
-    {
+/*    {
         path: "place",
         children: [
             {
@@ -57,7 +59,7 @@ const root = createBrowserRouter([
                 element:<Suspense fallback={Loading}><MemberJoin/></Suspense>
             },
         ]
-    },
+    },*/
 ]);
 
 export default root

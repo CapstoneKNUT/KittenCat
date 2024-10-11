@@ -24,7 +24,7 @@ public class PageRequestDTO {
     @Builder.Default
     private int size = 10;
 
-    public Pageable getPageable(String...props) {
+    public Pageable getPageable(String... props) {
         return PageRequest.of(this.page -1, this.size, Sort.by(props).ascending());
     }
 
@@ -41,7 +41,6 @@ public class PageRequestDTO {
 
             link = builder.toString();
         }
-
         return link;
     }
 }

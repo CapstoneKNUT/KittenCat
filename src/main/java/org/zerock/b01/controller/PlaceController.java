@@ -1,17 +1,26 @@
 package org.zerock.b01.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.querydsl.jpa.JPAQueryBase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.client.RestTemplate;
 import org.zerock.b01.dto.PageRequestDTO;
 import org.zerock.b01.dto.PageResponseDTO;
 import org.zerock.b01.dto.PlaceDTO;
 import org.zerock.b01.dto.PlaceSearchDTO;
+import org.zerock.b01.service.ApiService;
 import org.zerock.b01.service.PlaceService;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/place")
@@ -19,6 +28,8 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class PlaceController {
     private final PlaceService placeService;
+
+    private final ApiService apiService;
 
     @GetMapping("/list")
     public ResponseEntity<PageResponseDTO<PlaceDTO>> list(PageRequestDTO pageRequestDTO) {
@@ -28,39 +39,29 @@ public class PlaceController {
     }
 
     @PostMapping("/list")
-    public ResponseEntity<String> registerPost(@RequestBody PlaceSearchDTO placeSearchDTO) {
-        String p_area = placeSearchDTO.getP_area();
-        String p_subArea = placeSearchDTO.getP_subArea();
-        String p_category = placeSearchDTO.getP_category();
-        Integer p_count = placeSearchDTO.getP_count();
-        String p_keyword = placeSearchDTO.getP_keyword();
+    public ResponseEntity<?> searchPost(@RequestBody PlaceSearchDTO placeSearchDTO) {
+        String result = apiService.callExternalApi("http://localhost:8000/place/list", placeSearchDTO);
 
-        try{
-            ProcessBuilder processBuilder = new ProcessBuilder(
-                    "python3", "../python/place.py", p_area, p_subArea, p_category, String.valueOf(p_count), p_keyword
-            );
-            Process process = processBuilder.start();
+        // Python 스크립트의 응답을 파싱합니다.
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode jsonNode = mapper.readTree(result);
+            String redirectUrl = jsonNode.get("redirect_url").asText();
 
-            int exitCode = process.waitFor();
-            if(exitCode == 0){
-                return ResponseEntity.ok("스크립트가 성공적으로 실행 완료 됨");
-            } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파이썬 실행 중 오류 발생 : " + exitCode);
-            }
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("파이썬 실행 중 예외 발생 : " + e.getMessage());
-        } catch (InterruptedException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("파이썬 실행 중 예외 발생: " + e.getMessage());
+            // 리다이렉트 응답을 반환합니다.
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .header(HttpHeaders.LOCATION, redirectUrl)
+                    .build();
+        } catch (Exception e) {
+            log.error("Error parsing JSON response", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing the request");
         }
     }
 
-    @GetMapping({"/read"})
-    public ResponseEntity<PlaceDTO> read(@RequestParam Integer p_ord) {
-        PlaceDTO placeDTO = placeService.readOne(p_ord);
+    @GetMapping({ "/read" })
+    public ResponseEntity<PlaceDTO> read(@RequestParam Integer pord) {
+        PlaceDTO placeDTO = placeService.readOne(pord);
         log.info(placeDTO);
         return ResponseEntity.ok(placeDTO);
     }
-
 }

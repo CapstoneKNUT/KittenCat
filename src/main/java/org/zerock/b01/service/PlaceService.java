@@ -8,14 +8,14 @@ import java.util.stream.Collectors;
 
 public interface PlaceService {
 
-    PlaceDTO readOne(Integer p_ord);
+    PlaceDTO readOne(Integer pord);
 
     PageResponseDTO<PlaceDTO> list(PageRequestDTO pageRequestDTO);
 
     default PlaceDTO entityToDTO(Place place) {
 
         PlaceDTO placeDTO = PlaceDTO.builder()
-                .p_ord(place.getP_ord())
+                .pord(place.getPord())
                 .p_name(place.getP_name())
                 .p_category(place.getP_category())
                 .p_address(place.getP_address())
