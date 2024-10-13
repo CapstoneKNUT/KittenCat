@@ -1,5 +1,5 @@
 from selenium.webdriver.chrome.service import Service
-from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean, ForeignKey, BigInteger
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import declarative_base
 from selenium import webdriver 
@@ -41,8 +41,6 @@ class PlanDTO(BaseModel):
 async def get_place_list(place_search_dto: PlaceSearchDTO):
     p_count = place_search_dto.p_count or 10
     # 받은 데이터를 처리하거나 가공
-    print("1")
-
     search = f"{place_search_dto.p_area} {place_search_dto.p_subArea} {place_search_dto.p_category} {place_search_dto.p_keyword}".strip()
 
     list_url = f'https://map.naver.com/p/search/{search}?c=10.00,0,0,0,dh'
@@ -781,9 +779,7 @@ async def transport_add(Plan_DTO: PlanDTO):
                     else:
                         li_elements = wd.find_elements(By.CSS_SELECTOR,
                                                        '#sub_panel > div > div.panel_content > div > div > div.sc-1ngh13j.kxqoYk > ol > li')
-                        body = wd.find_element(By.XPATH, '//*[@id="sub_panel"]/div/div[1]/div/div/div[2]')
                         for i in range(1, len(li_elements)):
-                            print(len(li_elements))
                             c_method = wd.find_element(By.CSS_SELECTOR,
                                                        '#sub_panel div.panel_content div.sc-1ngh13j.kxqoYk li:nth-child(%d) div.detail_step_icon_area span.blind' % i)
                             wd.execute_script("arguments[0].scrollIntoView();", c_method)
@@ -813,7 +809,6 @@ async def transport_add(Plan_DTO: PlanDTO):
                                                  '#tab_pubtrans_directions ul:nth-child(1) li.sc-1tj2a62.efWKHx.is_selected div.base_info')
                         li_elements = wd.find_elements(By.CSS_SELECTOR,
                                                        '#sub_panel > div > div.panel_content > div > div > div.sc-1ngh13j.kxqoYk > ol > li')
-                        body = wd.find_element(By.XPATH, '//*[@id="sub_panel"]/div/div[1]/div/div/div[2]')
                         for i in range(1, len(li_elements)):
                             c_method = wd.find_element(By.CSS_SELECTOR,
                                                        '#sub_panel div.panel_content div.sc-1ngh13j.kxqoYk li:nth-child(%d) div.detail_step_icon_area span.blind' % i)
@@ -843,7 +838,7 @@ async def transport_add(Plan_DTO: PlanDTO):
 
     class TransportParentModel(Base):
         __tablename__ = 'transportParent'
-        tno = Column(Integer, primary_key=True, autoincrement=True)
+        tno = Column(BigInteger, primary_key=True, autoincrement=True)
         isCar = Column(Boolean)  # 추가 데이터 예시
         t_method = Column(String(13))
         t_startHour = Column(Integer)
@@ -857,8 +852,8 @@ async def transport_add(Plan_DTO: PlanDTO):
 
     class TransportChildModel(Base):
         __tablename__ = 'transportChild'
-        tord = Column(Integer, primary_key=True, autoincrement=True)
-        tno = Column(Integer, ForeignKey('transportParent.tno'))
+        tord = Column(BigInteger, primary_key=True, autoincrement=True)
+        tno = Column(BigInteger, ForeignKey('transportParent.tno'))
         c_method = Column(String(36))
         c_takeHour = Column(Integer)
         c_takeMinute = Column(Integer)
