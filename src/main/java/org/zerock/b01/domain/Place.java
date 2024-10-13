@@ -1,11 +1,7 @@
 package org.zerock.b01.domain;
 
 import lombok.*;
-import org.hibernate.annotations.BatchSize;
-
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Getter

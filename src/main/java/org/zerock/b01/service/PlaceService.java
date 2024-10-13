@@ -3,9 +3,6 @@ package org.zerock.b01.service;
 import org.zerock.b01.domain.Place;
 import org.zerock.b01.dto.*;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 public interface PlaceService {
 
     PlaceDTO readOne(Integer pord);

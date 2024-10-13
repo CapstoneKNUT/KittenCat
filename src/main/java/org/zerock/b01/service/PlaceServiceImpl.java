@@ -19,9 +19,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.zerock.b01.domain.QPlace.place;
-
-
 @Service
 @Log4j2
 @RequiredArgsConstructor
