@@ -16,28 +16,28 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PlaceDTO {
+public class MemberDTO {
 
-    private Integer pord;
+    private String mid;
 
-    private String p_name;
+    private String m_pw;
 
-    private String p_category;
+    private String m_email;
 
-    private String p_address;
+    private String m_name;
 
-    private String p_content;
+    private String m_phone;
 
-    private String p_image;
+    private String m_address;
 
-    private String p_call;
+    private String m_birth;
 
-    private Float p_star;
+    private String m_gender;
 
-    private String p_site;
+    private String m_mbti;
 
-    private String p_opentime;
+    private boolean m_del;
 
-    private String p_park;
+    private boolean m_social;
 
 }

@@ -12,6 +12,8 @@ public interface PlaceService {
 
     PageResponseDTO<PlaceDTO> list(PageRequestDTO pageRequestDTO);
 
+    Long register(Integer pord, String mid);
+
     default PlaceDTO entityToDTO(Place place) {
 
         PlaceDTO placeDTO = PlaceDTO.builder()
@@ -20,7 +22,6 @@ public interface PlaceService {
                 .p_category(place.getP_category())
                 .p_address(place.getP_address())
                 .p_content(place.getP_content())
-                .bookmark(place.getBookmark())
                 .p_image(place.getP_image())
                 .p_call(place.getP_call())
                 .p_star(place.getP_star())

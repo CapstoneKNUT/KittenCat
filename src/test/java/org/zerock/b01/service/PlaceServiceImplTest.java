@@ -4,6 +4,8 @@ import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.zerock.b01.domain.Place;
+import org.zerock.b01.domain.Store;
 import org.zerock.b01.dto.PageRequestDTO;
 import org.zerock.b01.dto.PageResponseDTO;
 import org.zerock.b01.dto.PlaceDTO;
@@ -43,4 +45,11 @@ class PlaceServiceImplTest {
         List<PlaceDTO> dtoList = responseDTO.getDtoList();
         assertEquals(10, dtoList.size()); // 리스트의 크기가 2인지 확인
     }
+
+    @Test
+    void register(){
+        Long result = placeService.register(1,"예찬");
+        assertNotNull(result);
+    }
+
 }

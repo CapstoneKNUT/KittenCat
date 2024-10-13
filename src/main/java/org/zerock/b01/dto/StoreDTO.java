@@ -1,21 +1,17 @@
-package org.zerock.b01.domain;
+package org.zerock.b01.dto;
 
-import lombok.*;
-import org.hibernate.annotations.BatchSize;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
-
-@Entity
-@Getter
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Place {
+public class StoreDTO {
 
-    @Id
-    private Integer pord;
+    private Long sno;
 
     private String p_name;
 
@@ -36,4 +32,5 @@ public class Place {
     private String p_opentime;
 
     private String p_park;
+
 }

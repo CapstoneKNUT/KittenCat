@@ -1,21 +1,22 @@
 package org.zerock.b01.domain;
 
-import lombok.*;
-import org.hibernate.annotations.BatchSize;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Place {
+public class Store {
 
     @Id
-    private Integer pord;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long sno;
 
     private String p_name;
 
@@ -24,6 +25,10 @@ public class Place {
     private String p_address;
 
     private String p_content;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bookmark")
+    private Member mid;
 
     private String p_image;
 
