@@ -357,5 +357,5 @@ async def get_place_list(place_search_dto: PlaceSearchDTO):
     # 작업이 완료되면 JSON 응답을 반환합니다.
     return JSONResponse(content={
         "message": "스크립트가 성공적으로 실행 완료 됨",
-        "redirect_url": "http://localhost:8080/api/place/list"
+        "redirect_url": "http://localhost:3000/place/list"
     })
