@@ -5,26 +5,32 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotEmpty;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class StoreDTO {
 
-    @NotEmpty
-    private String p_address; // 여행지 주소
+    private Long sno;
 
-    private String bookmark; // 한 명의 사용자 ID 저장
-
-    @NotEmpty
     private String p_name;
 
-    @NotEmpty
     private String p_category;
 
-    private byte[] p_image;
+    private String p_address;
 
-    private float p_star;
+    private String p_content;
+
+    private String p_image;
+
+    private String p_call;
+
+    private Float p_star;
+
+    private String p_site;
+
+    private String p_opentime;
+
+    private String p_park;
+
 }

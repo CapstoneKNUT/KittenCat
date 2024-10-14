@@ -28,8 +28,6 @@ public class PlaceDTO {
 
     private String p_content;
 
-    private String bookmark;
-
     private String p_image;
 
     private String p_call;
@@ -42,9 +40,4 @@ public class PlaceDTO {
 
     private String p_park;
 
-    private Boolean isBookmark;
-
-    public boolean isBookmark(){
-        return isBookmark = (bookmark != null);
-    };
 }

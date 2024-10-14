@@ -20,6 +20,7 @@ import org.zerock.b01.service.PlaceService;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -39,7 +40,7 @@ public class PlaceController {
     }
 
     @PostMapping("/list")
-    public ResponseEntity<?> searchPost(@RequestBody PlaceSearchDTO placeSearchDTO) {
+    public ResponseEntity<?> searchPost(@RequestBody  PlaceSearchDTO placeSearchDTO) {
         String result = apiService.callExternalApi("http://localhost:8000/place/list", placeSearchDTO);
 
         // Python 스크립트의 응답을 파싱합니다.
@@ -63,5 +64,17 @@ public class PlaceController {
         PlaceDTO placeDTO = placeService.readOne(pord);
         log.info(placeDTO);
         return ResponseEntity.ok(placeDTO);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<Map<String, Long>> register(@RequestBody Integer pord, String username) {
+
+        String mid = username;
+
+        Long sno = placeService.register(pord, mid);
+
+        log.info(sno);
+
+        return ResponseEntity.ok(Map.of("sno", sno));
     }
 }

@@ -1,18 +1,14 @@
 package org.zerock.b01.domain;
 
 import lombok.*;
-import org.hibernate.annotations.BatchSize;
-
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Place extends BaseEntity {
+public class Place {
 
     @Id
     private Integer pord;
@@ -24,8 +20,6 @@ public class Place extends BaseEntity {
     private String p_address;
 
     private String p_content;
-
-    private String bookmark;
 
     private String p_image;
 

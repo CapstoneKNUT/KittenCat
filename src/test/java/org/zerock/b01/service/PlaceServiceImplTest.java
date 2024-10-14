@@ -43,4 +43,11 @@ class PlaceServiceImplTest {
         List<PlaceDTO> dtoList = responseDTO.getDtoList();
         assertEquals(10, dtoList.size()); // 리스트의 크기가 2인지 확인
     }
+
+    @Test
+    void register(){
+        Long result = placeService.register(1,"예찬");
+        assertNotNull(result);
+    }
+
 }

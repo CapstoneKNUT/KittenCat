@@ -6,12 +6,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.zerock.b01.dto.PlaceSearchDTO;
 
+import javax.servlet.AsyncContext;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,11 +46,17 @@ class PlaceControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(new PlaceSearchDTO("서울", "강남구", "음식점", 10, "맛집"));
 
-        mockMvc.perform(post("/api/place/list")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isOk())
-                .andExpect(content().string("스크립트가 성공적으로 실행 완료 됨"));    }
+        MvcResult mvcResult = mockMvc.perform(post("/api/place/list")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andExpect(status().isFound())
+                .andReturn();
+
+        // Assert: 리다이렉트 경로 확인
+        String location = mvcResult.getResponse().getHeader(HttpHeaders.LOCATION);
+        assertNotNull(location);  // 리다이렉트 URL이 null이 아님을 확인
+        assertTrue(location.contains("http://localhost:3000/place/list"));  // 실제 응답으로 받은 URL에 대한 검증
+    }
 
     @Test
     void read() {

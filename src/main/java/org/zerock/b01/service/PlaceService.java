@@ -3,14 +3,13 @@ package org.zerock.b01.service;
 import org.zerock.b01.domain.Place;
 import org.zerock.b01.dto.*;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 public interface PlaceService {
 
     PlaceDTO readOne(Integer pord);
 
     PageResponseDTO<PlaceDTO> list(PageRequestDTO pageRequestDTO);
+
+    Long register(Integer pord, String mid);
 
     default PlaceDTO entityToDTO(Place place) {
 
@@ -20,7 +19,6 @@ public interface PlaceService {
                 .p_category(place.getP_category())
                 .p_address(place.getP_address())
                 .p_content(place.getP_content())
-                .bookmark(place.getBookmark())
                 .p_image(place.getP_image())
                 .p_call(place.getP_call())
                 .p_star(place.getP_star())
