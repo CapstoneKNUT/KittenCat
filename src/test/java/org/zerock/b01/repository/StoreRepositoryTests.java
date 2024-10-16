@@ -56,7 +56,8 @@ public class StoreRepositoryTests {
 
         Pageable pageable = PageRequest.of(0,10, Sort.by("sno").descending());
 
-        Page<Store> result = storeRepository.findByMidMid(username, pageable);
+//        Page<Store> result = storeRepository.findByMidMid(username, pageable);
+        Page<Store> result = storeRepository.findByMid_Mid(username, pageable);
 
         log.info(result);
     }

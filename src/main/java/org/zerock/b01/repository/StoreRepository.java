@@ -9,5 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface StoreRepository extends JpaRepository<Store, Long> {
-    Page<Store> findByMidMid(String username, Pageable pageable);
+//    Page<Store> findByMidMid(String username, Pageable pageable);
+    Page<Store> findByMid_Mid(String mid, Pageable pageable);
 }
+

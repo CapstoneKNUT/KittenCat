@@ -21,7 +21,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-// Spring Boot 통합 테스트 설정
 @SpringBootTest
 @AutoConfigureMockMvc
 @Log4j2
@@ -30,21 +29,19 @@ class StoreControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    // StoreService를 모킹하여 실제 서비스 로직을 호출하지 않음
     @MockBean
     private StoreService storeService;
 
     @Autowired
-    private ObjectMapper objectMapper; // JSON 변환을 위한 ObjectMapper
+    private ObjectMapper objectMapper;
 
     @Test
     void testListByUser() throws Exception {
         // Arrange
-        String username = "user0";
+        String username = "user0"; // 사용자 이름
         PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
                 .page(1)
-                .size(10)
-                .userid(username) // 사용자 ID 설정
+                .size(10) // 페이지 크기 설정
                 .build();
 
         StoreDTO storeDTO = StoreDTO.builder()
@@ -64,7 +61,7 @@ class StoreControllerTest {
 
         // Act & Assert
         mockMvc.perform(get("/api/store/list")
-                        .param("user0", username)
+                        .param("username", username) // 올바른 파라미터 이름으로 수정
                         .param("page", String.valueOf(pageRequestDTO.getPage()))
                         .param("size", String.valueOf(pageRequestDTO.getSize()))
                         .contentType(MediaType.APPLICATION_JSON))

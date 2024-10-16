@@ -37,7 +37,9 @@ public class StoreServiceImpl implements StoreService {
     @Override
     public PageResponseDTO<StoreDTO> list(String username,PageRequestDTO pageRequestDTO) {
         Pageable pageable = pageRequestDTO.getPageable("sno"); // "sno" 기준으로 정렬
-        Page<Store> result = storeRepository.findByMidMid(username, pageable);
+//        Page<Store> result = storeRepository.findByMidMid(username, pageable);
+        Page<Store> result = storeRepository.findByMid_Mid(username, pageable);
+
 
         List<StoreDTO> dtoList = result.getContent().stream()
                 .map(this::entityToDTO)
@@ -75,9 +77,7 @@ public class StoreServiceImpl implements StoreService {
         return modelMapper.map(storeDTO, Store.class);
     }
 
-
-
-
+}
     //    // 추가하기
 //    @Override
 //    public String register(StoreDTO storeDTO) {
@@ -93,5 +93,3 @@ public class StoreServiceImpl implements StoreService {
 //
 //        return store.getP_address();
 //    }
-
-}
