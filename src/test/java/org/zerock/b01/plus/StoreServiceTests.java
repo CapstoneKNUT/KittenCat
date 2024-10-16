@@ -1,3 +1,4 @@
+/*
 package org.zerock.b01.plus;
 
 import lombok.extern.log4j.Log4j2;
@@ -33,15 +34,15 @@ public class StoreServiceTests {
 
         // MemberDTO 객체 생성
         MemberDTO memberDTO = MemberDTO.builder()
-                .m_id("user6")
+                .mid("user1")
                 .m_pw("password")
                 .m_email("example@example.com")
-                .m_name("유저6")
+                .m_name("유저1")
                 .m_phone("010-1234-5678")
                 .m_address("충주시 대소원면")
-                .m_birth(parseDate("2024-10-08"))
+                .m_birth("2024-10-08")
                 .m_gender("male")
-                .m_mbti("ENTP")
+                .m_mbti("ISFP")
                 .m_del(false)
                 .m_social(false)
                 .build();
@@ -56,7 +57,7 @@ public class StoreServiceTests {
                 .bookmark(memberId) // 저장된 Member의 ID 사용
                 .p_name("Beautiful Beach")
                 .p_category("Beach")
-                .p_image(imageData)
+//                .p_image(imageData)
                 .p_star(4.5f)
                 .build();
 
@@ -77,3 +78,4 @@ public class StoreServiceTests {
         }
     }
 }
+*/

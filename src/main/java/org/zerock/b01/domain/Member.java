@@ -21,7 +21,7 @@ public class Member {
     @Id
     @Size(min = 3, max = 100)
     @Column(nullable = false)
-    private String m_id; // 기본 키
+    private String mid; // 기본 키
 
     @Column(length = 40, nullable = false)
     private String m_pw; //비밀번호
@@ -35,7 +35,7 @@ public class Member {
     @Column(length = 30)
     private String m_phone; // 전화번호
 
-    private Date m_birth; // 생년월일
+    private String m_birth; // 생년월일
 
     @Column(length = 100)
     private String m_address; // 주소(거주지)

@@ -25,7 +25,7 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
 
         // 저장된 회원의 ID 반환
-        return member.getM_id();
+        return member.getMid();
     }
 
     @Override
@@ -44,7 +44,7 @@ public class MemberServiceImpl implements MemberService {
     // DTO를 엔티티로 변환하는 메서드
     private Member dtoToEntity(MemberDTO memberDTO) {
         return Member.builder()
-                .m_id(memberDTO.getM_id())
+                .mid(memberDTO.getMid())
                 .m_pw(memberDTO.getM_pw())
                 .m_email(memberDTO.getM_email())
                 .m_name(memberDTO.getM_name())
@@ -61,7 +61,7 @@ public class MemberServiceImpl implements MemberService {
     // 엔티티를 DTO로 변환하는 메서드
     private MemberDTO entityToDTO(Member member) {
         return MemberDTO.builder()
-                .m_id(member.getM_id())
+                .mid(member.getMid())
                 .m_pw(member.getM_pw())
                 .m_email(member.getM_email())
                 .m_name(member.getM_name())

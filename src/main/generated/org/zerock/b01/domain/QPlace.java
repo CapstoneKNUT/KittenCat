@@ -19,13 +19,6 @@ public class QPlace extends EntityPathBase<Place> {
 
     public static final QPlace place = new QPlace("place");
 
-    public final QBaseEntity _super = new QBaseEntity(this);
-
-    public final StringPath bookmark = createString("bookmark");
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> modDate = _super.modDate;
-
     public final StringPath p_address = createString("p_address");
 
     public final StringPath p_call = createString("p_call");
@@ -34,13 +27,11 @@ public class QPlace extends EntityPathBase<Place> {
 
     public final StringPath p_content = createString("p_content");
 
-    public final ArrayPath<byte[], Byte> p_image = createArray("p_image", byte[].class);
+    public final StringPath p_image = createString("p_image");
 
     public final StringPath p_name = createString("p_name");
 
     public final StringPath p_opentime = createString("p_opentime");
-
-    public final NumberPath<Integer> p_ord = createNumber("p_ord", Integer.class);
 
     public final StringPath p_park = createString("p_park");
 
@@ -48,8 +39,7 @@ public class QPlace extends EntityPathBase<Place> {
 
     public final NumberPath<Float> p_star = createNumber("p_star", Float.class);
 
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> regDate = _super.regDate;
+    public final NumberPath<Integer> pord = createNumber("pord", Integer.class);
 
     public QPlace(String variable) {
         super(Place.class, forVariable(variable));

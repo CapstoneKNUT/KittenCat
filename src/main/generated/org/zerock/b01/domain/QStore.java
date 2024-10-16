@@ -22,17 +22,29 @@ public class QStore extends EntityPathBase<Store> {
 
     public static final QStore store = new QStore("store");
 
-    public final QMember bookmark;
+    public final QMember mid;
 
     public final StringPath p_address = createString("p_address");
 
+    public final StringPath p_call = createString("p_call");
+
     public final StringPath p_category = createString("p_category");
 
-    public final ArrayPath<byte[], Byte> p_image = createArray("p_image", byte[].class);
+    public final StringPath p_content = createString("p_content");
+
+    public final StringPath p_image = createString("p_image");
 
     public final StringPath p_name = createString("p_name");
 
+    public final StringPath p_opentime = createString("p_opentime");
+
+    public final StringPath p_park = createString("p_park");
+
+    public final StringPath p_site = createString("p_site");
+
     public final NumberPath<Float> p_star = createNumber("p_star", Float.class);
+
+    public final NumberPath<Long> sno = createNumber("sno", Long.class);
 
     public QStore(String variable) {
         this(Store.class, forVariable(variable), INITS);
@@ -52,7 +64,7 @@ public class QStore extends EntityPathBase<Store> {
 
     public QStore(Class<? extends Store> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.bookmark = inits.isInitialized("bookmark") ? new QMember(forProperty("bookmark")) : null;
+        this.mid = inits.isInitialized("mid") ? new QMember(forProperty("mid")) : null;
     }
 
 }

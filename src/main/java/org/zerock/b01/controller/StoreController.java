@@ -6,10 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.zerock.b01.domain.Store;
 import org.zerock.b01.dto.PageRequestDTO;
@@ -18,26 +15,25 @@ import org.zerock.b01.dto.StoreDTO;
 import org.zerock.b01.service.StoreService;
 
 @Controller
-@RequestMapping("/store")
+@RequestMapping("/api/store")
 @Log4j2
 @RequiredArgsConstructor
 public class StoreController {
 
     private final StoreService storeService;
 
-    //찜목록 조회
+    /*//찜목록 조회
     @GetMapping("/list")
     public ResponseEntity<PageResponseDTO<StoreDTO>> list(PageRequestDTO pageRequestDTO) {
         PageResponseDTO<StoreDTO> responseDTO = storeService.list(pageRequestDTO);
         log.info(responseDTO);
         return ResponseEntity.ok(responseDTO);
-    }
+    }*/
 
     // 유저별 찜 목록 조회
-    @GetMapping("/list/{userid}")
-    public ResponseEntity<PageResponseDTO<StoreDTO>> listByUser(@PathVariable("username") String username, PageRequestDTO pageRequestDTO) {
-        pageRequestDTO.setUserid(username);  // userid를 세팅
-        PageResponseDTO<StoreDTO> responseDTO = storeService.list(pageRequestDTO);
+    @GetMapping("/list")
+    public ResponseEntity<PageResponseDTO<StoreDTO>> listByUser(@RequestParam String username, PageRequestDTO pageRequestDTO) {
+        PageResponseDTO<StoreDTO> responseDTO = storeService.list(username, pageRequestDTO);
         log.info(responseDTO);
         return ResponseEntity.ok(responseDTO);
     }

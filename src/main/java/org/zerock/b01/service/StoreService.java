@@ -5,15 +5,19 @@ import org.zerock.b01.dto.PageResponseDTO;
 import org.zerock.b01.dto.StoreDTO;
 
 public interface StoreService {
-    // 추가하기
-    String register(StoreDTO storeDTO);
-
-    // 제거하기
-    void remove(String p_address);
 
     // 페이지로 나타내기
-    PageResponseDTO<StoreDTO> list(PageRequestDTO pageRequestDTO);
+    PageResponseDTO<StoreDTO> list(String username, PageRequestDTO pageRequestDTO);
+
 
     // 상세페이지로 이동
-    StoreDTO readOne(String p_address);
+    StoreDTO readOne(Long sno);
+
+    // 제거하기
+    void remove(Long sno);
+
+
+
+    // (테스트용) 추가하기
+//    String register(StoreDTO storeDTO);
 }

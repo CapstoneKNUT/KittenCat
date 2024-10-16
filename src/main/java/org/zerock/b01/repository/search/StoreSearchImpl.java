@@ -17,65 +17,21 @@ public class StoreSearchImpl extends QuerydslRepositorySupport implements StoreS
         super(Store.class);
     }
 
+    //코드 수정을 위한 원본보호차원의 주석처리
     @Override
-    public Page<Store> search1(Pageable pageable) {
+    public Page<Store> searchAll(String username, Pageable pageable) {
 
         QStore store = QStore.store;
-
         JPQLQuery<Store> query = from(store);
 
-        BooleanBuilder booleanBuilder = new BooleanBuilder(); // (
-
-        booleanBuilder.or(store.p_name.contains(store.p_name)); // name like ...
-
-        booleanBuilder.or(store.p_category.contains(store.p_category)); // category like ....
+        //username은 받아질거라서 if문으로 확인할 필요 X
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        booleanBuilder.or(store.mid.mid.eq(username));
 
         query.where(booleanBuilder);
 
-        //query.where(store.bno.gt(0L));
-
-
-        //paging
-        this.getQuerydsl().applyPagination(pageable, query);
-
-        List<Store> list = query.fetch();
-
-        long count = query.fetchCount();
-
-
-        return null;
-
-    }
-
-    @Override
-    public Page<Store> searchAll(String[] types, String keyword, Pageable pageable) {
-
-        QStore store = QStore.store;
-        JPQLQuery<Store> query = from(store);
-
-        if( (types != null && types.length > 0) && keyword != null ){ //검색 조건과 키워드가 있다면
-
-            BooleanBuilder booleanBuilder = new BooleanBuilder(); // (
-
-            for(String type: types){
-
-                switch (type){
-                    case "t": //이름
-                        booleanBuilder.or(store.p_name.contains(keyword));
-                        break;
-                    case "c": //카테고리
-                        booleanBuilder.or(store.p_category.contains(keyword));
-                        break;
-                    case "w": // 주소
-                        booleanBuilder.or(store.p_address.contains(keyword));
-                        break;
-                }
-            }//end for
-            query.where(booleanBuilder);
-        }//end if
-
-        //bno > 0
-        //query.where(store.bno.gt(0L));
+        //sno > 0
+        query.where(store.sno.gt(0L));
 
         //paging
         this.getQuerydsl().applyPagination(pageable, query);
@@ -88,133 +44,44 @@ public class StoreSearchImpl extends QuerydslRepositorySupport implements StoreS
 
     }
 
-    //댓글 수
     /*@Override
-    public Page<StoreListReplyCountDTO> searchWithReplyCount(String[] types, String keyword, Pageable pageable) {
+    public Page<Store> searchAll(String bookmark, String keyword, Pageable pageable) {
 
         QStore store = QStore.store;
-        QReply reply = QReply.reply;
-
         JPQLQuery<Store> query = from(store);
-        query.leftJoin(reply).on(reply.store.eq(store));
 
-        query.groupBy(store);
+        // 공통적으로 사용할 BooleanBuilder 생성
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
 
-        if( (types != null && types.length > 0) && keyword != null ){
-
-            BooleanBuilder booleanBuilder = new BooleanBuilder(); // (
-
-            for(String type: types){
-
-                switch (type){
-                    case "t": //이름
-                        booleanBuilder.or(store.p_name.contains(keyword));
-                        break;
-                    case "c": //카테고리
-                        booleanBuilder.or(store.p_category.contains(keyword));
-                        break;
-                    case "w": //주소
-                        booleanBuilder.or(store.p_address.contains(keyword));
-                        break;
-                }
-            }//end for
-            query.where(booleanBuilder);
+        //bookmark에 값이 없으면 못보잖슴.
+        if(bookmark != null && !bookmark.trim().isEmpty()) {
+            booleanBuilder.and(store.bookmark.eq(bookmark));  // bookmark 필드에 대한 조건
         }
 
-        //bno > 0
-        query.where(store.bno.gt(0L));
 
-        //댓글 수
-        *//*JPQLQuery<StoreListReplyCountDTO> dtoQuery = query.select(Projections.bean(StoreListReplyCountDTO.class,
-                store.bno,
-                store.title,
-                store.writer,
-                store.regDate,
-                reply.count().as("replyCount")
-        ));*//*
+        if(keyword != null ){ //키워드가 있다면
 
-        this.getQuerydsl().applyPagination(pageable,dtoQuery);
+            booleanBuilder = new BooleanBuilder(); // (
+            booleanBuilder.or(store.p_name.contains(keyword));
 
-        List<StoreListReplyCountDTO> dtoList = dtoQuery.fetch();
+            query.where(booleanBuilder);
+        }//end
 
-        long count = dtoQuery.fetchCount();
+        //sno > 0
+        query.where(store.sno.gt(0L));
 
-        return new PageImpl<>(dtoList, pageable, count);
+        //paging
+        this.getQuerydsl().applyPagination(pageable, query);
+
+        List<Store> list = query.fetch();
+
+        long count = query.fetchCount();
+
+        return new PageImpl<>(list, pageable, count);
+
     }*/
 
-    /*@Override
-    public Page<StoreListAllDTO> searchWithAll(String[] types, String keyword, Pageable pageable) {
-
-        QStore store = QStore.store;
-        QReply reply = QReply.reply;
-
-        JPQLQuery<Store> storeJPQLQuery = from(store);
-        storeJPQLQuery.leftJoin(reply).on(reply.store.eq(store)); //left join
-
-        if( (types != null && types.length > 0) && keyword != null ){
-
-            BooleanBuilder booleanBuilder = new BooleanBuilder(); // (
-
-            for(String type: types){
-
-                switch (type){
-                    case "t": //이름
-                        booleanBuilder.or(store.p_name.contains(keyword));
-                        break;
-                    case "c": //카테고리
-                        booleanBuilder.or(store.p_category.contains(keyword));
-                        break;
-                    case "w": //주소
-                        booleanBuilder.or(store.p_address.contains(keyword));
-                        break;
-                }
-            }//end for
-            storeJPQLQuery.where(booleanBuilder);
-        }
-
-        storeJPQLQuery.groupBy(store);
-
-        getQuerydsl().applyPagination(pageable, storeJPQLQuery); //paging
-
-
-
-        JPQLQuery<Tuple> tupleJPQLQuery = storeJPQLQuery.select(store, reply.countDistinct());
-
-        List<Tuple> tupleList = tupleJPQLQuery.fetch();
-
-        List<StoreListAllDTO> dtoList = tupleList.stream().map(tuple -> {
-
-            Store store1 = (Store) tuple.get(store);
-            long replyCount = tuple.get(1,Long.class);
-
-            StoreListAllDTO dto = StoreListAllDTO.builder()
-                    .bno(store1.getBno())
-                    .title(store1.getTitle())
-                    .writer(store1.getWriter())
-                    .regDate(store1.getRegDate())
-                    .replyCount(replyCount)
-                    .build();
-
-
-
-            return dto;
-        }).collect(Collectors.toList());
-
-        long totalCount = storeJPQLQuery.fetchCount();
-
-
-        return new PageImpl<>(dtoList, pageable, totalCount);
-    }
-*/
 }
-
-
-
-
-
-
-
-
 
 
 

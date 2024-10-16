@@ -44,9 +44,11 @@ class PlaceServiceImplTest {
         assertEquals(10, dtoList.size()); // 리스트의 크기가 2인지 확인
     }
 
+
+    //place의 pord째 데이터 mid값과 함께 store에 저장
     @Test
     void register(){
-        Long result = placeService.register(1,"예찬");
+        Long result = placeService.register(1,"user0");
         assertNotNull(result);
     }
 

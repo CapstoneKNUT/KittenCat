@@ -21,15 +21,13 @@ public class QMember extends EntityPathBase<Member> {
 
     public final StringPath m_address = createString("m_address");
 
-    public final DateTimePath<java.util.Date> m_birth = createDateTime("m_birth", java.util.Date.class);
+    public final StringPath m_birth = createString("m_birth");
 
     public final BooleanPath m_del = createBoolean("m_del");
 
     public final StringPath m_email = createString("m_email");
 
     public final StringPath m_gender = createString("m_gender");
-
-    public final StringPath m_id = createString("m_id");
 
     public final StringPath m_mbti = createString("m_mbti");
 
@@ -40,6 +38,8 @@ public class QMember extends EntityPathBase<Member> {
     public final StringPath m_pw = createString("m_pw");
 
     public final BooleanPath m_social = createBoolean("m_social");
+
+    public final StringPath mid = createString("mid");
 
     public QMember(String variable) {
         super(Member.class, forVariable(variable));

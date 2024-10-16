@@ -15,7 +15,7 @@ import java.util.Date;
 public class MemberDTO {
 
     @NotEmpty
-    private String m_id; // 기본 키 (회원 ID)
+    private String mid; // 기본 키 (회원 ID)
 
     @NotEmpty
     private String m_pw; // 사용자 비밀번호
@@ -28,7 +28,7 @@ public class MemberDTO {
     @NotEmpty
     private String m_phone; // 전화번호
     @NotEmpty
-    private Date m_birth; // 생년월일
+    private String m_birth; // 생년월일
     @NotEmpty
     private String m_address; // 주소
     @NotEmpty
