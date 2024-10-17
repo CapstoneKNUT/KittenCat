@@ -14,18 +14,19 @@ class MemberRepositoryTest {
     @Autowired
     private MemberRepository memberRepository;
 
+    //member 테이블에 데이터 저장
     @Test
     public void testInsert(){
         Member member = Member.builder()
-                .mid("예찬")
+                .mid("user99")
                 .m_pw("1111")
-                .m_email("qbsb147@naver.com")
-                .m_name("최예찬")
+                .m_email("example@naver.com")
+                .m_name("useruseruser")
                 .m_phone("010-6640-8235")
                 .m_address("서울")
-                .m_birth("1996")
+                .m_birth("1999-09-09")
                 .m_gender("man")
-                .m_mbti("ESTP")
+                .m_mbti("INFP")
                 .m_del(false)
                 .m_social(false)
                 .build();

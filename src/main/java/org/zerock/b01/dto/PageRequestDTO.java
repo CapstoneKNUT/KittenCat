@@ -24,7 +24,9 @@ public class PageRequestDTO {
     @Builder.Default
     private int size = 10;
 
-    public Pageable getPageable(String... props) {
+//    private String userid;  // 사용자 ID 필드 추가
+
+    public Pageable getPageable(String...props) {
         return PageRequest.of(this.page -1, this.size, Sort.by(props).ascending());
     }
 
@@ -39,8 +41,17 @@ public class PageRequestDTO {
 
             builder.append("&size=" + this.size);
 
+//            if (userid != null && !userid.isEmpty()) {
+//                try {
+//                    builder.append("&userid=" + URLEncoder.encode(userid, "UTF-8"));
+//                } catch (UnsupportedEncodingException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+
             link = builder.toString();
         }
+
         return link;
     }
 }
