@@ -5,37 +5,32 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotEmpty;
-import java.util.Date;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class MemberDTO {
 
-    @NotEmpty
-    private String mid; // 기본 키 (회원 ID)
+    private String mid;
 
-    @NotEmpty
-    private String m_pw; // 사용자 비밀번호
+    private String m_pw;
 
-    @NotEmpty
-    private String m_name; // 사용자 이름
+    private String m_email;
 
-    @NotEmpty
-    private String m_email; // 사용자 이메일
-    @NotEmpty
-    private String m_phone; // 전화번호
-    @NotEmpty
-    private String m_birth; // 생년월일
-    @NotEmpty
-    private String m_address; // 주소
-    @NotEmpty
-    private String m_mbti; // MBTI
-    @NotEmpty
-    private String m_gender; // 성별
+    private String m_name;
 
-    private boolean m_del; // 자동 로그인 여부
-    private boolean m_social; // 소셜 로그인 여부
+    private String m_phone;
+
+    private String m_address;
+
+    private String m_birth;
+
+    private String m_gender;
+
+    private String m_mbti;
+
+    private boolean m_del;
+
+    private boolean m_social;
+
 }

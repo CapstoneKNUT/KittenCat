@@ -2,14 +2,11 @@ package org.zerock.b01.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.querydsl.jpa.JPAQueryBase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
-import org.springframework.web.client.RestTemplate;
 import org.zerock.b01.dto.PageRequestDTO;
 import org.zerock.b01.dto.PageResponseDTO;
 import org.zerock.b01.dto.PlaceDTO;
@@ -17,11 +14,7 @@ import org.zerock.b01.dto.PlaceSearchDTO;
 import org.zerock.b01.service.ApiService;
 import org.zerock.b01.service.PlaceService;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/place")
