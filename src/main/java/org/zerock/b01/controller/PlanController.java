@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import org.zerock.b01.domain.PlanPlace;
 import org.zerock.b01.domain.PlanSet;
 import org.zerock.b01.domain.Store;
-import org.zerock.b01.dto.PlanPlaceDTO;
 import org.zerock.b01.dto.PlanSetDTO;
 import org.zerock.b01.dto.Search.getXYRequest;
 import org.zerock.b01.repository.PlaceRepository;
