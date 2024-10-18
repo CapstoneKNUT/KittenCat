@@ -30,12 +30,14 @@ public class PlanSet {
     @Column(nullable = false)
     private LocalDateTime startDate;
 
-    @OneToMany(mappedBy = "place",
-            cascade = {CascadeType.ALL},
-            fetch = FetchType.LAZY,
-            orphanRemoval = true)
+    @OneToMany(mappedBy = "place", cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, orphanRemoval = true)
     @Builder.Default
     @BatchSize(size = 20)
     private Set<PlanPlace> planPlaceSet = new HashSet<>();
+
+    // 추가할 생성자
+    public PlanSet(Long planNo) {
+        this.planNo = planNo;
+    }
 
 }

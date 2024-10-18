@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -23,7 +24,7 @@ public class PlanPlace {
 
     private LocalDateTime pp_startDate;
 
-    private LocalDateTime pp_takeDate;
+    private LocalTime pp_takeDate;
 
     private int pp_mapx;
 

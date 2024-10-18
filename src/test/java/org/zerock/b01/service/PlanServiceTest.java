@@ -4,9 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.zerock.b01.dto.Search.getXYRequest;
-import org.zerock.b01.naver.dto.SearchLocalReq;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class PlanServiceTest {

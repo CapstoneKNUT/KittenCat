@@ -10,6 +10,7 @@ import org.zerock.b01.domain.PlanSet;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Data
 @Builder
@@ -23,7 +24,7 @@ public class PlanPlaceDTO {
 
     private LocalDateTime pp_startDate;
 
-    private LocalDateTime pp_takeDate;
+    private LocalTime pp_takeDate;
 
     private int pp_mapx;
 

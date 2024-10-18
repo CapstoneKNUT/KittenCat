@@ -6,15 +6,22 @@ import org.zerock.b01.dto.PlanPlaceDTO;
 import org.zerock.b01.dto.PlanSetDTO;
 import org.zerock.b01.dto.Search.getXYRequest;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 public interface PlanService {
+
+    PlanSetDTO InitReadOne(Long planNo);
+
+    PlanPlaceDTO readOne(Long ppOrd);
 
     Long registerInit(PlanSetDTO planSetDTO);
 
     Map<String, Integer> getXY(getXYRequest getXYRequest);
 
     Long registerPP(PlanPlaceDTO planPlaceDTO);
+
+    LocalDateTime startTime(Long planNo, String Address, int mapx, int mapy);
 
     default PlanSet dtoToEntity(PlanSetDTO planSetDTO) {
 
@@ -29,6 +36,18 @@ public interface PlanService {
         return planSet;
     }
 
+    default PlanSetDTO entityToDTO(PlanSet planSet) {
+
+        PlanSetDTO planSetDTO = PlanSetDTO.builder()
+                .planNo(planSet.getPlanNo())
+                .writer(planSet.getWriter())
+                .isCar(planSet.getIsCar())
+                .startDate(planSet.getStartDate())
+                .build();
+
+        return planSetDTO;
+    }
+
     default PlanPlace dtoToEntityPP(PlanPlaceDTO planplaceDTO) {
 
         PlanPlace planplace = PlanPlace.builder()
@@ -41,6 +60,20 @@ public interface PlanService {
                 .build();
 
         return planplace;
+    }
+
+    default PlanPlaceDTO entityToDTOPP(PlanPlace planplace) {
+
+        PlanPlaceDTO planplaceDTO = PlanPlaceDTO.builder()
+                .ppOrd(planplace.getPpOrd())
+                .pp_startAddress(planplace.getPp_startAddress())
+                .pp_takeDate(planplace.getPp_takeDate())
+                .pp_mapx(planplace.getPp_mapx())
+                .pp_mapy(planplace.getPp_mapy())
+                .planNo(planplace.getPlanNo())
+                .build();
+
+        return planplaceDTO;
     }
 
 }
