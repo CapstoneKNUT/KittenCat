@@ -26,9 +26,9 @@ public class PlanPlaceDTO {
 
     private LocalTime pp_takeDate;
 
-    private int pp_mapx;
+    private float pp_mapx;
 
-    private int pp_mapy;
+    private float pp_mapy;
 
     private PlanSet planNo;
 

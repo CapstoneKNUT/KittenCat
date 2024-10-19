@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class getXYResponse {
+public class DrivingResponse {
     // 지역 검색 출력 결과를 변수화
 
     private String lastBuildDate; // 검색 결과를 생성한 시간이다.

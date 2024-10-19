@@ -33,7 +33,7 @@ public class PlaceController {
     }
 
     @PostMapping("/list")
-    public ResponseEntity<?> searchPost(@RequestBody  PlaceSearchDTO placeSearchDTO) {
+    public ResponseEntity<?> searchPost(@RequestBody PlaceSearchDTO placeSearchDTO) {
         String result = apiService.callExternalApi("http://localhost:8000/place/list", placeSearchDTO);
 
         // Python 스크립트의 응답을 파싱합니다.
@@ -66,7 +66,7 @@ public class PlaceController {
 
         Long sno = placeService.register(pord, mid);
 
-        log.info(sno);
+        log.info("Registered place with sno: {}", sno);
 
         return ResponseEntity.ok(Map.of("sno", sno));
     }

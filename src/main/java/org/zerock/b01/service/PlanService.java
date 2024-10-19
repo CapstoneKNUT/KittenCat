@@ -4,7 +4,8 @@ import org.zerock.b01.domain.PlanPlace;
 import org.zerock.b01.domain.PlanSet;
 import org.zerock.b01.dto.PlanPlaceDTO;
 import org.zerock.b01.dto.PlanSetDTO;
-import org.zerock.b01.dto.Search.getXYRequest;
+import org.zerock.b01.dto.Search.GetXYRequest;
+import org.zerock.b01.dto.Search.GetXYResponse;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -17,11 +18,11 @@ public interface PlanService {
 
     Long registerInit(PlanSetDTO planSetDTO);
 
-    Map<String, Integer> getXY(getXYRequest getXYRequest);
+    GetXYResponse getXY(GetXYRequest getXYRequest);
 
     Long registerPP(PlanPlaceDTO planPlaceDTO);
 
-    LocalDateTime startTime(Long planNo, String Address, int mapx, int mapy);
+    LocalDateTime startTime(Long planNo, String Address, float mapx, float mapy);
 
     default PlanSet dtoToEntity(PlanSetDTO planSetDTO) {
 
@@ -56,7 +57,7 @@ public interface PlanService {
                 .pp_takeDate(planplaceDTO.getPp_takeDate())
                 .pp_mapx(planplaceDTO.getPp_mapx())
                 .pp_mapy(planplaceDTO.getPp_mapy())
-                .planNo(planplaceDTO.getPlanNo())
+                .planSet(planplaceDTO.getPlanNo())
                 .build();
 
         return planplace;
@@ -70,7 +71,7 @@ public interface PlanService {
                 .pp_takeDate(planplace.getPp_takeDate())
                 .pp_mapx(planplace.getPp_mapx())
                 .pp_mapy(planplace.getPp_mapy())
-                .planNo(planplace.getPlanNo())
+                .planNo(planplace.getPlanSet())
                 .build();
 
         return planplaceDTO;

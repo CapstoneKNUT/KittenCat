@@ -8,22 +8,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.zerock.b01.domain.PlanPlace;
 import org.zerock.b01.domain.PlanSet;
-import org.zerock.b01.domain.Store;
 import org.zerock.b01.dto.PlanPlaceDTO;
 import org.zerock.b01.dto.PlanSetDTO;
-import org.zerock.b01.dto.Search.getXYRequest;
+import org.zerock.b01.dto.Search.GetXYRequest;
+import org.zerock.b01.dto.Search.GetXYResponse;
 import org.zerock.b01.dto.StoreDTO;
-import org.zerock.b01.repository.PlaceRepository;
+import org.zerock.b01.naver.dto.SearchLocalReq;
+import org.zerock.b01.naver.dto.SearchLocalRes;
 import org.zerock.b01.repository.PlanPlaceRepository;
-import org.zerock.b01.repository.PlanRepository;
-import org.zerock.b01.repository.StoreRepository;
 import org.zerock.b01.service.PlanService;
 import org.zerock.b01.service.StoreService;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/plan")
@@ -63,27 +61,27 @@ public class PlanController {
 
         String Address = storeDTO.getP_address();
 
-        var search = new getXYRequest();
+        var search = new GetXYRequest();
 
         search.setQuery(Address);
 
-        // 좌표 정보 조회
-        Map<String, Integer> coordinates = planService.getXY(search);
+        var result = planService.getXY(search);
 
-        int mapx = coordinates.get("mapx");
-        int mapy = coordinates.get("mapy");
+        GetXYResponse.Address firstAddress = result.getAddresses().get(0);
+
+        float mapx = Float.parseFloat(firstAddress.getX());
+        float mapy = Float.parseFloat(firstAddress.getY());
 
         log.info("mapx: {}, mapy: {}", mapx, mapy);
 
         PlanPlace planPlace = planPlaceRepository.findLastPlanPlaceByPlanNo(planNo);
-
 
         PlanPlaceDTO planplaceDTO = PlanPlaceDTO.builder()
                 .pp_startAddress(planPlace.getPp_startAddress())
                 .pp_takeDate(planPlace.getPp_takeDate())
                 .pp_mapx(planPlace.getPp_mapx())
                 .pp_mapy(planPlace.getPp_mapy())
-                .planNo(planPlace.getPlanNo())
+                .planNo(planPlace.getPlanSet())
                 .build();
 
         PlanPlace planplace;
@@ -95,7 +93,7 @@ public class PlanController {
                     .pp_takeDate(takeDate) // storeReposi
                     .pp_mapx(mapx) // storeReposi
                     .pp_mapy(mapy) // storeReposi
-                    .planNo(new PlanSet(planNo)) // planReposi
+                    .planSet(new PlanSet(planNo)) // planReposi
                     .build();
         } else {
             LocalDateTime startTime = planService.startTime(planNo, Address, mapx, mapy);
@@ -106,7 +104,7 @@ public class PlanController {
                     .pp_takeDate(takeDate)
                     .pp_mapx(mapx)
                     .pp_mapy(mapy)
-                    .planNo(new PlanSet(planNo))
+                    .planSet(new PlanSet(planNo))
                     .build();
         }
         Long ppOrd = planPlaceRepository.save(planplace).getPpOrd();

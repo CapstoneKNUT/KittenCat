@@ -26,11 +26,12 @@ public class PlanPlace {
 
     private LocalTime pp_takeDate;
 
-    private int pp_mapx;
+    private float pp_mapx;
 
-    private int pp_mapy;
+    private float pp_mapy;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private PlanSet planNo;
+    @JoinColumn(name = "planNo")
+    private PlanSet planSet;
 
 }

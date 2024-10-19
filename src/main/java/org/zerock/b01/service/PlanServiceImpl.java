@@ -2,7 +2,10 @@ package org.zerock.b01.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -11,21 +14,27 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.zerock.b01.domain.Place;
 import org.zerock.b01.domain.PlanPlace;
 import org.zerock.b01.domain.PlanSet;
-import org.zerock.b01.dto.PlaceDTO;
 import org.zerock.b01.dto.PlanPlaceDTO;
 import org.zerock.b01.dto.PlanSetDTO;
-import org.zerock.b01.dto.Search.getXYRequest;
-import org.zerock.b01.dto.Search.getXYResponse;
-import org.zerock.b01.dto.StoreDTO;
+import org.zerock.b01.dto.Search.DrivingRequest;
+import org.zerock.b01.dto.Search.DrivingResponse;
+import org.zerock.b01.dto.Search.GetXYRequest;
+import org.zerock.b01.dto.Search.GetXYResponse;
 import org.zerock.b01.repository.PlanPlaceRepository;
 import org.zerock.b01.repository.PlanRepository;
 
 import javax.transaction.Transactional;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -40,8 +49,6 @@ public class PlanServiceImpl implements PlanService {
 
     private final PlanPlaceRepository planPlaceRepository;
 
-    private final PlanService planService;
-
     @Value("${naver.client.id}")
     private String naverClientId;
 
@@ -51,8 +58,11 @@ public class PlanServiceImpl implements PlanService {
     @Value("${naver.url.search.local}")
     private String naverLocalSearchUrl;
 
+    @Value("https://naveropenapi.apigw.gov-ntruss.com/map-direction-15/v1/driving")
+    private String naverDrivingSearchUrl;
+
     @Override
-    public PlanSetDTO InitReadOne(Long planNo){
+    public PlanSetDTO InitReadOne(Long planNo) {
 
         Optional<PlanSet> result = planRepository.findById(planNo);
 
@@ -64,7 +74,7 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public PlanPlaceDTO readOne(Long ppOrd){
+    public PlanPlaceDTO readOne(Long ppOrd) {
 
         Optional<PlanPlace> result = planPlaceRepository.findById(ppOrd);
 
@@ -86,43 +96,51 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public Map<String, Integer> getXY(getXYRequest getXYRequest) {
-        var uri = UriComponentsBuilder
-                .fromUriString(naverLocalSearchUrl)
-                .queryParams(getXYRequest.toMultiValueMap())
-                .build()
-                .encode()
-                .toUri();
+    public GetXYResponse getXY(GetXYRequest getXYRequest) {
+        try {
+            String query = URLEncoder.encode(getXYRequest.getQuery(), StandardCharsets.UTF_8);
+            String apiURL = naverLocalSearchUrl + "?query=" + query;
 
-        var headers = new HttpHeaders();
-        headers.set("X-Naver-Client-Id", naverClientId);
-        headers.set("X-Naver-Client-Secret", naverSecret);
-        headers.setContentType(MediaType.APPLICATION_JSON);
+            URL url = new URL(apiURL);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            con.setRequestProperty("X-NCP-APIGW-API-KEY-ID", naverClientId);
+            con.setRequestProperty("X-NCP-APIGW-API-KEY", naverSecret);
 
-        var httpEntity = new HttpEntity<>(headers);
-        var responseType = new ParameterizedTypeReference<getXYResponse>() {
-        };
+            int responseCode = con.getResponseCode();
+            BufferedReader br;
+            if (responseCode == 200) {
+                br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8));
+            } else {
+                br = new BufferedReader(new InputStreamReader(con.getErrorStream()));
+            }
 
-        var responseEntity = new RestTemplate()
-                .exchange(
-                        uri,
-                        HttpMethod.GET,
-                        httpEntity,
-                        responseType);
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+            while ((inputLine = br.readLine()) != null) {
+                response.append(inputLine);
+            }
+            br.close();
 
-        getXYResponse response = responseEntity.getBody();
+            JSONObject jsonResponse = new JSONObject(response.toString());
+            JSONArray addresses = jsonResponse.getJSONArray("addresses");
 
-        List<getXYResponse.SearchLocalItem> items = response.getItems();
+            GetXYResponse result = new GetXYResponse();
+            List<GetXYResponse.Address> addressList = new ArrayList<>();
 
-        if (!items.isEmpty()) {
-            getXYResponse.SearchLocalItem item = items.get(0);
-            int mapx = item.getMapx();
-            int mapy = item.getMapy();
+            for (int i = 0; i < addresses.length(); i++) {
+                JSONObject address = addresses.getJSONObject(i);
+                GetXYResponse.Address addressObj = new GetXYResponse.Address(
+                        address.getString("x"),
+                        address.getString("y"));
+                addressList.add(addressObj);
+            }
 
-            log.info("mapx: {}, mapy: {}", mapx, mapy);
-            return Map.of("mapx", mapx, "mapy", mapy);
+            result.setAddresses(addressList);
+            return result;
+        } catch (Exception e) {
+            throw new RuntimeException("지역 검색 실패", e);
         }
-        return Map.of();
     }
 
     @Override
@@ -136,12 +154,12 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public LocalDateTime startTime(Long planNo, String Address, int mapx, int mapy){
-        //자차 여부 조회
-        PlanSetDTO planSetDTO = planService.InitReadOne(planNo);
+    public LocalDateTime startTime(Long planNo, String Address, float mapx, float mapy) {
+        // 자차 여부 조회
+        PlanSetDTO planSetDTO = InitReadOne(planNo);
         Boolean isCar = planSetDTO.getIsCar();
 
-        //마지막 저장 장소 조회
+        // 마지막 저장 장소 조회
         PlanPlace LastPlanPlace = planPlaceRepository.findLastPlanPlaceByPlanNo(planNo);
 
         PlanPlaceDTO LastPlanPlaceDTO = PlanPlaceDTO.builder()
@@ -149,12 +167,12 @@ public class PlanServiceImpl implements PlanService {
                 .pp_takeDate(LastPlanPlace.getPp_takeDate())
                 .pp_mapx(LastPlanPlace.getPp_mapx())
                 .pp_mapy(LastPlanPlace.getPp_mapy())
-                .planNo(LastPlanPlace.getPlanNo())
+                .planNo(LastPlanPlace.getPlanSet())
                 .build();
 
         String pp_startAddress = LastPlanPlaceDTO.getPp_startAddress();
-        int pp_mapx = LastPlanPlaceDTO.getPp_mapx();
-        int pp_mapy = LastPlanPlaceDTO.getPp_mapy();
+        float pp_mapx = LastPlanPlaceDTO.getPp_mapx();
+        float pp_mapy = LastPlanPlaceDTO.getPp_mapy();
 
         LocalDateTime pp_startDate = LastPlanPlaceDTO.getPp_startDate();
         LocalTime pp_takeDate = LastPlanPlaceDTO.getPp_takeDate();
@@ -162,15 +180,41 @@ public class PlanServiceImpl implements PlanService {
         pp_startDate = pp_startDate.plusHours(pp_takeDate.getHour())
                 .plusMinutes(pp_takeDate.getMinute());
 
-        //출발 시, 출발 분
+        // 출발 시, 출발 분
         int t_startHour = pp_startDate.getHour();
         int t_startMinute = pp_startDate.getMinute();
 
-        //도착 장소 조회
-        if(isCar == true){
+        // 도착 장소 조회
+        if (isCar == true) {
+            DrivingRequest drivingRequest = new DrivingRequest();
+            var uri = UriComponentsBuilder
+                    .fromUriString(naverDrivingSearchUrl)
+                    .queryParams(drivingRequest.toMultiValueMap())
+                    .build()
+                    .encode()
+                    .toUri();
+
+            var headers = new HttpHeaders();
+            headers.set("X-NCP-APIGW-API-KEY-ID", naverClientId);
+            headers.set("X-NCP-APIGW-API-KEY", naverSecret);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            var httpEntity = new HttpEntity<>(headers);
+            var responseType = new ParameterizedTypeReference<DrivingResponse>() {
+            };
+
+            var responseEntity = new RestTemplate()
+                    .exchange(
+                            uri,
+                            HttpMethod.GET,
+                            httpEntity,
+                            responseType);
+
+            DrivingResponse response = responseEntity.getBody();
+
+            List<DrivingResponse.SearchLocalItem> items = response.getItems();
 
         }
-
 
         return LocalDateTime.now();
     }
