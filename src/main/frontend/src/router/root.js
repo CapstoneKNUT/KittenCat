@@ -8,9 +8,9 @@ const Loading = <div>Loading....</div>
 
 const App = lazy(() => import("../App"))
 const Main = lazy(() => import("../pages/main"))
+const PlaceList = lazy(() => import("../pages/place/Lists"))
+const PlaceRead = lazy(() => import("../pages/place/Read"))
 /*
-const PlaceList = lazy(() => import("../pages/place/list"))
-const PlaceRead = lazy(() => import("../pages/place/read"))
 const MemberJoin = lazy(() => import("../pages/member/join"))
 const MemberLogin = lazy(() => import("../pages/member/login"))
 */
@@ -24,7 +24,7 @@ const root = createBrowserRouter([
         path: "main",
         element: <Suspense fallback={Loading}><Main/></Suspense>,
     },
-/*    {
+    {
         path: "place",
         children: [
             {
@@ -32,11 +32,12 @@ const root = createBrowserRouter([
                 element:<Suspense fallback={Loading}><PlaceList/></Suspense>
             },
             {
-                path:'read',
+                path:'read/:pord',
                 element:<Suspense fallback={Loading}><PlaceRead/></Suspense>
-            },
+            }
         ]
     },
+/*
     {
         path: "plan",
         element:<Suspense fallback={Loading}><PlanProvider><Plan /></PlanProvider></Suspense>,

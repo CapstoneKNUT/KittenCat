@@ -57,28 +57,29 @@ async def get_place_list(place_search_dto: PlaceSearchDTO):
     p_callList = []
     p_siteList = []
     p_contentList = []
-    p_ordList = []
-
-    p_count = int(p_count)
-
-    breakPoint = False;
+    pordList = []
 
     s = Service()
     options = webdriver.ChromeOptions()
+    service = Service('chromedriver.exe')
     wd = webdriver.Chrome(service=s, options=options)
     wd.get(list_url)
     time.sleep(4)
 
     # 페이지 다운
     def page_down(num):
-        body = wd.find_element(By.TAG_NAME, 'body')
+        body = WebDriverWait(wd, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "#_pcmap_list_scroll_container"))
+        )
         body.click()
         for i in range(num):
-            body.send_keys(Keys.PAGE_DOWN)
+            wd.execute_script('arguments[0].scrollTop += arguments[0].offsetHeight;', body)
+
+    breakPoint = False  # 여기에 breakPoint 변수를 초기화합니다.
 
     for i in range(1, (p_count // 50) + 2):
 
-        if i == (p_count // 50) + 1:
+        if i == (p_count // 50 + 1):
             eleCount = p_count % 50 + 1
         else:
             eleCount = 51
@@ -87,6 +88,7 @@ async def get_place_list(place_search_dto: PlaceSearchDTO):
         wd.switch_to.default_content()
         wd.switch_to.frame('searchIframe')
         time.sleep(2)
+
         page_down(eleCount)
         time.sleep(2)
 
@@ -100,6 +102,7 @@ async def get_place_list(place_search_dto: PlaceSearchDTO):
             else:
                 try:
                     body.click()
+                    print("버튼 클릭")
                     time.sleep(2)
                     wd.switch_to.default_content()
                     wd.switch_to.frame('entryIframe')
@@ -114,9 +117,11 @@ async def get_place_list(place_search_dto: PlaceSearchDTO):
 
                     if img_element is not None:
                         P_image = img_element.get_attribute("src")
+                        print("이미지")
                     else:
                         P_image = None
                     p_imageList.append(P_image)
+                    print("이미지 리스트에 담음")
 
                     # 별점
                     P_star = wd.find_element(By.XPATH,
@@ -129,11 +134,13 @@ async def get_place_list(place_search_dto: PlaceSearchDTO):
                     else:
                         P_star = None
                     p_starList.append(P_star)
+                    print(P_star)
 
                     # 여행지명
                     try:
                         P_name = wd.find_element(By.XPATH, '//*[@id="_title"]/div/span[1]').text
                         p_nameList.append(P_name)
+                        print(P_name)
                     except:
                         p_nameList.append(None)
 
@@ -141,6 +148,7 @@ async def get_place_list(place_search_dto: PlaceSearchDTO):
                     try:
                         P_category = wd.find_element(By.XPATH, '//*[@id="_title"]/div/span[2]').text
                         p_categoryList.append(P_category)
+                        print(P_category)
                     except:
                         p_categoryList.append(None)
 
@@ -167,6 +175,7 @@ async def get_place_list(place_search_dto: PlaceSearchDTO):
                         time.sleep(0.1)
                         P_park = wd.find_element(By.CSS_SELECTOR, "div.O8qbU.AZ9_F span.zPfVt").text
                         p_parkList.append(P_park)
+                        print("주차 안내")
 
                     # 영업 시간
                     try:
@@ -183,20 +192,22 @@ async def get_place_list(place_search_dto: PlaceSearchDTO):
                         time.sleep(0.1)
                         P_time = wd.find_element(By.CSS_SELECTOR, "div.O8qbU.pSavy a.gKP9i.RMgN0").text[:-2]
                         if P_time[:5] == "영업 종료":
-                            P_time = P_time[5:]
+                            P_time = P_time[6:]
                         elif P_time[:4] == "영업 전":
-                            P_time = P_time[4:]
+                            P_time = P_time[5:]
                         elif P_time[:4] == "영업 중":
-                            P_time = P_time[4:]
+                            P_time = P_time[5:]
                         else:
                             P_time = P_time
                         p_timeList.append(P_time)
+                        print("시간 안내")
 
                     # 전화번호
                     try:
                         P_call = wd.find_element(By.CSS_SELECTOR, ".O8qbU.nbXkr").text
                         P_call = re.sub(r'[\n가-힣]', '', P_call)
                         p_callList.append(P_call)
+                        print(P_call)
                     except:
                         p_siteList.append(None)
 
@@ -205,56 +216,61 @@ async def get_place_list(place_search_dto: PlaceSearchDTO):
                         P_site = wd.find_element(By.CSS_SELECTOR, ".O8qbU.yIPfO").text
                         P_site = re.sub(r'[\n가-힣]', '', P_site)
                         p_siteList.append(P_site)
+                        print(P_site)
                     except:
                         p_siteList.append(None)
 
                     # 내용
                     try:
                         more = wd.find_element(By.CSS_SELECTOR,
-                                               "#app-root > div > div > div > div:nth-child(6) > div > div:nth-child(2) > div.NSTUp > div > a")
+                                               "#app-root > div > div > div > div:nth-child(5) > div > div:nth-child(2) > div.NSTUp > div > a > span.TeItc")
                     except:
                         try:
-                            EleBody = wd.find_element(By.XPATH, '/html/body')
-                            EleBody.send_keys(Keys.PAGE_DOWN)
+                            EleBody = wd.find_element(By.CSS_SELECTOR, '#sub_panel > div > div.panel_content > div')
+                            wd.execute_script('arguments[0].scrollTop += arguments[0].offsetHeight;', EleBody)
                             more = WebDriverWait(wd, 2).until(
                                 EC.any_of(
                                     EC.presence_of_element_located((By.CSS_SELECTOR,
-                                                                    "#app-root > div > div > div > div:nth-child(6) > div > div:nth-child(2) > div.NSTUp > div > a")),
+                                                                    "#app-root > div > div > div > div:nth-child(5) > div > div:nth-child(2) > div.NSTUp > div > a > span.TeItc")),
+                                    EC.presence_of_element_located((By.CSS_SELECTOR,
+                                                                    "#app-root > div > div > div > div:nth-child(6) > div > div:nth-child(2) > div.NSTUp > div > a > span.TeItc")),
                                 )
                             )
+                            print("요소 찾음")
                         except:
+                            print("더보기 없음")
                             p_contentList.append(None)
                         else:
                             more.click()
                             try:
-                                P_content = WebDriverWait(wd, 2).until(
+                                P_content = WebDriverWait(wd, 4).until(
                                     EC.any_of(
-                                        EC.presence_of_element_located((By.CSS_SELECTOR,
-                                                                        "div.place_section.no_margin.Od79H > div > div > div.Ve1Rp")),
-                                        EC.presence_of_element_located((By.CSS_SELECTOR,
-                                                                        "div.place_section.no_margin.no_border.TMUvC > div > div > div.ztuVm")),
+                                        EC.presence_of_element_located(
+                                            (By.CSS_SELECTOR, "div.place_section.no_margin.Od79H div.Ve1Rp")),
+                                        EC.presence_of_element_located(
+                                            (By.CSS_SELECTOR, "div.place_section.no_margin.no_border.TMUvC div.ztuVm")),
                                     )
                                 )
                                 try:
                                     P_content = wd.find_element(By.CSS_SELECTOR,
-                                                                "div.place_section.no_margin.Od79H > div > div > div.Ve1Rp > a.OWPIf")
+                                                                "div.place_section.no_margin.Od79H div.Ve1Rp a.OWPIf")
                                 except:
                                     try:
                                         P_content = wd.find_element(By.CSS_SELECTOR,
-                                                                    "div.place_section.no_margin.Od79H > div > div > div.Ve1Rp").text
+                                                                    "div.place_section.no_margin.Od79H div.Ve1Rp").text
                                     except:
                                         P_content = wd.find_element(By.CSS_SELECTOR,
                                                                     "div.place_section.no_margin.no_border.TMUvC div.ztuVm").text
                                 else:
                                     P_content.click()
-                                    time.sleep(0.1)
+                                    time.sleep(0.5)
                                     P_content = wd.find_element(By.CSS_SELECTOR,
-                                                                "div.place_section.no_margin.Od79H > div > div > div.Ve1Rp").text[
-                                                :-2]
+                                                                "div.place_section.no_margin.Od79H div.Ve1Rp").text[:-2]
                             except:
                                 P_content = None
                             finally:
                                 p_contentList.append(P_content)
+                                print("내용")
                     else:
                         more.click()
                         P_content = WebDriverWait(wd, 2).until(
@@ -268,6 +284,7 @@ async def get_place_list(place_search_dto: PlaceSearchDTO):
                         try:
                             P_content = wd.find_element(By.CSS_SELECTOR,
                                                         "div.place_section.no_margin.Od79H > div > div > div.Ve1Rp > a.OWPIf")
+                            print("버튼 찾음")
                         except:
                             try:
                                 P_content = wd.find_element(By.CSS_SELECTOR,
@@ -280,18 +297,25 @@ async def get_place_list(place_search_dto: PlaceSearchDTO):
                                     P_content = None
                         else:
                             P_content.click()
+                            print("버튼 클릭함")
                             time.sleep(0.1)
                             P_content = wd.find_element(By.CSS_SELECTOR,
                                                         "div.place_section.no_margin.Od79H > div > div > div.Ve1Rp").text
+                            print("내용 가져옴")
                         finally:
                             p_contentList.append(P_content)
+                            print("내용")
+
+                    print('데이터 담기 완료')
                     wd.switch_to.default_content()
                     wd.switch_to.frame('searchIframe')
+                    print('done')
                 except Exception as e:
                     wd.switch_to.default_content()
                     wd.switch_to.frame('searchIframe')
                     print(f"error : {e}")
-                p_ordList.append(j)
+                    print('None')
+                pordList.append(j)
 
         if breakPoint == True:
             break
@@ -306,13 +330,10 @@ async def get_place_list(place_search_dto: PlaceSearchDTO):
 
     Base = declarative_base()
 
-    Base.metadata.drop_all(engine)
-
-    #데이터베이스 모델 정의
     class PlaceModel(Base):
         __tablename__ = 'place'
         pord = Column(Integer, primary_key=True)
-        p_name = Column(String)            # 추가 데이터 예시
+        p_name = Column(String)  # 추가 데이터 예시
         p_category = Column(String)
         p_content = Column(String)
         p_image = Column(String)
@@ -327,6 +348,9 @@ async def get_place_list(place_search_dto: PlaceSearchDTO):
 
     Session = sessionmaker(bind=engine)
     session = Session()
+    # 데이터베이스 모델 정의
+
+    # In[30]:
 
     try:
         # 기존 데이터를 모두 삭제
@@ -347,7 +371,9 @@ async def get_place_list(place_search_dto: PlaceSearchDTO):
                 'p_site': p_site
             }
             for pord, p_name, p_category, p_star, p_image, p_content, p_address, p_park, p_opentime, p_call, p_site
-            in zip(p_ordList, p_nameList, p_categoryList, p_starList, p_imageList, p_contentList, p_addressList, p_parkList, p_timeList, p_callList, p_siteList)
+            in
+            zip(pordList, p_nameList, p_categoryList, p_starList, p_imageList, p_contentList, p_addressList, p_parkList,
+                p_timeList, p_callList, p_siteList)
         ]
         # 세션에 추가
         session.bulk_insert_mappings(PlaceModel, place_data)
@@ -358,11 +384,11 @@ async def get_place_list(place_search_dto: PlaceSearchDTO):
         session.rollback()
         print(f"error: {e}")
 
-    # 작업이 완료되면 JSON 응답을 반환합니다.
     return JSONResponse(content={
         "message": "장소 검색이 성공적으로 실행 완료 됨",
         "redirect_url": "http://localhost:3000/place/list"
     })
+
 
 @app.post("/plan/transport/add")
 async def transport_add(Plan_DTO: PlanDTO):
@@ -715,7 +741,7 @@ async def transport_add(Plan_DTO: PlanDTO):
                 )
                 # 대중교통 시간 열기
                 wd.find_element(By.XPATH,
-                                '//*[@id="section_content"]/div/div[2]/div/div[2]/div[2]/div[2]/div/button').click()
+                                '//*[@id="section_content"]/div/div[2]/div/div[2]/div[2]/div[2]/div/div/div/ul')
                 # 대중교통 시간 선택
                 h = tx_startHour + 1
                 WebDriverWait(wd, 15).until(
@@ -911,4 +937,3 @@ async def transport_add(Plan_DTO: PlanDTO):
     except Exception as e:
         session.rollback()
         print(f"error: {e}")
-

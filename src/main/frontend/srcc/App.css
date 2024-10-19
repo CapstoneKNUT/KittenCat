@@ -1,0 +1,107 @@
+.App {
+  text-align: center;
+}
+
+/* App.css */
+body {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f7f7f7;
+}
+
+/* 검색 페이지 스타일 */
+.search-page {
+  text-align: center;
+}
+
+.search-page form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.search-page select,
+.search-page input[type="text"],
+.search-page button {
+  padding: 10px;
+  margin: 10px;
+  font-size: 16px;
+}
+
+.search-page button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.search-page button:hover {
+  background-color: #0056b3;
+}
+
+/* 결과 페이지 스타일 */
+.results-page {
+  padding: 20px;
+}
+
+.results-page h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.results-page ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.results-page li {
+  background-color: #f8f9fa;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.results-page li div {
+  margin: 0 10px;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

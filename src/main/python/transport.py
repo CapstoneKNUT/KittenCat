@@ -49,6 +49,7 @@ list_url = f'https://map.naver.com/p/directions/-/-/-/transit?c=13.00,0,0,0,dh'
 
 s = Service()
 options = webdriver.ChromeOptions()
+service = Service('chromedriver.exe')
 wd = webdriver.Chrome(service=s,options=options)
 wd.get(list_url)
 
