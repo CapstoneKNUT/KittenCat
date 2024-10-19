@@ -18,8 +18,6 @@ import org.zerock.b01.domain.PlanPlace;
 import org.zerock.b01.domain.PlanSet;
 import org.zerock.b01.dto.PlanPlaceDTO;
 import org.zerock.b01.dto.PlanSetDTO;
-import org.zerock.b01.dto.Search.DrivingRequest;
-import org.zerock.b01.dto.Search.DrivingResponse;
 import org.zerock.b01.dto.Search.GetXYRequest;
 import org.zerock.b01.dto.Search.GetXYResponse;
 import org.zerock.b01.repository.PlanPlaceRepository;
@@ -186,33 +184,6 @@ public class PlanServiceImpl implements PlanService {
 
         // 도착 장소 조회
         if (isCar == true) {
-            DrivingRequest drivingRequest = new DrivingRequest();
-            var uri = UriComponentsBuilder
-                    .fromUriString(naverDrivingSearchUrl)
-                    .queryParams(drivingRequest.toMultiValueMap())
-                    .build()
-                    .encode()
-                    .toUri();
-
-            var headers = new HttpHeaders();
-            headers.set("X-NCP-APIGW-API-KEY-ID", naverClientId);
-            headers.set("X-NCP-APIGW-API-KEY", naverSecret);
-            headers.setContentType(MediaType.APPLICATION_JSON);
-
-            var httpEntity = new HttpEntity<>(headers);
-            var responseType = new ParameterizedTypeReference<DrivingResponse>() {
-            };
-
-            var responseEntity = new RestTemplate()
-                    .exchange(
-                            uri,
-                            HttpMethod.GET,
-                            httpEntity,
-                            responseType);
-
-            DrivingResponse response = responseEntity.getBody();
-
-            List<DrivingResponse.SearchLocalItem> items = response.getItems();
 
         }
 

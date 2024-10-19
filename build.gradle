@@ -26,6 +26,14 @@ repositories {
 }
 
 dependencies {
+    // Spring Boot WebFlux 의존성 추가
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // Reactor Netty 의존성 추가 (보통 Spring WebFlux에 포함됨)
+    implementation 'io.projectreactor.netty:reactor-netty'
+
+    // Jackson (JSON 처리용)
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'org.json:json:20230227'  // 최신 버전 확인 후 변경 가능
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
