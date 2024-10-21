@@ -18,6 +18,8 @@ import org.zerock.b01.domain.PlanPlace;
 import org.zerock.b01.domain.PlanSet;
 import org.zerock.b01.dto.PlanPlaceDTO;
 import org.zerock.b01.dto.PlanSetDTO;
+import org.zerock.b01.dto.Search.DrivingRequest;
+import org.zerock.b01.dto.Search.DrivingResponse;
 import org.zerock.b01.dto.Search.GetXYRequest;
 import org.zerock.b01.dto.Search.GetXYResponse;
 import org.zerock.b01.repository.PlanPlaceRepository;
@@ -152,6 +154,58 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
+    public DrivingResponse getTime(DrivingRequest drivingRequest) {
+        try {
+            String start = URLEncoder.encode(drivingRequest.getStart(), StandardCharsets.UTF_8);
+            String goal = URLEncoder.encode(drivingRequest.getGoal(), StandardCharsets.UTF_8);
+            String apiURL = naverDrivingSearchUrl + "?start=" + start + "&goal=" + goal;
+
+            URL url = new URL(apiURL);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            con.setRequestProperty("X-NCP-APIGW-API-KEY-ID", naverClientId);
+            con.setRequestProperty("X-NCP-APIGW-API-KEY", naverSecret);
+
+            int responseCode = con.getResponseCode();
+            BufferedReader br;
+            if (responseCode == 200) {
+                br = new BufferedReader(
+                        new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8));
+            } else {
+                br = new BufferedReader(new InputStreamReader(con.getErrorStream()));
+            }
+
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+            while ((inputLine = br.readLine()) != null) {
+                response.append(inputLine);
+            }
+            br.close();
+
+            JSONObject jsonResponse = new JSONObject(response.toString());
+            JSONObject routeObject = jsonResponse.getJSONObject("route");
+            JSONArray traoptimalArray = routeObject.getJSONArray("traoptimal");
+            JSONObject firstTraoptimal = traoptimalArray.getJSONObject(0);
+            JSONObject summaryObject = firstTraoptimal.getJSONObject("summary");
+
+            DrivingResponse result = new DrivingResponse();
+            DrivingResponse.Route route = new DrivingResponse.Route();
+            DrivingResponse.Route.Traoptimal traoptimal = new DrivingResponse.Route.Traoptimal();
+            DrivingResponse.Route.Traoptimal.Summary summary = new DrivingResponse.Route.Traoptimal.Summary();
+
+            summary.setDuration(summaryObject.getInt("duration"));
+            traoptimal.setSummary(summary);
+            route.setTraoptimal(new DrivingResponse.Route.Traoptimal[] { traoptimal });
+            result.setRoute(route);
+
+            return result;
+        } catch (Exception e) {
+            throw new RuntimeException("경로 검색 실패", e);
+        }
+
+    }
+
+    @Override
     public LocalDateTime startTime(Long planNo, String Address, float mapx, float mapy) {
         // 자차 여부 조회
         PlanSetDTO planSetDTO = InitReadOne(planNo);
@@ -172,9 +226,12 @@ public class PlanServiceImpl implements PlanService {
         float pp_mapx = LastPlanPlaceDTO.getPp_mapx();
         float pp_mapy = LastPlanPlaceDTO.getPp_mapy();
 
+        //출발 시간
         LocalDateTime pp_startDate = LastPlanPlaceDTO.getPp_startDate();
+        //노는 시간
         LocalTime pp_takeDate = LastPlanPlaceDTO.getPp_takeDate();
 
+        //출발 시간 + 노는시간
         pp_startDate = pp_startDate.plusHours(pp_takeDate.getHour())
                 .plusMinutes(pp_takeDate.getMinute());
 
@@ -184,9 +241,26 @@ public class PlanServiceImpl implements PlanService {
 
         // 도착 장소 조회
         if (isCar == true) {
+            try{
+                var request = new DrivingRequest();
+                request.setStart(pp_mapx+","+pp_mapy);
+                request.setGoal(mapx+","+mapy);
+                var result = getTime(request);
+                Integer duration = result.getRoute().getTraoptimal()[0].getSummary().getDuration();
+                int t_takeDay = (int) (duration / 86400);
+                int t_takeHour = (int) ((duration % 86400) / 3600);  // 1시간 = 3600초
+                int t_takeMinute = (int) ((duration % 3600) / 60);  // 1분 = 60초
+                //출발시간 + 노는시간 + 이동시간
+                pp_startDate = pp_startDate.plusHours(t_takeDay);
+                pp_startDate = pp_startDate.plusHours(t_takeHour);
+                pp_startDate = pp_startDate.plusMinutes(t_takeMinute);
+                return pp_startDate;
+            }
+            catch(Exception e){
 
+            }
         }
 
-        return LocalDateTime.now();
+        return pp_startDate;
     }
 }

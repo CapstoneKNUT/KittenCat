@@ -4,6 +4,8 @@ import org.zerock.b01.domain.PlanPlace;
 import org.zerock.b01.domain.PlanSet;
 import org.zerock.b01.dto.PlanPlaceDTO;
 import org.zerock.b01.dto.PlanSetDTO;
+import org.zerock.b01.dto.Search.DrivingRequest;
+import org.zerock.b01.dto.Search.DrivingResponse;
 import org.zerock.b01.dto.Search.GetXYRequest;
 import org.zerock.b01.dto.Search.GetXYResponse;
 
@@ -21,6 +23,8 @@ public interface PlanService {
     GetXYResponse getXY(GetXYRequest getXYRequest);
 
     Long registerPP(PlanPlaceDTO planPlaceDTO);
+
+    DrivingResponse getTime(DrivingRequest drivingRequest);
 
     LocalDateTime startTime(Long planNo, String Address, float mapx, float mapy);
 
