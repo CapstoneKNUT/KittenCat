@@ -2,6 +2,7 @@ package org.zerock.b01.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.zerock.b01.dto.PageRequestDTO;
 import org.zerock.b01.dto.PageResponseDTO;
 import org.zerock.b01.dto.StoreDTO;
@@ -114,6 +115,40 @@ class StoreControllerTest {
                 .andExpect(jsonPath("$.dtoList").isEmpty());
 
         verify(storeService, times(1)).list(eq(username), any(PageRequestDTO.class));
+    }
+
+    //상세페이지 테스트
+    @Test
+    public void testReadStore() throws Exception {
+        String username = "user0";
+        // 테스트용 가짜 데이터
+        StoreDTO mockStoreDTO = StoreDTO.builder()
+                .sno(5L)
+                .p_name("Test CoFFee")
+                .p_category("cafe")
+                .p_address("123 Test Address")
+                .p_content("Water is Self")
+                .p_image("..")
+                .bookmark(username)
+                .p_opentime("Mon~Fri 09:00~21:00")
+                .p_park("We don'thave")
+                .p_star(4.5f)
+                .build();
+
+        // 목 서비스 동작 설정
+        when(storeService.readOne(any(String.class), any(Long.class)))
+                .thenReturn(mockStoreDTO);
+
+        // GET 요청에 대한 테스트
+        mockMvc.perform(get("/api/store/read")
+                        .param("username", "user0")
+                        .param("sno", "5")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.sno").value(5L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.p_name").value("Test CoFFee"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.p_address").value("123 Test Address"))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
 /*    //존재하지 않는 사용자
