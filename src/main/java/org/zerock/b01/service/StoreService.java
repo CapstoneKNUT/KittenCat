@@ -21,6 +21,7 @@ public interface StoreService {
 
 
 
+
     // (테스트용) 추가하기
 //    String register(StoreDTO storeDTO);
 }

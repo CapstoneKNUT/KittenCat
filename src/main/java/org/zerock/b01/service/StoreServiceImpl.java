@@ -80,6 +80,7 @@ public class StoreServiceImpl implements StoreService {
                 .total((int) result.getTotalElements())
                 .build();
 
+
     }
 
 
