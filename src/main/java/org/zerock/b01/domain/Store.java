@@ -41,4 +41,5 @@ public class Store {
     private String p_opentime;
 
     private String p_park;
+
 }

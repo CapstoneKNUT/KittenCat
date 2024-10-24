@@ -38,80 +38,43 @@ public class StoreController {
         return ResponseEntity.ok(responseDTO);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /*//리스트
-    @GetMapping("/list")
-    public void list(PageRequestDTO pageRequestDTO, Model model){
-
-        //PageResponseDTO<StoreDTO> responseDTO = storeService.list(pageRequestDTO);
-
-        PageResponseDTO<StoreDTO> responseDTO =
-                storeService.list(pageRequestDTO);
-
-        log.info(responseDTO);
-
-        model.addAttribute("responseDTO", responseDTO);
-    }*/
-
-    //조회
-    /*@GetMapping("/read")
-    public void read(String p_key, PageRequestDTO pageRequestDTO, Model model){
-
-        StoreDTO storeDTO = storeService.readOne(p_key);
-
+    //유저별 찜 목록의 상세 페이지
+    @GetMapping("/read")
+    public ResponseEntity<StoreDTO> readOne(@RequestParam String username, @RequestParam Long sno) {
+        log.info("readOne store with sno: " + sno + " by user: " + username);
+        StoreDTO storeDTO = storeService.readOne(username, sno);
         log.info(storeDTO);
+        return ResponseEntity.ok(storeDTO);
+    }
 
-        model.addAttribute("dto", storeDTO);
-
-    }*/
-
-
-    //삭제
-//    @PreAuthorize("principal.username == #storeDTO.bookmark")
-    /*@PostMapping("/remove")
-    public String remove(StoreDTO storeDTO, RedirectAttributes redirectAttributes) {
-
-
-        String p_address  = storeDTO.getP_address();
-        log.info("remove store.. " + p_address);
-
-        storeService.remove(p_address);
-
-//        //게시물이 삭제되었다면 첨부 파일 삭제
-//        String p_image = storeDTO.getP_image();
-//        if (p_image != null && !p_image.isEmpty()) {
-//            log.info("remove image.. " + p_image);
-//            try {
-//                storeService.removeImage(p_image);
-//            } catch (Exception e) {
-//                log.error("image not removed: " + e.getMessage(), e);
-//                // 예외 발생 시 처리 로직 (예: 오류 메시지 저장, 관리자에게 알림 등)
-//            }
-//        }
-
+    //사용자의 찜목록 제거
+    @DeleteMapping("/remove")
+    public ResponseEntity<String> remove(@RequestParam String username, @RequestParam Long sno, RedirectAttributes redirectAttributes) {
+        log.info("remove store with sno: " + sno + " by user: " + username);
+        storeService.remove(username, sno);
         redirectAttributes.addFlashAttribute("result", "removed");
+        return ResponseEntity.ok("Store removed successfully");
+    }
 
-        return "redirect:/store/list";
+    // 유저의 찜목록 중 이름을 검색하여 조회
+    @GetMapping("/search")
+    public ResponseEntity<PageResponseDTO<StoreDTO>> searchBookmarks(
+            @RequestParam String username,
+            @RequestParam(required = false) String p_name,
+            @RequestParam(required = false) String p_address,
+            PageRequestDTO pageRequestDTO) {
+
+        PageResponseDTO<StoreDTO> responseDTO = storeService.searchBookmarks(username, p_name, p_address, pageRequestDTO);
+        log.info(responseDTO);
+        return ResponseEntity.ok(responseDTO);
+    }
 
 
+    /*// 유저의 찜목록 중 이름을 검색하여 조회
+    @GetMapping("/search")
+    public ResponseEntity<PageResponseDTO<StoreDTO>> searchBookmarks(@RequestParam String username,@RequestParam String p_name, PageRequestDTO pageRequestDTO) {
+        PageResponseDTO<StoreDTO> responseDTO = storeService.list(username, pageRequestDTO);
+        log.info(responseDTO);
+        return ResponseEntity.ok(responseDTO);
     }*/
-
 }
