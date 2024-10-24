@@ -1,0 +1,52 @@
+* [33m248b68817[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdjatjs-KittenCat[m[33m, [m[1;31morigin/KittenCat[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mKittenCat[m[33m)[m ㅎ2
+* [33m4b1d273f4[m ㅎ2
+* [33mcae199f69[m ㅎ2
+* [33m148330e60[m ㅎ2
+* [33m218b512f9[m ㅎ2
+* [33mbb0605fff[m 망할 버그 잡았다 ㅅㅂ
+* [33m7bbd9306c[m 망할 버그 잡았다 ㅅㅂ
+* [33ma83fbe9cd[m Plan 이동시간 구하기 80% 완료
+* [33m67bded9a4[m Plan 이동시간 구하기 80% 완료
+* [33mf983bf541[m Plan 페이지 작성 중
+* [33m9e117514c[m Plan 페이지 작성 중
+* [33m76d7e4f1c[m Plan 페이지 작성 중
+* [33m80955c94b[m 이동시간 계산 가공작업
+*   [33mbfe6997b6[m Merge pull request #1 from djatjs/KittenCat
+[32m|[m[33m\[m  
+[32m|[m * [33m74a6a60a7[m 해치웠나
+[32m|[m * [33m1f078d01e[m 해치웠나
+[32m|[m * [33m4c01e788b[m 일단 StoreControllerTest 구현은 되긴했는디 PageRequestDTO에서 userid 빼려는 시도를 해볼 예정
+[32m|[m *   [33md89816b28[m Merge remote-tracking branch 'origin/KittenCat' into KittenCat
+[32m|[m [34m|[m[32m\[m  
+[32m|[m [34m|[m[32m/[m  
+[32m|[m[32m/[m[34m|[m   
+* [34m|[m [33m10df708f1[m Plan 이동시간 계산 python 작성완료
+* [34m|[m [33m7fad55ad1[m Plan 이동시간 계산 python 작성완료
+* [34m|[m [33mf425b1125[m place페이지 register 기능 추가
+* [34m|[m [33m0f9ac24f2[m place페이지 register 기능 추가
+* [34m|[m [33m74e2867b6[m place페이지 register 기능 추가
+* [34m|[m [33m1c59ef19d[m place페이지 버그 수정
+* [34m|[m [33m4f275dba8[m place페이지 버그 수정
+[35m|[m * [33m6c651866e[m  선일
+[35m|[m *   [33m2f4b5a111[m Merge remote-tracking branch 'origin/KittenCat' into KittenCat
+[35m|[m [36m|[m[35m\[m  
+[35m|[m [36m|[m[35m/[m  
+[35m|[m[35m/[m[36m|[m   
+* [36m|[m [33m4b21e3b71[m place페이지 백엔드 완료
+* [36m|[m [33m42400f4d9[m place페이지 백엔드 완료
+* [36m|[m [33mc3a16d730[m place페이지 스프링부트 작업
+[1;31m|[m * [33mbd2c2160e[m  선일
+[1;31m|[m * [33m2beacb481[m  선일
+[1;31m|[m * [33m905bcff19[m  선일 천재
+[1;31m|[m * [33m652672ab7[m  선일 천재
+[1;31m|[m[1;31m/[m  
+* [33m725f9ecd1[m place페이지 스프링부트 작업
+* [33ma0373ace6[m place페이지 스프링부트 작업
+* [33m7a3e79511[m place페이지 스프링부트 작업
+* [33ma22156d37[m place페이지 스프링부트 작업
+* [33m163bce33e[m 부분 수정
+*   [33m7af217c42[m KittenCat Start
+[1;32m|[m[1;33m\[m  
+[1;32m|[m * [33m9281d892d[m Initial commit
+* [33mc3fa95929[m KittenCat Start
+* [33mac98edfa4[m Initial commit
