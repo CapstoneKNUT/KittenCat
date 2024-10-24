@@ -115,7 +115,6 @@ public class PlanController {
     @GetMapping(value = "value = /register/{planNo}/trans", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Long>> registerTransGet(@PathVariable Long planNo) {
         PlanPlace planPlace = planPlaceRepository.findLastPlanPlaceByPlanNo(planNo);
-
         return null;
     }
 }

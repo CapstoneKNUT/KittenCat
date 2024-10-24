@@ -1,5 +1,7 @@
 package org.zerock.b01.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.json.JSONArray;
@@ -7,10 +9,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -22,6 +21,7 @@ import org.zerock.b01.dto.Search.DrivingRequest;
 import org.zerock.b01.dto.Search.DrivingResponse;
 import org.zerock.b01.dto.Search.GetXYRequest;
 import org.zerock.b01.dto.Search.GetXYResponse;
+import org.zerock.b01.dto.TransTimeDTO;
 import org.zerock.b01.repository.PlanPlaceRepository;
 import org.zerock.b01.repository.PlanRepository;
 
@@ -48,6 +48,8 @@ public class PlanServiceImpl implements PlanService {
     private final PlanRepository planRepository;
 
     private final PlanPlaceRepository planPlaceRepository;
+
+    private final ApiService apiService;
 
     @Value("${naver.client.id}")
     private String naverClientId;
@@ -226,12 +228,12 @@ public class PlanServiceImpl implements PlanService {
         float pp_mapx = LastPlanPlaceDTO.getPp_mapx();
         float pp_mapy = LastPlanPlaceDTO.getPp_mapy();
 
-        //출발 시간
+        // 출발 날짜, 시간
         LocalDateTime pp_startDate = LastPlanPlaceDTO.getPp_startDate();
-        //노는 시간
+        // 노는 시간
         LocalTime pp_takeDate = LastPlanPlaceDTO.getPp_takeDate();
 
-        //출발 시간 + 노는시간
+        // 출발 시간 + 노는시간
         pp_startDate = pp_startDate.plusHours(pp_takeDate.getHour())
                 .plusMinutes(pp_takeDate.getMinute());
 
@@ -241,23 +243,42 @@ public class PlanServiceImpl implements PlanService {
 
         // 도착 장소 조회
         if (isCar == true) {
-            try{
+            try {
                 var request = new DrivingRequest();
-                request.setStart(pp_mapx+","+pp_mapy);
-                request.setGoal(mapx+","+mapy);
+                request.setStart(pp_mapx + "," + pp_mapy);
+                request.setGoal(mapx + "," + mapy);
                 var result = getTime(request);
                 Integer duration = result.getRoute().getTraoptimal()[0].getSummary().getDuration();
-                int t_takeDay = (int) (duration / 86400);
-                int t_takeHour = (int) ((duration % 86400) / 3600);  // 1시간 = 3600초
-                int t_takeMinute = (int) ((duration % 3600) / 60);  // 1분 = 60초
-                //출발시간 + 노는시간 + 이동시간
-                pp_startDate = pp_startDate.plusHours(t_takeDay);
+                int t_takeHour = (int) ((duration % 86400) / 3600); // 1시간 = 3600초
+                int t_takeMinute = (int) ((duration % 3600) / 60); // 1분 = 60초
+                // 출발시간 + 노는시간 + 이동시간
                 pp_startDate = pp_startDate.plusHours(t_takeHour);
                 pp_startDate = pp_startDate.plusMinutes(t_takeMinute);
                 return pp_startDate;
-            }
-            catch(Exception e){
+            } catch (Exception e) {
+                TransTimeDTO transTimeDTO = TransTimeDTO.builder()
+                        .t_startHour(pp_startDate.getHour())
+                        .t_startMinute(pp_startDate.getMinute())
+                        .start_location(LastPlanPlace.getPp_startAddress())
+                        .arrive_location(Address)
+                        .isCar(false)
+                        .build();
 
+                String result = apiService.callTransportApi("http://localhost:8000/plan/transport/add", transTimeDTO);
+
+                // Python 스크립트의 응답을 파싱합니다.
+                ObjectMapper mapper = new ObjectMapper();
+                try {
+                    JsonNode jsonNode = mapper.readTree(result);
+                    int hours = jsonNode.get("hours").asInt();
+                    int minutes = jsonNode.get("minutes").asInt();
+
+                    // 계산된 시간을 pp_startDate에 추가합니다.
+                    return pp_startDate.plusHours(hours).plusMinutes(minutes);
+                } catch (Exception ex) {
+                    log.error("JSON 응답 파싱 오류", ex);
+                    throw new RuntimeException("이동 시간 계산 실패", ex);
+                }
             }
         }
 
