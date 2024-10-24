@@ -14,6 +14,11 @@ function Lists() {
   const [selectedArea, setSelectedArea] = useState('');
   const [selectedSubArea, setSelectedSubArea] = useState('');
   const [keywordInput, setKeywordInput] = useState('');
+  const [p_area, setP_area] = useState('');
+  const [p_subArea, setP_subArea] = useState('');
+  const [p_category, setP_category] = useState('');
+  const [p_count, setP_count] = useState('');
+  const [p_keyword, setP_keyword] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -28,8 +33,6 @@ function Lists() {
     end: 0,
     page: 1,
   });
-
-  useEffect(() => {
     // 데이터를 받아오는 함수
     const fetchData = async () => {
       try {
@@ -46,6 +49,7 @@ function Lists() {
       }
     };
 
+  useEffect(() => {
     fetchData();
   }, [pageRequest]);
 
@@ -62,18 +66,29 @@ function Lists() {
     : [];
 
   // 검색 기능
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
 
-    const searchParams = new URLSearchParams();
-    if (selectedArea) searchParams.append('location', selectedArea);
-    if (selectedSubArea && selectedSubArea !== '지역 전체') searchParams.append('district', selectedSubArea);
-    if (keywordInput) searchParams.append('keyword', keywordInput);
+    const p_area = selectedArea;
+    const p_subArea = selectedSubArea !== '지역 전체' ? selectedSubArea : '';
+    const p_keyword = keywordInput;
 
-    navigate(`?${searchParams.toString()}`);
+  try {
+    // 서버로 POST 요청을 보내고 응답 받기
+    const response = await axios.post('http://localhost:8080/api/place/list', {
+      p_area,
+      p_subArea,
+      p_category: '', // 카테고리가 필요하다면 추가하세요.
+      p_count: 20,    // 원하는 카운트 값을 넣으세요.
+      p_keyword
+    });
+  } catch (error) {
+    console.error('에러 발생:', error);
+  }
   };
 
   useEffect(() => {
+    console.log('responseData:', responseData);
     const searchParams = new URLSearchParams(location.search);
     const locationParam = searchParams.get('location') || '';
     const districtParam = searchParams.get('district') || '';
@@ -122,7 +137,7 @@ function Lists() {
     <div className="results-page">
       <h2>검색 결과</h2>
       <form className="search-form" onSubmit={handleSearch}>
-        <select value={selectedArea} onChange={(e) => setSelectedArea(e.target.value)}>
+        <select value={selectedArea} onChange={(e) => {setSelectedArea(e.target.value); setP_area(e.target.value);}}>
           <option value="">지역 선택</option>
           {area.map((a) => (
             <option key={a.name} value={a.name}>
@@ -131,7 +146,7 @@ function Lists() {
           ))}
         </select>
 
-        <select value={selectedSubArea} onChange={(e) => setSelectedSubArea(e.target.value)} disabled={!selectedArea}>
+        <select value={selectedSubArea} onChange={(e) => {setSelectedSubArea(e.target.value); setP_subArea(e.target.value);}} disabled={!selectedArea}>
           <option value="">시/구/군</option>
           <option value="지역 전체">지역 전체</option>
           {filteredSubArea.map((sub, index) => (
@@ -144,7 +159,7 @@ function Lists() {
         <input
           type="text"
           value={keywordInput}
-          onChange={(e) => setKeywordInput(e.target.value)}
+          onChange={(e) => {setKeywordInput(e.target.value); setP_keyword(e.target.value);}}
           placeholder="키워드 검색"
         />
         <button type="submit">검색</button>
@@ -214,5 +229,7 @@ function Lists() {
     </div>
   );
 }
+
+
 
 export default Lists;
