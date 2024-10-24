@@ -58,9 +58,23 @@ public class StoreController {
 
     // 유저의 찜목록 중 이름을 검색하여 조회
     @GetMapping("/search")
+    public ResponseEntity<PageResponseDTO<StoreDTO>> searchBookmarks(
+            @RequestParam String username,
+            @RequestParam(required = false) String p_name,
+            @RequestParam(required = false) String p_address,
+            PageRequestDTO pageRequestDTO) {
+
+        PageResponseDTO<StoreDTO> responseDTO = storeService.searchBookmarks(username, p_name, p_address, pageRequestDTO);
+        log.info(responseDTO);
+        return ResponseEntity.ok(responseDTO);
+    }
+
+
+    /*// 유저의 찜목록 중 이름을 검색하여 조회
+    @GetMapping("/search")
     public ResponseEntity<PageResponseDTO<StoreDTO>> searchBookmarks(@RequestParam String username,@RequestParam String p_name, PageRequestDTO pageRequestDTO) {
         PageResponseDTO<StoreDTO> responseDTO = storeService.list(username, pageRequestDTO);
         log.info(responseDTO);
         return ResponseEntity.ok(responseDTO);
-    }
+    }*/
 }

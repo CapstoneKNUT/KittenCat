@@ -48,7 +48,7 @@ class PlaceServiceImplTest {
     //place의 pord째 데이터 mid값과 함께 store에 저장
     @Test
     void register(){
-        Long result = placeService.register(1,"user0");
+        Long result = placeService.register(5,"sun1");
         assertNotNull(result);
     }
 

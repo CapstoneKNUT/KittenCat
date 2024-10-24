@@ -25,5 +25,19 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     //searchByName
     @Query("SELECT s FROM Store s WHERE s.mid.mid = :username AND s.p_name LIKE %:name%")
     Page<Store> findByUsernameAndPlaceNameContaining(@Param("username") String username, @Param("name") String p_name, Pageable pageable);
+
+
+    @Query("SELECT s FROM Store s WHERE s.mid.mid = :username AND s.p_name LIKE %:p_name%")
+    Page<Store> findByUsernameAndPName(@Param("username") String username, @Param("p_name") String p_name, Pageable pageable);
+
+    @Query("SELECT s FROM Store s WHERE s.mid.mid = :username AND s.p_address  LIKE %:p_address%")
+    Page<Store> findByUsernameAndPAddress(@Param("username") String username, @Param("p_address") String p_address, Pageable pageable);
+
+    @Query("SELECT s FROM Store s WHERE s.mid.mid = :username AND s.p_name  LIKE %:p_name% AND s.p_address  LIKE %:p_address%")
+    Page<Store> findByUsernameAndPNameAndPAddress(@Param("username") String username, @Param("p_name") String p_name, @Param("p_address") String p_address, Pageable pageable);
+
+    @Query("SELECT s FROM Store s WHERE s.mid.mid = :username")
+    Page<Store> findByUsername(@Param("username") String username, Pageable pageable);
+
 }
 

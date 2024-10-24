@@ -66,9 +66,20 @@ public class StoreServiceImpl implements StoreService {
     }
 
     // 여행지 이름 검색하여 찜목록 조회
-    public PageResponseDTO<StoreDTO> searchBookmarks(String username, String p_name, PageRequestDTO pageRequestDTO) {
+    @Override
+    public PageResponseDTO<StoreDTO> searchBookmarks(String username, String p_name, String p_address, PageRequestDTO pageRequestDTO) {
         Pageable pageable = pageRequestDTO.getPageable("sno");
-        Page<Store> result = storeRepository.findByUsernameAndPlaceNameContaining(username, p_name,pageable);
+        Page<Store> result;
+
+        if (p_name != null && p_address != null) {
+            result = storeRepository.findByUsernameAndPNameAndPAddress(username, p_name, p_address, pageable);
+        } else if (p_name != null) {
+            result = storeRepository.findByUsernameAndPName(username, p_name, pageable);
+        } else if (p_address != null) {
+            result = storeRepository.findByUsernameAndPAddress(username, p_address, pageable);
+        } else {
+            result = storeRepository.findByUsername(username, pageable);
+        }
 
         List<StoreDTO> dtoList = result.getContent().stream()
                 .map(this::entityToDTO)
@@ -79,38 +90,16 @@ public class StoreServiceImpl implements StoreService {
                 .dtoList(dtoList)
                 .total((int) result.getTotalElements())
                 .build();
-
-
     }
-
-
-
 
     // 엔티티를 DTO로 변환
     private StoreDTO entityToDTO(Store store) {
         return modelMapper.map(store, StoreDTO.class);
     }
 
-
     // DTO를 엔티티로 변환
     protected Store dtoToEntity(StoreDTO storeDTO) {
         return modelMapper.map(storeDTO, Store.class);
     }
 
-
 }
-    //    // 추가하기
-//    @Override
-//    public String register(StoreDTO storeDTO) {
-//        // StoreDTO의 bookmark에서 Member 정보를 가져옴
-//        String memberId = storeDTO.getBookmark();
-//        memberService.read(memberId);  // Member가 존재하는지 확인
-//
-//        // DTO를 엔티티로 변환
-//        Store store = dtoToEntity(storeDTO);
-//
-//        // 저장
-//        storeRepository.save(store);
-//
-//        return store.getP_address();
-//    }

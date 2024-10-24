@@ -18,7 +18,7 @@ class MemberRepositoryTest {
     @Test
     public void testInsert(){
         Member member = Member.builder()
-                .mid("user99")
+                .mid("sun1")
                 .m_pw("1111")
                 .m_email("example@naver.com")
                 .m_name("useruseruser")
