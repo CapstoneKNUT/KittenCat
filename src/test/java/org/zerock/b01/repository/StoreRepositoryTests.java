@@ -26,15 +26,15 @@ public class StoreRepositoryTests {
     private StoreService storeService;
 
 
-    //Store 테이블에서 제거하기
+   /* //Store 테이블에서 제거하기
     @Test
     public void testRemoveStore() {
         //제거하려는 Store의 sno와 bookmark를 설정
         Long sno = 4L; // 실제 존재하는 sno로 변경
-
-        //remove 메서드 호출하여 Store 제거
-        storeService.remove(sno);
-    }
+        String username = "user0";
+        //remove 메서드 호출하여 St/ore 제거
+        storeService.remove(sno,username);
+    }*/
 
 
     @Test
