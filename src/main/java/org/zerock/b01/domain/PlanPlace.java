@@ -20,18 +20,24 @@ public class PlanPlace {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ppOrd;
 
+    private String pp_title;
+
     private String pp_startAddress;
 
     private LocalDateTime pp_startDate;
 
     private LocalTime pp_takeDate;
 
-    private float pp_mapx;
+    private Float pp_mapx;
 
-    private float pp_mapy;
+    private Float pp_mapy;
+
+    private Boolean NightToNight;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "planNo")
     private PlanSet planSet;
 
+    @OneToOne(mappedBy = "planPlace", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private TransportParent transportParent;
 }

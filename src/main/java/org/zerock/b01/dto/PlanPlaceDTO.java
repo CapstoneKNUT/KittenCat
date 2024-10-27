@@ -20,15 +20,19 @@ public class PlanPlaceDTO {
 
     private Long ppOrd;
 
+    private String pp_title;
+
     private String pp_startAddress;
 
     private LocalDateTime pp_startDate;
 
     private LocalTime pp_takeDate;
 
-    private float pp_mapx;
+    private Float pp_mapx;
 
-    private float pp_mapy;
+    private Float pp_mapy;
+
+    private Boolean NightToNight;
 
     private PlanSet planNo;
 

@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TransTimeDTO {
 
+    private String writer;
+
     private Integer t_startHour;
 
     private Integer t_startMinute;

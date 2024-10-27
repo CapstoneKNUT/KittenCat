@@ -31,5 +31,6 @@ public class StoreDTO {
     private String p_opentime;
 
     private String p_park;
+
     private String bookmark;
 }

@@ -6,24 +6,22 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 import org.zerock.b01.domain.PlanPlace;
 import org.zerock.b01.domain.PlanSet;
-import org.zerock.b01.dto.PlanPlaceDTO;
-import org.zerock.b01.dto.PlanSetDTO;
+import org.zerock.b01.domain.TransportChild;
+import org.zerock.b01.domain.TransportParent;
+import org.zerock.b01.dto.*;
 import org.zerock.b01.dto.Search.DrivingRequest;
 import org.zerock.b01.dto.Search.DrivingResponse;
 import org.zerock.b01.dto.Search.GetXYRequest;
 import org.zerock.b01.dto.Search.GetXYResponse;
-import org.zerock.b01.dto.TransTimeDTO;
 import org.zerock.b01.repository.PlanPlaceRepository;
 import org.zerock.b01.repository.PlanRepository;
+import org.zerock.b01.repository.TransportChildRepository;
+import org.zerock.b01.repository.TransportParentRepository;
 
 import javax.transaction.Transactional;
 import java.io.BufferedReader;
@@ -34,10 +32,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Log4j2
@@ -45,11 +40,18 @@ import java.util.Optional;
 @Transactional
 public class PlanServiceImpl implements PlanService {
 
+    private final ModelMapper modelMapper;
+
     private final PlanRepository planRepository;
 
     private final PlanPlaceRepository planPlaceRepository;
 
+    private final TransportParentRepository transportParentRepository;
+
+    private final TransportChildRepository transportChildRepository;
+
     private final ApiService apiService;
+
 
     @Value("${naver.client.id}")
     private String naverClientId;
@@ -76,7 +78,7 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public PlanPlaceDTO readOne(Long ppOrd) {
+    public PlanPlaceDTO readPlanPlace(Long ppOrd) {
 
         Optional<PlanPlace> result = planPlaceRepository.findById(ppOrd);
 
@@ -85,6 +87,34 @@ public class PlanServiceImpl implements PlanService {
         PlanPlaceDTO planplaceDTO = entityToDTOPP(planplace);
 
         return planplaceDTO;
+    }
+
+    @Override
+    public TransportParentDTO readTransportParent(Long ppOrd) {
+
+        Optional<TransportParent> result = Optional.ofNullable(transportParentRepository.findByPpord(ppOrd));
+
+        TransportParent transportParent = result.orElseThrow();
+
+        TransportParentDTO transportParentDTO = entityToDTOTP(transportParent);
+
+        return transportParentDTO;
+    }
+
+    @Override
+    public TransportChildDTO readTransportChild(Long tno) {
+
+        List<TransportChild> result = transportChildRepository.findByTno(tno);
+
+        if (result.isEmpty()) {
+            return null;  // 또는 예외 처리 로직 추가
+        }
+
+        TransportChild transportChild = result.get(0);
+
+        TransportChildDTO transportChildDTO = entityToDTOTP(transportChild);
+
+        return transportChildDTO;
     }
 
     @Override
@@ -146,16 +176,6 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public Long registerPP(PlanPlaceDTO planPlaceDTO) {
-
-        PlanPlace planplace = dtoToEntityPP(planPlaceDTO);
-
-        Long ppOrd = planPlaceRepository.save(planplace).getPpOrd();
-
-        return ppOrd;
-    }
-
-    @Override
     public DrivingResponse getTime(DrivingRequest drivingRequest) {
         try {
             String start = URLEncoder.encode(drivingRequest.getStart(), StandardCharsets.UTF_8);
@@ -208,7 +228,7 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public LocalDateTime startTime(Long planNo, String Address, float mapx, float mapy) {
+    public Map<String, Object> startTime(Long planNo, String Address, Float mapx, Float mapy, String writer) {
         // 자차 여부 조회
         PlanSetDTO planSetDTO = InitReadOne(planNo);
         Boolean isCar = planSetDTO.getIsCar();
@@ -216,47 +236,117 @@ public class PlanServiceImpl implements PlanService {
         // 마지막 저장 장소 조회
         PlanPlace LastPlanPlace = planPlaceRepository.findLastPlanPlaceByPlanNo(planNo);
 
+        //DTO로 변환해서 꺼내쓰기
         PlanPlaceDTO LastPlanPlaceDTO = PlanPlaceDTO.builder()
+                .pp_startDate(LastPlanPlace.getPp_startDate())
+                .ppOrd(LastPlanPlace.getPpOrd())
                 .pp_startAddress(LastPlanPlace.getPp_startAddress())
                 .pp_takeDate(LastPlanPlace.getPp_takeDate())
                 .pp_mapx(LastPlanPlace.getPp_mapx())
                 .pp_mapy(LastPlanPlace.getPp_mapy())
                 .planNo(LastPlanPlace.getPlanSet())
+                .NightToNight(LastPlanPlace.getNightToNight())
                 .build();
+        if(LastPlanPlace.getPp_startAddress() != Address){
+            Float pp_mapx = LastPlanPlaceDTO.getPp_mapx();
+            Float pp_mapy = LastPlanPlaceDTO.getPp_mapy();
 
-        String pp_startAddress = LastPlanPlaceDTO.getPp_startAddress();
-        float pp_mapx = LastPlanPlaceDTO.getPp_mapx();
-        float pp_mapy = LastPlanPlaceDTO.getPp_mapy();
+            // 출발 날짜, 시간
+            LocalDateTime pp_startDate = LastPlanPlaceDTO.getPp_startDate();
+            // 노는 시간
+            LocalTime pp_takeDate = LastPlanPlaceDTO.getPp_takeDate();
 
-        // 출발 날짜, 시간
-        LocalDateTime pp_startDate = LastPlanPlaceDTO.getPp_startDate();
-        // 노는 시간
-        LocalTime pp_takeDate = LastPlanPlaceDTO.getPp_takeDate();
+            // 출발 시간 + 머무는 시간
+            pp_startDate = pp_startDate.plusHours(pp_takeDate.getHour())
+                    .plusMinutes(pp_takeDate.getMinute());
 
-        // 출발 시간 + 노는시간
-        pp_startDate = pp_startDate.plusHours(pp_takeDate.getHour())
-                .plusMinutes(pp_takeDate.getMinute());
+            Integer getTNumber = 0;
+            // 도착 장소 조회
+            if (isCar == true) {
+                try {
+                    var request = new DrivingRequest();
+                    request.setStart(pp_mapx + "," + pp_mapy);
+                    request.setGoal(mapx + "," + mapy);
+                    var result = getTime(request);
+                    Integer duration = result.getRoute().getTraoptimal()[0].getSummary().getDuration();
+                    int t_takeHour = (int) ((duration % 86400) / 3600); // 1시간 = 3600초
+                    int t_takeMinute = (int) ((duration % 3600) / 60); // 1분 = 60초
+                    // 출발시간 + 노는시간 + 이동시간
 
-        // 출발 시, 출발 분
-        int t_startHour = pp_startDate.getHour();
-        int t_startMinute = pp_startDate.getMinute();
+                    pp_startDate = pp_startDate.plusHours(t_takeHour);
+                    pp_startDate = pp_startDate.plusMinutes(t_takeMinute);
+                    LocalTime pp_takeTime = LocalTime.of(t_takeHour, t_takeMinute);
 
-        // 도착 장소 조회
-        if (isCar == true) {
-            try {
-                var request = new DrivingRequest();
-                request.setStart(pp_mapx + "," + pp_mapy);
-                request.setGoal(mapx + "," + mapy);
-                var result = getTime(request);
-                Integer duration = result.getRoute().getTraoptimal()[0].getSummary().getDuration();
-                int t_takeHour = (int) ((duration % 86400) / 3600); // 1시간 = 3600초
-                int t_takeMinute = (int) ((duration % 3600) / 60); // 1분 = 60초
-                // 출발시간 + 노는시간 + 이동시간
-                pp_startDate = pp_startDate.plusHours(t_takeHour);
-                pp_startDate = pp_startDate.plusMinutes(t_takeMinute);
-                return pp_startDate;
-            } catch (Exception e) {
+                    //출발알 = 도착일 같을 시 하나만 생성
+                    if (LastPlanPlaceDTO.getPp_startDate().toLocalDate() == pp_startDate.toLocalDate()){
+                        TransportParent transportParent = TransportParent.builder()
+                                .isCar(true)
+                                .t_method("차")
+                                .t_startDateTime(LastPlanPlaceDTO.getPp_startDate())
+                                .t_takeTime(pp_takeTime)
+                                .t_goalDateTime(pp_startDate)
+                                .writer(writer)
+                                .NightToNight(false)
+                                .build();
+
+                        transportParentRepository.save(transportParent);
+                        getTNumber = 1;
+                    }else {
+                        //출발 시간 = 도착 시간 다를 시 두개 생성
+                        LocalDateTime finalTime = LastPlanPlaceDTO.getPp_startDate().withHour(23).withMinute(59).withSecond(59);
+                        TransportParent transportParent1 = TransportParent.builder()
+                                .isCar(true)
+                                .t_method("차")
+                                .t_startDateTime(LastPlanPlaceDTO.getPp_startDate())
+                                .t_takeTime(pp_takeTime)
+                                .t_goalDateTime(finalTime)
+                                .writer(writer)
+                                .NightToNight(true)
+                                .build();
+
+                        transportParentRepository.save(transportParent1);
+
+                        TransportParent transportParent2 = TransportParent.builder()
+                                .isCar(true)
+                                .t_method("차")
+                                .t_startDateTime(LastPlanPlaceDTO.getPp_startDate().plusDays(1).withHour(0).withMinute(0).withSecond(0))
+                                .t_takeTime(pp_takeTime)
+                                .t_goalDateTime(pp_startDate)
+                                .writer(writer)
+                                .NightToNight(true)
+                                .build();
+                        transportParentRepository.save(transportParent2);
+
+                        getTNumber = 2;
+                    }
+                } catch (Exception e) {
+                    System.out.println("오류메세지 : " + e);
+                    TransTimeDTO transTimeDTO = TransTimeDTO.builder()
+                            .t_startHour(pp_startDate.getHour())
+                            .t_startMinute(pp_startDate.getMinute())
+                            .start_location(LastPlanPlace.getPp_startAddress())
+                            .arrive_location(Address)
+                            .isCar(false)
+                            .build();
+
+                    String result = apiService.callTransportApi("http://localhost:8000/plan/transport/add", transTimeDTO);
+                    //최신 교통수단 저장내용 조회
+                    TransportParent LastTransportParent = transportParentRepository.findLastTransportParent(writer);
+                    //출발시간 지정
+                    pp_startDate = LastTransportParent.getT_goalDateTime();
+                    // Python 스크립트의 응답을 파싱합니다.
+                    ObjectMapper mapper = new ObjectMapper();
+                    try {
+                        JsonNode jsonNode = mapper.readTree(result);
+                        String getTNumberString = jsonNode.get("getTNumber").asText();
+                        getTNumber = Integer.valueOf(getTNumberString);
+                    } catch (Exception ex) {
+                        log.error("Error parsing JSON response", ex);
+                    }
+                }
+            } else{
                 TransTimeDTO transTimeDTO = TransTimeDTO.builder()
+                        .writer(writer)
                         .t_startHour(pp_startDate.getHour())
                         .t_startMinute(pp_startDate.getMinute())
                         .start_location(LastPlanPlace.getPp_startAddress())
@@ -265,23 +355,40 @@ public class PlanServiceImpl implements PlanService {
                         .build();
 
                 String result = apiService.callTransportApi("http://localhost:8000/plan/transport/add", transTimeDTO);
-
-                // Python 스크립트의 응답을 파싱합니다.
+                //최신 저장내용 조회
+                TransportParent LastTransportParent = transportParentRepository.findLastTransportParent(writer);
+                //출발시간 지정
+                pp_startDate = LastTransportParent.getT_goalDateTime();
                 ObjectMapper mapper = new ObjectMapper();
                 try {
                     JsonNode jsonNode = mapper.readTree(result);
-                    int hours = jsonNode.get("hours").asInt();
-                    int minutes = jsonNode.get("minutes").asInt();
-
-                    // 계산된 시간을 pp_startDate에 추가합니다.
-                    return pp_startDate.plusHours(hours).plusMinutes(minutes);
+                    String getTNumberString = jsonNode.get("getTNumber").asText();
+                    getTNumber = Integer.valueOf(getTNumberString);
                 } catch (Exception ex) {
-                    log.error("JSON 응답 파싱 오류", ex);
-                    throw new RuntimeException("이동 시간 계산 실패", ex);
+                    log.error("Error parsing JSON response", ex);
                 }
             }
+            Map<String, Object> result = new HashMap<>();
+            result.put("pp_startDate", pp_startDate);
+            result.put("getTNumber", getTNumber);
+            return result; // 반환
+        }else{
+            Map<String, Object> result = new HashMap<>();
+            //마지막 저장 장소 시작 일시 + 머무는 시간
+            result.put("pp_startDate", LastPlanPlaceDTO.getPp_startDate().plusHours(LastPlanPlaceDTO.getPp_takeDate().getHour()).plusMinutes(LastPlanPlaceDTO.getPp_takeDate().getMinute()));
+            result.put("getTNumber", 0);
+            return result; // 반환
         }
+    }
+    // 시작 장소 조회
 
-        return pp_startDate;
+    @Override
+    public void removePlanSet(Long planNo){
+        planRepository.deleteById(planNo);
+    }
+
+    @Override
+    public void removePlanPlace(Long ppOrd){
+        planPlaceRepository.deleteById(ppOrd);
     }
 }

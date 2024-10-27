@@ -58,6 +58,18 @@ public class StoreServiceImpl implements StoreService {
         return storeDTO;
     }
 
+    @Override
+    public StoreDTO read(Long sno) {
+        Optional<Store> result = storeRepository.findById(sno); // 인스턴스 변수 사용
+
+        Store store = result.orElseThrow();
+
+        // 엔티티를 DTO로 변환 후 반환
+        StoreDTO storeDTO = entityToDTO(store);
+
+        return storeDTO;
+    }
+
     // 제거하기
     @Override
     @Transactional

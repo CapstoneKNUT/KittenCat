@@ -2,12 +2,16 @@ package org.zerock.b01.service;
 
 import org.zerock.b01.domain.PlanPlace;
 import org.zerock.b01.domain.PlanSet;
+import org.zerock.b01.domain.TransportChild;
+import org.zerock.b01.domain.TransportParent;
 import org.zerock.b01.dto.PlanPlaceDTO;
 import org.zerock.b01.dto.PlanSetDTO;
 import org.zerock.b01.dto.Search.DrivingRequest;
 import org.zerock.b01.dto.Search.DrivingResponse;
 import org.zerock.b01.dto.Search.GetXYRequest;
 import org.zerock.b01.dto.Search.GetXYResponse;
+import org.zerock.b01.dto.TransportChildDTO;
+import org.zerock.b01.dto.TransportParentDTO;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -16,17 +20,23 @@ public interface PlanService {
 
     PlanSetDTO InitReadOne(Long planNo);
 
-    PlanPlaceDTO readOne(Long ppOrd);
-
     Long registerInit(PlanSetDTO planSetDTO);
 
     GetXYResponse getXY(GetXYRequest getXYRequest);
 
-    Long registerPP(PlanPlaceDTO planPlaceDTO);
-
     DrivingResponse getTime(DrivingRequest drivingRequest);
 
-    LocalDateTime startTime(Long planNo, String Address, float mapx, float mapy);
+    Map<String,Object> startTime(Long planNo, String Address, Float mapx, Float mapy, String writer);
+
+    PlanPlaceDTO readPlanPlace(Long ppOrd);
+
+    TransportParentDTO readTransportParent(Long tno);
+
+    TransportChildDTO readTransportChild(Long tord);
+
+    void removePlanSet(Long planNo);
+
+    void removePlanPlace(Long ppOrd);
 
     default PlanSet dtoToEntity(PlanSetDTO planSetDTO) {
 
@@ -53,20 +63,6 @@ public interface PlanService {
         return planSetDTO;
     }
 
-    default PlanPlace dtoToEntityPP(PlanPlaceDTO planplaceDTO) {
-
-        PlanPlace planplace = PlanPlace.builder()
-                .ppOrd(planplaceDTO.getPpOrd())
-                .pp_startAddress(planplaceDTO.getPp_startAddress())
-                .pp_takeDate(planplaceDTO.getPp_takeDate())
-                .pp_mapx(planplaceDTO.getPp_mapx())
-                .pp_mapy(planplaceDTO.getPp_mapy())
-                .planSet(planplaceDTO.getPlanNo())
-                .build();
-
-        return planplace;
-    }
-
     default PlanPlaceDTO entityToDTOPP(PlanPlace planplace) {
 
         PlanPlaceDTO planplaceDTO = PlanPlaceDTO.builder()
@@ -81,4 +77,31 @@ public interface PlanService {
         return planplaceDTO;
     }
 
+    default TransportParentDTO entityToDTOTP(TransportParent transportParent) {
+
+        TransportParentDTO transportParentDTO = TransportParentDTO.builder()
+                .tno(transportParent.getTno())
+                .ppOrd(transportParent.getPlanPlace().getPpOrd())
+                .isCar(transportParent.getIsCar())
+                .t_method(transportParent.getT_method())
+                .t_startDateTime(transportParent.getT_startDateTime())
+                .t_takeTime(transportParent.getT_takeTime())
+                .t_goalDateTime(transportParent.getT_goalDateTime())
+                .writer(transportParent.getWriter())
+                .build();
+
+        return transportParentDTO;
+    }
+
+    default TransportChildDTO entityToDTOTP(TransportChild transportChild) {
+
+        TransportChildDTO transportChildDTO = TransportChildDTO.builder()
+                .tord(transportChild.getTord())
+                .tno(transportChild.getTransportParent().getTno())
+                .c_method(transportChild.getC_method())
+                .c_takeTime(transportChild.getC_takeTime())
+                .build();
+
+        return transportChildDTO;
+    }
 }
