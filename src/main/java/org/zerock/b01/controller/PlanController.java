@@ -18,6 +18,7 @@ import org.zerock.b01.repository.PlanPlaceRepository;
 import org.zerock.b01.repository.TransportParentRepository;
 import org.zerock.b01.service.PlanService;
 import org.zerock.b01.service.StoreService;
+import org.zerock.b01.service.StoreToPlanService;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -31,6 +32,7 @@ public class PlanController {
 
     private final PlanService planService;
     private final StoreService storeService;
+    private final StoreToPlanService storeToPlanService;
     private final PlanPlaceRepository planPlaceRepository;
     private final TransportParentRepository transportParentRepository;
 
@@ -62,6 +64,8 @@ public class PlanController {
         List<Long> ppOrdList = new ArrayList<>();
 
         StoreDTO storeDTO = storeService.read(planPlaceBodyDTO.getSno());
+
+        storeToPlanService.register(planPlaceBodyDTO.getSno());
 
         PlanSetDTO planSetDTO = planService.InitReadOne(planNo);
 
