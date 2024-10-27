@@ -1,0 +1,23 @@
+/* Read.css */
+.detail-page {
+  padding: 20px;
+}
+
+.detail-page img {
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 20px;
+}
+
+.store-info p,
+.store-categories button {
+  margin: 10px 0;
+}
+
+.store-categories button {
+  margin-right: 5px;
+  padding: 5px 10px;
+  background-color: #f0f0f0;
+  border: none;
+  cursor: pointer;
+}

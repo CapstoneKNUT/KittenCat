@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 
-const Header = () => (
+const Header = () =>(
     <div className="header">
         <Link className="header-item" to="/main">🏠 Home</Link>
         <Link className="header-item" to="/place/list">여행지 정보</Link>
