@@ -30,13 +30,13 @@ public class StoreController {
         return ResponseEntity.ok(responseDTO);
     }*/
 
-    // 유저별 찜 목록 조회
+    /*// 유저별 찜 목록 조회
     @GetMapping("/list")
     public ResponseEntity<PageResponseDTO<StoreDTO>> listByUser(@RequestParam String username, PageRequestDTO pageRequestDTO) {
         PageResponseDTO<StoreDTO> responseDTO = storeService.list(username, pageRequestDTO);
         log.info(responseDTO);
         return ResponseEntity.ok(responseDTO);
-    }
+    }*/
 
     //유저별 찜 목록의 상세 페이지
     @GetMapping("/read")
@@ -57,7 +57,7 @@ public class StoreController {
     }
 
     // 유저의 찜목록 중 이름을 검색하여 조회
-    @GetMapping("/search")
+    @GetMapping("/list")
     public ResponseEntity<PageResponseDTO<StoreDTO>> searchBookmarks(
             @RequestParam String username,
             @RequestParam(required = false) String p_name,
