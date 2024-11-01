@@ -9,6 +9,7 @@ const Header = () =>(
         <Link className="header-item" to="/place/list">여행지 정보</Link>
         <Link className="header-item" to="/board/list">리뷰 목록</Link>
         <Link className="header-item" to="/mypage">마이 페이지</Link>
+        <Link className="header-item" to="/favorite">찜 목록</Link>
         <div className="header-icons">
             <Link to="/profile">
                 <img src="/assets/user.jpg" alt="Profile" className="icon" />
