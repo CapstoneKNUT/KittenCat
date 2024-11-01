@@ -62,8 +62,6 @@ async def get_place_list(place_search_dto: PlaceSearchDTO):
 
     p_count = int(p_count)
 
-    breakPoint = False;
-
     s = Service()
     options = webdriver.ChromeOptions()
     wd = webdriver.Chrome(service=s, options=options)
@@ -72,10 +70,14 @@ async def get_place_list(place_search_dto: PlaceSearchDTO):
 
     # 페이지 다운
     def page_down(num):
-        body = wd.find_element(By.TAG_NAME, 'body')
+        body = WebDriverWait(wd, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "#_pcmap_list_scroll_container"))
+        )
         body.click()
         for i in range(num):
-            body.send_keys(Keys.PAGE_DOWN)
+            wd.execute_script('arguments[0].scrollTop += arguments[0].offsetHeight;', body)
+
+    breakPoint = False  # 여기에 breakPoint 변수를 초기화합니다.
 
     for i in range(1, (p_count // 50) + 2):
 
@@ -212,15 +214,17 @@ async def get_place_list(place_search_dto: PlaceSearchDTO):
                     # 내용
                     try:
                         more = wd.find_element(By.CSS_SELECTOR,
-                                               "#app-root > div > div > div > div:nth-child(6) > div > div:nth-child(2) > div.NSTUp > div > a")
+                                               "#app-root > div > div > div > div:nth-child(5) > div > div:nth-child(2) > div.NSTUp > div > a")
                     except:
                         try:
-                            EleBody = wd.find_element(By.XPATH, '/html/body')
-                            EleBody.send_keys(Keys.PAGE_DOWN)
+                            EleBody = wd.find_element(By.CSS_SELECTOR, '#sub_panel > div > div.panel_content > div')
+                            wd.execute_script('arguments[0].scrollTop += arguments[0].offsetHeight;', EleBody)
                             more = WebDriverWait(wd, 2).until(
                                 EC.any_of(
                                     EC.presence_of_element_located((By.CSS_SELECTOR,
-                                                                    "#app-root > div > div > div > div:nth-child(6) > div > div:nth-child(2) > div.NSTUp > div > a")),
+                                                                    "#app-root > div > div > div > div:nth-child(5) > div > div:nth-child(2) > div.NSTUp > div > a > span.TeItc")),
+                                    EC.presence_of_element_located((By.CSS_SELECTOR,
+                                                                    "#app-root > div > div > div > div:nth-child(6) > div > div:nth-child(2) > div.NSTUp > div > a > span.TeItc")),
                                 )
                             )
                         except:
@@ -228,30 +232,29 @@ async def get_place_list(place_search_dto: PlaceSearchDTO):
                         else:
                             more.click()
                             try:
-                                P_content = WebDriverWait(wd, 2).until(
+                                P_content = WebDriverWait(wd, 4).until(
                                     EC.any_of(
-                                        EC.presence_of_element_located((By.CSS_SELECTOR,
-                                                                        "div.place_section.no_margin.Od79H > div > div > div.Ve1Rp")),
-                                        EC.presence_of_element_located((By.CSS_SELECTOR,
-                                                                        "div.place_section.no_margin.no_border.TMUvC > div > div > div.ztuVm")),
+                                        EC.presence_of_element_located(
+                                            (By.CSS_SELECTOR, "div.place_section.no_margin.Od79H div.Ve1Rp")),
+                                        EC.presence_of_element_located(
+                                            (By.CSS_SELECTOR, "div.place_section.no_margin.no_border.TMUvC div.ztuVm")),
                                     )
                                 )
                                 try:
                                     P_content = wd.find_element(By.CSS_SELECTOR,
-                                                                "div.place_section.no_margin.Od79H > div > div > div.Ve1Rp > a.OWPIf")
+                                                                "div.place_section.no_margin.Od79H div.Ve1Rp a.OWPIf")
                                 except:
                                     try:
                                         P_content = wd.find_element(By.CSS_SELECTOR,
-                                                                    "div.place_section.no_margin.Od79H > div > div > div.Ve1Rp").text
+                                                                    "div.place_section.no_margin.Od79H div.Ve1Rp").text
                                     except:
                                         P_content = wd.find_element(By.CSS_SELECTOR,
                                                                     "div.place_section.no_margin.no_border.TMUvC div.ztuVm").text
                                 else:
                                     P_content.click()
-                                    time.sleep(0.1)
+                                    time.sleep(0.5)
                                     P_content = wd.find_element(By.CSS_SELECTOR,
-                                                                "div.place_section.no_margin.Od79H > div > div > div.Ve1Rp").text[
-                                                :-2]
+                                                                "div.place_section.no_margin.Od79H div.Ve1Rp").text[:-2]
                             except:
                                 P_content = None
                             finally:

@@ -32,7 +32,7 @@ public class PlanPlaceDTO {
 
     private Float pp_mapy;
 
-    private Boolean NightToNight;
+    private Byte NightToNight;
 
     private PlanSet planNo;
 

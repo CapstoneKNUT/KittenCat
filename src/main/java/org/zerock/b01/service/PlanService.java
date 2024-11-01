@@ -4,16 +4,14 @@ import org.zerock.b01.domain.PlanPlace;
 import org.zerock.b01.domain.PlanSet;
 import org.zerock.b01.domain.TransportChild;
 import org.zerock.b01.domain.TransportParent;
-import org.zerock.b01.dto.PlanPlaceDTO;
-import org.zerock.b01.dto.PlanSetDTO;
+import org.zerock.b01.dto.*;
 import org.zerock.b01.dto.Search.DrivingRequest;
 import org.zerock.b01.dto.Search.DrivingResponse;
 import org.zerock.b01.dto.Search.GetXYRequest;
 import org.zerock.b01.dto.Search.GetXYResponse;
-import org.zerock.b01.dto.TransportChildDTO;
-import org.zerock.b01.dto.TransportParentDTO;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 public interface PlanService {
@@ -26,17 +24,17 @@ public interface PlanService {
 
     DrivingResponse getTime(DrivingRequest drivingRequest);
 
-    Map<String,Object> startTime(Long planNo, String Address, Float mapx, Float mapy, String writer);
+    Map<String, Object> startTime(Long planNo, String Address, Float mapx, Float mapy, String writer);
 
-    PlanPlaceDTO readPlanPlace(Long ppOrd);
+    List<PlanPlaceDTO> listOfPlanPlace(Long planNo, Integer day);
 
-    TransportParentDTO readTransportParent(Long tno);
+    List<TransportParentDTO> listOfTransportParent(Long planNo, Long ppOrd, Integer day);
 
-    TransportChildDTO readTransportChild(Long tord);
+    List<TransportChildDTO> listOfTransportChild(Long tno);
 
     void removePlanSet(Long planNo);
 
-    void removePlanPlace(Long ppOrd);
+    void removePlanPlace(Long planNom, Long ppOrd);
 
     default PlanSet dtoToEntity(PlanSetDTO planSetDTO) {
 
@@ -81,7 +79,7 @@ public interface PlanService {
 
         TransportParentDTO transportParentDTO = TransportParentDTO.builder()
                 .tno(transportParent.getTno())
-                .ppOrd(transportParent.getPlanPlace().getPpOrd())
+                .ppOrd(transportParent.getPlanPlaceSet().iterator().next().getPpOrd())
                 .isCar(transportParent.getIsCar())
                 .t_method(transportParent.getT_method())
                 .t_startDateTime(transportParent.getT_startDateTime())

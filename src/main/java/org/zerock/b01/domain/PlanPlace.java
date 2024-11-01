@@ -32,12 +32,12 @@ public class PlanPlace {
 
     private Float pp_mapy;
 
-    private Boolean NightToNight;
+    private Byte NightToNight;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "planNo")
     private PlanSet planSet;
 
-    @OneToOne(mappedBy = "planPlace", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @ManyToOne(cascade = { CascadeType.ALL, CascadeType.REMOVE }, fetch = FetchType.LAZY)
     private TransportParent transportParent;
 }

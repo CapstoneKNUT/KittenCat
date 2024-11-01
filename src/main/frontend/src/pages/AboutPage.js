@@ -6,9 +6,9 @@ function AboutPage(props){
     const { username } = useContext(UserContext); // UserContext에서 username 가져오기
 
     return(
-        <BasicLayout>
+        <BasicLzayout>
             <div>About Page</div>
-        </BasicLayout>
+        </BasicLzayout>
     );
 }
 export default AboutPage;

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import BasicLayout from "../layout/BasicLayout"; // Link 컴포넌트 import
 import './css/styles.css'; // 스타일 시트 import
 
 const TravelPage = () => {
@@ -21,7 +20,6 @@ const TravelPage = () => {
     };
 
     return (
-        <BasicLayout>
         <div id="layout-container">
             <main>
                 <div className="search-bar">
@@ -47,7 +45,6 @@ const TravelPage = () => {
                 </div>
             </main>
         </div>
-        </BasicLayout>
     );
 };
 

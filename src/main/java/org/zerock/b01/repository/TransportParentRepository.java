@@ -16,6 +16,6 @@ public interface TransportParentRepository extends JpaRepository<TransportParent
     List<TransportParent> findLastTwoTransportParents(@Param("writer") String writer);
 
     @Query(value = "SELECT * FROM transportparent WHERE ppOrd := ppOrd", nativeQuery = true)
-    TransportParent findByPpord(@Param("ppOrd") Long ppOrd);
+    List<TransportParent> findByPpord(@Param("ppOrd") Long ppOrd);
 
 }

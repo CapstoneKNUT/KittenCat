@@ -36,19 +36,19 @@ public class PlanController {
     private final PlanPlaceRepository planPlaceRepository;
     private final TransportParentRepository transportParentRepository;
 
-    //게시물 등록 초기화면
+    // 게시물 등록 초기화면
     @GetMapping("/register/init")
     public ResponseEntity<Void> registerInitGET() {
         return ResponseEntity.ok().build();
     }
 
-    //게시물 등록 화민
-    @GetMapping("/register")
-    public ResponseEntity<Void> registerGET() {
+    // 게시물 등록 화민
+    @GetMapping("/register/{planNo}")
+    public ResponseEntity<Void> registerGET(@PathVariable Long planNo) {
         return ResponseEntity.ok().build();
     }
 
-    //게시물 초기상태 등록
+    // 게시물 초기상태 등록
     @PostMapping(value = "/register/init", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Long>> registerInitPost(@RequestBody PlanSetDTO planSetDTO) {
 
@@ -57,10 +57,10 @@ public class PlanController {
         return ResponseEntity.ok(Map.of("planNo", planNo));
     }
 
-    //찜목록에서 가져와 일정표에 넣기
-    @PostMapping(value = "/register/{planNo}/add", consumes = MediaType.APPLICATION_JSON_VALUE)
+    // 찜목록에서 가져와 일정표에 넣기
+    @PostMapping(value = "/{planNo}/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, List<Long>>> registerPlanPlaceAdd(@RequestBody PlanPlaceBodyDTO planPlaceBodyDTO,
-                                                                  @PathVariable Long planNo) {
+            @PathVariable Long planNo) {
         List<Long> ppOrdList = new ArrayList<>();
 
         StoreDTO storeDTO = storeService.read(planPlaceBodyDTO.getSno());
@@ -88,9 +88,12 @@ public class PlanController {
 
         PlanPlace planplace;
 
+        // 장소 저장
         if (planPlace == null) {
-            //출발일 == (출발일시 + 머무는 시간)
-            if(planSetDTO.getStartDate().toLocalDate() == planSetDTO.getStartDate().plusHours(planPlaceBodyDTO.getTakeDate().getHour()).plusMinutes(planPlaceBodyDTO.getTakeDate().getMinute()).toLocalDate()) {
+            // 출발일 == (출발일시 + 머무는 시간)
+            if (planSetDTO.getStartDate().toLocalDate() == planSetDTO.getStartDate()
+                    .plusHours(planPlaceBodyDTO.getTakeDate().getHour())
+                    .plusMinutes(planPlaceBodyDTO.getTakeDate().getMinute()).toLocalDate()) {
                 planplace = PlanPlace.builder()
                         .pp_title(storeDTO.getP_name())
                         .pp_startAddress(Address) // planReposi
@@ -99,20 +102,23 @@ public class PlanController {
                         .pp_mapx(mapx) // storeReposi
                         .pp_mapy(mapy) // storeReposi
                         .planSet(new PlanSet(planNo)) // planReposi
-                        .NightToNight(false)
+                        .NightToNight((byte) 0)
                         .build();
                 log.info("planplace 초기화 확인 : {}", planplace);
 
                 ppOrdList.add(planPlaceRepository.save(planplace).getPpOrd());
 
                 return ResponseEntity.ok(Map.of("ppOrd", ppOrdList));
-            }else {
-                LocalTime endTime = LocalTime.of(23,59,59);
+            } else {
+                LocalTime endTime = LocalTime.of(23, 59, 59);
 
-                //23:59:59 - 출발시간
-                LocalTime prevTime = endTime.minusHours(planSetDTO.getStartDate().getHour()).minusMinutes(planSetDTO.getStartDate().getMinute()).minusSeconds(planSetDTO.getStartDate().getSecond());
-                //머무는 시간 - prevTime + 1초
-                LocalTime nextTime = planPlaceBodyDTO.getTakeDate().minusHours(prevTime.getHour()).minusMinutes(prevTime.getMinute()).minusSeconds(prevTime.getSecond()).plusSeconds(1);
+                // 23:59:59 - 출발시간
+                LocalTime prevTime = endTime.minusHours(planSetDTO.getStartDate().getHour())
+                        .minusMinutes(planSetDTO.getStartDate().getMinute())
+                        .minusSeconds(planSetDTO.getStartDate().getSecond());
+                // 머무는 시간 - prevTime - 1초
+                LocalTime nextTime = planPlaceBodyDTO.getTakeDate().minusHours(prevTime.getHour())
+                        .minusMinutes(prevTime.getMinute()).minusSeconds(prevTime.getSecond()).minusSeconds(1);
 
                 PlanPlace planplace1 = PlanPlace.builder()
                         .pp_title(storeDTO.getP_name())
@@ -122,7 +128,7 @@ public class PlanController {
                         .pp_mapx(mapx) // storeReposi
                         .pp_mapy(mapy) // storeReposi
                         .planSet(new PlanSet(planNo)) // planReposi
-                        .NightToNight(true)
+                        .NightToNight((byte) 1)
                         .build();
                 ppOrdList.add(planPlaceRepository.save(planplace1).getPpOrd());
 
@@ -134,7 +140,7 @@ public class PlanController {
                         .pp_mapx(mapx) // storeReposi
                         .pp_mapy(mapy) // storeReposi
                         .planSet(new PlanSet(planNo)) // planReposi
-                        .NightToNight(true)
+                        .NightToNight((byte) 2)
                         .build();
                 ppOrdList.add(planPlaceRepository.save(planplace2).getPpOrd());
                 return ResponseEntity.ok(Map.of("ppOrd", ppOrdList));
@@ -145,7 +151,10 @@ public class PlanController {
             LocalDateTime startTime = (LocalDateTime) timeResult.get("pp_startDate");
             Integer getTNumber = (Integer) timeResult.get("getTNumber");
 
-            if(startTime.toLocalDate() == startTime.plusHours(planPlaceBodyDTO.getTakeDate().getHour()).plusMinutes(planPlaceBodyDTO.getTakeDate().getMinute()).plusSeconds(planPlaceBodyDTO.getTakeDate().getSecond()).toLocalDate()){
+            // 장소 저장
+            if (startTime.toLocalDate() == startTime.plusHours(planPlaceBodyDTO.getTakeDate().getHour())
+                    .plusMinutes(planPlaceBodyDTO.getTakeDate().getMinute())
+                    .plusSeconds(planPlaceBodyDTO.getTakeDate().getSecond()).toLocalDate()) {
                 planplace = PlanPlace.builder()
                         .pp_title(storeDTO.getP_name())
                         .pp_startAddress(Address)
@@ -154,7 +163,7 @@ public class PlanController {
                         .pp_mapx(mapx)
                         .pp_mapy(mapy)
                         .planSet(new PlanSet(planNo))
-                        .NightToNight(false)
+                        .NightToNight((byte) 0)
                         .build();
 
                 log.info("planplace 초기화 확인 : {}", planplace);
@@ -164,10 +173,12 @@ public class PlanController {
                 return ResponseEntity.ok(Map.of("ppOrd", ppOrdList));
             } else {
                 LocalTime endTime = LocalTime.of(23, 59, 59);
-                //23:59:59 - 출발시간
-                LocalTime prevTime = endTime.minusHours(startTime.getHour()).minusMinutes(startTime.getMinute()).minusSeconds(startTime.getSecond());
-                //머무는 시간 - prevTime + 1초
-                LocalTime nextTime = planPlaceBodyDTO.getTakeDate().minusHours(prevTime.getHour()).minusMinutes(prevTime.getMinute()).minusSeconds(prevTime.getSecond()).plusSeconds(1);
+                // 23:59:59 - 출발시간
+                LocalTime prevTime = endTime.minusHours(startTime.getHour()).minusMinutes(startTime.getMinute())
+                        .minusSeconds(startTime.getSecond());
+                // 머무는 시간 - prevTime - 1초
+                LocalTime nextTime = planPlaceBodyDTO.getTakeDate().minusHours(prevTime.getHour())
+                        .minusMinutes(prevTime.getMinute()).minusSeconds(prevTime.getSecond()).minusSeconds(1);
                 PlanPlace planplace1 = PlanPlace.builder()
                         .pp_title(storeDTO.getP_name())
                         .pp_startAddress(Address)
@@ -176,7 +187,7 @@ public class PlanController {
                         .pp_mapx(mapx)
                         .pp_mapy(mapy)
                         .planSet(new PlanSet(planNo))
-                        .NightToNight(true)
+                        .NightToNight((byte) 1)
                         .build();
                 ppOrdList.add(planPlaceRepository.save(planplace1).getPpOrd());
 
@@ -188,59 +199,73 @@ public class PlanController {
                         .pp_mapx(mapx) // storeReposi
                         .pp_mapy(mapy) // storeReposi
                         .planSet(new PlanSet(planNo)) // planReposi
-                        .NightToNight(true)
+                        .NightToNight((byte) 2)
                         .build();
                 ppOrdList.add(planPlaceRepository.save(planplace2).getPpOrd());
             }
-            if(getTNumber == 1) {
 
-                //최신 교통수단 저장내용 조회
-                TransportParent LastTransportParent = transportParentRepository.findLastTransportParent(planSetDTO.getWriter());
-                //마지막 저장 장소 조회
+            // 외래키 지정
+
+            if (getTNumber == 1) {
+
+                // 최신 교통수단 저장내용 조회
+                TransportParent LastTransportParent = transportParentRepository
+                        .findLastTransportParent(planSetDTO.getWriter());
+                // 마지막 저장 장소 조회
                 PlanPlace LastPlanPlace = planPlaceRepository.findLastPlanPlaceByPlanNo(planNo);
-                //교통수단의 장소 외래키 수정
-                LastTransportParent.setPlanPlace(LastPlanPlace);
-                //교통수단 저장
+                // 교통수단의 장소 외래키 수정
+                LastTransportParent.getPlanPlaceSet().add(LastPlanPlace);
+                // 교통수단 저장
                 transportParentRepository.save(LastTransportParent);
-            }else if (getTNumber == 2){
-                //최신 교통수단 저장내용 조회
-                List<TransportParent> LastTransportParent = transportParentRepository.findLastTwoTransportParents(planSetDTO.getWriter());
+            } else if (getTNumber == 2) {
+                // 최신 교통수단 저장내용 조회
+                List<TransportParent> LastTransportParent = transportParentRepository
+                        .findLastTwoTransportParents(planSetDTO.getWriter());
                 TransportParent LastTransportParent1 = LastTransportParent.get(0); // 가장 최신
                 TransportParent LastTransportParent2 = LastTransportParent.get(1); // 두 번째 최신
 
-                //마지막 저장 장소 조회
+                // 마지막 저장 장소 조회
                 PlanPlace LastPlanPlace = planPlaceRepository.findLastPlanPlaceByPlanNo(planNo);
-                //교통수단의 장소 외래키 수정
-                LastTransportParent1.setPlanPlace(LastPlanPlace);
-                //교통수단 저장
+                // 교통수단의 장소 외래키 수정
+                LastTransportParent1.getPlanPlaceSet().add(LastPlanPlace);
+                // 교통수단 저장
                 transportParentRepository.save(LastTransportParent1);
-                //교통수단의 장소 외래키 수정
-                LastTransportParent2.setPlanPlace(LastPlanPlace);
-                //교통수단 저장
+                // 교통수단의 장소 외래키 수정
+                LastTransportParent2.getPlanPlaceSet().add(LastPlanPlace);
+                // 교통수단 저장
                 transportParentRepository.save(LastTransportParent2);
             }
             return ResponseEntity.ok(Map.of("ppOrd", ppOrdList));
         }
     }
 
-    //일정표에서 등록된 장소 조회
+    // 일정표에서 등록된 장소 조회
     @ApiOperation(value = "Read PlanPlace", notes = "Get 방식으로 등록 장소 조회")
-    @GetMapping("/planplace/{ppOrd}")
-    public ResponseEntity<PlanPlaceDTO> getPlanPlace(@PathVariable Long ppOrd) {
-        PlanPlaceDTO planPlaceDTO = planService.readPlanPlace(ppOrd);
+    @GetMapping("/{planNo}/planplace")
+    public ResponseEntity<List<PlanPlaceDTO>> getPlanPlaceList(@PathVariable Long planNo, @RequestParam Integer day) {
+        List<PlanPlaceDTO> planPlaceDTO = planService.listOfPlanPlace(planNo, day);
         return ResponseEntity.ok(planPlaceDTO);
     }
 
-    //일정표에서 등록된 교통수단 조회
-    @ApiOperation(value = "Read TransportParent", notes = "Get 방식으로 등록 장소 조회")
-    @GetMapping("/TransportParent/{ppOrd}")
-    public ResponseEntity<TransportParentDTO> getTransportParent(@PathVariable Long ppOrd) {
-        TransportParentDTO transportParentDTO = planService.readTransportParent(ppOrd);
+    // 일정표에서 등록된 교통수단 조회
+    @ApiOperation(value = "Read TransportParent", notes = "Get 방식으로 등록 이동수단 조회")
+    @GetMapping("/{planNo}/TransportParent/{ppOrd}")
+    public ResponseEntity<List<TransportParentDTO>> getTransportParent(@PathVariable Long planNo,
+            @PathVariable Long ppOrd, @RequestParam Integer day) {
+        List<TransportParentDTO> transportParentDTO = planService.listOfTransportParent(planNo, ppOrd, day);
         return ResponseEntity.ok(transportParentDTO);
     }
 
+    // 일정표에서 등록된 교통 정보 조회
+    @ApiOperation(value = "Read TransportChild", notes = "Get 방식으로 등록 교통정보 조회")
+    @GetMapping("/{planNo}/TransportChild/{tno}")
+    public ResponseEntity<List<TransportChildDTO>> getTransportChild(@PathVariable Long tno) {
+        List<TransportChildDTO> transportChildDTO = planService.listOfTransportChild(tno);
+        return ResponseEntity.ok(transportChildDTO);
+    }
+
     @ApiOperation(value = "Delete PlanSet", notes = "DELETE 방식으로 일정표 삭제")
-    @DeleteMapping(value="/{planNo}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/{planNo}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Long>> removePlanSet(@PathVariable Long planNo) {
         try {
             planService.removePlanSet(planNo);
@@ -249,28 +274,22 @@ public class PlanController {
             resultMap.put("planNo", planNo);
 
             return ResponseEntity.ok(resultMap);
-        }catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
-    @DeleteMapping(value="/planplace/{ppOrd}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, Long>> removePlanPlace(@PathVariable Long ppOrd) {
+    @DeleteMapping(value = "/{planNo}/planplace/{ppOrd}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, Long>> removePlanPlace(@PathVariable Long planNo, @PathVariable Long ppOrd) {
         try {
-            planService.removePlanPlace(ppOrd);
+            planService.removePlanPlace(planNo, ppOrd);
 
             Map<String, Long> resultMap = new HashMap<>();
             resultMap.put("ppOrd", ppOrd);
 
             return ResponseEntity.ok(resultMap);
-        }catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-    }
-
-    @GetMapping(value = "/register/{planNo}/trans", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, Long>> registerTransGet(@PathVariable Long planNo) {
-        PlanPlace planPlace = planPlaceRepository.findLastPlanPlaceByPlanNo(planNo);
-        return null;
     }
 }

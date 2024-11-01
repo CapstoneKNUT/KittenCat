@@ -41,7 +41,7 @@ const root = createBrowserRouter([
     {
         path: "plan",
         element:<Suspense fallback={Loading}><PlanProvider><Plan /></PlanProvider></Suspense>,
-        children: [
+        children: [z
             {
                 path:'register',
                 element:<Suspense fallback={Loading}><PlanProvider><PlanRegister/></PlanProvider></Suspense>

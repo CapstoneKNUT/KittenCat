@@ -5,11 +5,11 @@ function BasicLayout({children}){
     return(
         <header>
           <BasicMenu/>
-        <div>
-            <main>
-                {children}
-            </main>
-        </div>
+            <div>
+                <main>
+                    {children}
+                </main>
+            </div>
         </header>
     )
 }

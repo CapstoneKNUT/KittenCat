@@ -4,7 +4,7 @@ import BasicLayout from '../layout/BasicLayout';
 
 function MainPage(props){
     return(
-        <BasicLayout>
+        <BasicLayout>z
             <div>Main Page</div>
         </BasicLayout>
     );
