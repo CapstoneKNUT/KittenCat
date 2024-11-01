@@ -1,33 +1,22 @@
-import {RouterProvider} from "react-router-dom"
-import {Provider} from "react-redux"
-import root from "./router/root";
-import './pages/css/styles.css';
-import store from './components/slice/store'
-import {UserProvider} from "./components/context/UserContext";
-import axios from "axios";
-import {useEffect} from "react";
+import HeaderPage from 'C:/Users/taewan/OneDrive/바탕 화면/KittenCat-KittenCat/src/main/frontend/src/components/menus/Header.js';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Lists from 'C:/Users/taewan/OneDrive/바탕 화면/KittenCat-KittenCat/src/main/frontend/src/pages/place/Lists.js';
+import Main from 'C:/Users/taewan/OneDrive/바탕 화면/KittenCat-KittenCat/src/main/frontend/src/pages/Main/Main.js';
+import Read from 'C:/Users/taewan/OneDrive/바탕 화면/KittenCat-KittenCat/src/main/frontend/src/pages/place/Read.js';
+import Store from './Store/Store.js';
 
 function App() {
-    useEffect(() => {
-        // Spring Boot 서버에서 쿠키를 설정하는 요청
-        const setCookie = async () => {
-            try {
-                await axios.get('http://localhost:8080/set-cookie', {
-                    withCredentials: true, // 쿠키 포함
-                });
-            } catch (error) {
-                console.error('Error setting cookie:', error);
-            }
-        };
-
-        setCookie();
-    }, []);
     return (
-        <UserProvider>
-            <Provider store={store}>
-                <RouterProvider router={root}/>
-            </Provider>
-        </UserProvider>
+        <Router>
+            <HeaderPage />
+            <Routes>
+                <Route path="/place/list" element={<Lists />} />
+                <Route path="/main" element={<Main />} />
+                <Route path="/place/read/:pord" element={<Read />} />
+                <Route path="/store" element={<Store />} />
+            </Routes>
+        </Router>
     );
 }
 

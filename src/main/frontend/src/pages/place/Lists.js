@@ -4,6 +4,7 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import './Lists.css';
 import { area } from './Area';
 
+
 function Lists() {
   const [places, setPlaces] = useState([]);
   const [bookmarks, setBookmarks] = useState(() => {
