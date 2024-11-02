@@ -39,5 +39,4 @@ public class PlanSet {
     public PlanSet(Long planNo) {
         this.planNo = planNo;
     }
-
 }

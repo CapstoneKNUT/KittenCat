@@ -79,7 +79,7 @@ public interface PlanService {
 
         TransportParentDTO transportParentDTO = TransportParentDTO.builder()
                 .tno(transportParent.getTno())
-                .ppOrd(transportParent.getPlanPlaceSet().iterator().next().getPpOrd())
+                .ppOrd(transportParent.getPlanPlace().getPpOrd())
                 .isCar(transportParent.getIsCar())
                 .t_method(transportParent.getT_method())
                 .t_startDateTime(transportParent.getT_startDateTime())

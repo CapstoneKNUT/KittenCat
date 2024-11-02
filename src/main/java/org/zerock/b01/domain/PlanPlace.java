@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -38,6 +40,7 @@ public class PlanPlace {
     @JoinColumn(name = "planNo")
     private PlanSet planSet;
 
-    @ManyToOne(cascade = { CascadeType.ALL, CascadeType.REMOVE }, fetch = FetchType.LAZY)
-    private TransportParent transportParent;
+    @OneToMany(mappedBy = "planPlace", cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, orphanRemoval = true)
+    @Builder.Default
+    private Set<TransportParent> transportParentSet = new HashSet<>();
 }

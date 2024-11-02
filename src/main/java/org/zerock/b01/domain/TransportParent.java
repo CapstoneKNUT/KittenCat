@@ -21,9 +21,9 @@ public class TransportParent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tno;
 
-    @OneToMany(mappedBy = "transportParent", cascade = { CascadeType.ALL, CascadeType.REMOVE }, fetch = FetchType.LAZY)
-    @Builder.Default
-    private Set<PlanPlace> planPlaceSet = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="ppOrd")
+    private PlanPlace planPlace;
 
     private Boolean isCar;
 
@@ -40,7 +40,6 @@ public class TransportParent {
     @OneToMany(mappedBy = "transportParent", cascade = {
             CascadeType.ALL }, fetch = FetchType.LAZY, orphanRemoval = true)
     @Builder.Default
-    @BatchSize(size = 20)
     private Set<TransportChild> transportChildrenSet = new HashSet<>();
 
     private Byte NightToNight;

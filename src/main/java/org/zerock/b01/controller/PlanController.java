@@ -214,7 +214,7 @@ public class PlanController {
                 // 마지막 저장 장소 조회
                 PlanPlace LastPlanPlace = planPlaceRepository.findLastPlanPlaceByPlanNo(planNo);
                 // 교통수단의 장소 외래키 수정
-                LastTransportParent.getPlanPlaceSet().add(LastPlanPlace);
+                LastTransportParent.setPlanPlace(LastPlanPlace);
                 // 교통수단 저장
                 transportParentRepository.save(LastTransportParent);
             } else if (getTNumber == 2) {
@@ -227,11 +227,11 @@ public class PlanController {
                 // 마지막 저장 장소 조회
                 PlanPlace LastPlanPlace = planPlaceRepository.findLastPlanPlaceByPlanNo(planNo);
                 // 교통수단의 장소 외래키 수정
-                LastTransportParent1.getPlanPlaceSet().add(LastPlanPlace);
+                LastTransportParent1.setPlanPlace(LastPlanPlace);
                 // 교통수단 저장
                 transportParentRepository.save(LastTransportParent1);
                 // 교통수단의 장소 외래키 수정
-                LastTransportParent2.getPlanPlaceSet().add(LastPlanPlace);
+                LastTransportParent2.setPlanPlace(LastPlanPlace);
                 // 교통수단 저장
                 transportParentRepository.save(LastTransportParent2);
             }

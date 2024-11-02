@@ -13,6 +13,9 @@ public interface StoreService {
     // 상세페이지로 이동
     StoreDTO readOne(String username, Long sno);
 
+    // 상세페이지로 이동
+    StoreDTO read(Long sno);
+
     // 제거하기
     void remove(String username, Long sno);
 
