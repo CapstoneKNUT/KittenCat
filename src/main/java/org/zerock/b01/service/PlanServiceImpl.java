@@ -412,11 +412,32 @@ public class PlanServiceImpl implements PlanService {
         PlanPlaceDTO planPlaceDTO1 = modelMapper.map(planPlace1, PlanPlaceDTO.class);
 
         LocalTime loseTime = planPlaceDTO1.getPp_takeDate();
-        Long losePpOrd = planPlaceDTO1.getPpOrd();
+
+        if(planPlaceDTO1.getNightToNight() == 0){
+            planPlaceRepository.deleteById(ppOrd);
+        } else if (planPlaceDTO1.getNightToNight() == 1) {
+            Optional<PlanPlace> planPlacedaum = Optional.ofNullable(planPlaceRepository.findNextId(planNo, ppOrd));
+            PlanPlaceDTO planPlaceDTOdaum = modelMapper.map(planPlacedaum, PlanPlaceDTO.class);
+            loseTime = loseTime.plusHours(planPlaceDTOdaum.getPp_takeDate().getHour())
+                    .plusMinutes(planPlaceDTOdaum.getPp_takeDate().getMinute())
+                    .plusSeconds(planPlaceDTOdaum.getPp_takeDate().getSecond())
+                    .plusSeconds(1);
+            planPlaceRepository.deleteById(ppOrd);
+            planPlaceRepository.deleteById(planPlaceDTOdaum.getPpOrd());
+        } else{
+            Optional<PlanPlace> planPlaceprev = Optional.ofNullable(planPlaceRepository.findPrevId(planNo, ppOrd));
+            PlanPlaceDTO planPlaceDTOprev = modelMapper.map(planPlaceprev, PlanPlaceDTO.class);
+            loseTime = loseTime.plusHours(planPlaceDTOprev.getPp_takeDate().getHour())
+                    .plusMinutes(planPlaceDTOprev.getPp_takeDate().getMinute())
+                    .plusSeconds(planPlaceDTOprev.getPp_takeDate().getSecond())
+                    .minusSeconds(1);
+            planPlaceRepository.deleteById(ppOrd);
+            planPlaceRepository.deleteById(planPlaceDTOprev.getPpOrd());
+        }
 
         //교통정보에서 시간 가져와서 loseTime에 더하기
         //loseTime = 머무는 시간 + 이동 시간
-        List<TransportParent> transportParents = transportParentRepository.findByPpord(losePpOrd);
+        List<TransportParent> transportParents = transportParentRepository.findByPpord(ppOrd);
 
         List<TransportParentDTO> transportParentDTOS = transportParents.stream()
                 .map(transportParent -> modelMapper.map(transportParent, TransportParentDTO.class)).collect(Collectors.toList());
@@ -459,7 +480,7 @@ public class PlanServiceImpl implements PlanService {
 
             //모든 planPlace 데이터를 - loseTime 해주기
             planPlaceDTO.setPp_startDate(planPlaceDTO.getPp_startDate()
-                    .minusHours(loseTime.getMinute())
+                    .minusHours(loseTime.getHour())
                     .minusMinutes(loseTime.getMinute())
                     .minusSeconds(loseTime.getSecond()));
 
@@ -604,5 +625,193 @@ public class PlanServiceImpl implements PlanService {
             }
         }
         planPlaceRepository.deleteById(ppOrd);
+    }
+
+    @Override
+    public void updatePlanPlaceTime(Long planNo, Long ppOrd, LocalTime takeTime) {
+        //장소 정보 가져오기 및 변환
+        //loseTime = 머무는 시간
+        Optional<PlanPlace> planPlace1 = planPlaceRepository.findById(ppOrd);
+
+        PlanPlaceDTO planPlaceDTO1 = modelMapper.map(planPlace1, PlanPlaceDTO.class);
+
+
+        int loseHour = planPlaceDTO1.getPp_takeDate().getHour() - takeTime.getHour();
+        int loseMinute = planPlaceDTO1.getPp_takeDate().getHour() - takeTime.getHour();
+        int loseSecond = planPlaceDTO1.getPp_takeDate().getHour() - takeTime.getHour();
+
+
+        //지정된 장소 이후의 장소 정보 가져오기
+        List<PlanPlace> planPlaces = planPlaceRepository.findAllAfterId(planNo, ppOrd);
+
+        List<PlanPlaceDTO> planPlaceDTOS = planPlaces.stream()
+                .map(planPlace -> modelMapper.map(planPlace, PlanPlaceDTO.class)).collect(Collectors.toList());
+
+        //순환 참조 가능한 리스트로 전환
+        ListIterator<PlanPlaceDTO> PlanPlaceIterator = planPlaceDTOS.listIterator();
+
+        while (PlanPlaceIterator.hasNext()) {
+            PlanPlaceDTO planPlaceDTO = PlanPlaceIterator.next();
+
+            //NightToNight 1, 2 통합
+            if(planPlaceDTO.getNightToNight() == 1){
+                if(PlanPlaceIterator.hasNext()){
+                    PlanPlaceDTO planPlaceDTO2 = PlanPlaceIterator.next();
+                    //부모교통정보는 2번째 ppOrd를 참조하기 때문
+                    planPlaceDTO.setPpOrd(planPlaceDTO2.getPpOrd());
+                    //NightToNight가 1인 경우 NightToNight = 1이 오늘 보내는 시간 + 내일 보내는 시간 + 1초
+                    planPlaceDTO.setPp_takeDate(planPlaceDTO.getPp_takeDate().plusHours(planPlaceDTO2.getPp_takeDate().getHour()).plusMinutes(planPlaceDTO2.getPp_takeDate().getMinute()).plusSeconds(planPlaceDTO2.getPp_takeDate().getSecond()).plusSeconds(1));
+                    planPlaceDTO.setNightToNight((byte)0);
+                    //NightToNight가 2인 것을 제거
+                    PlanPlaceIterator.remove();
+                }
+            }
+
+            //모든 planPlace 데이터를 - loseTime 해주기
+            planPlaceDTO.setPp_startDate(planPlaceDTO.getPp_startDate()
+                    .minusHours(loseHour)
+                    .minusMinutes(loseMinute)
+                    .minusSeconds(loseSecond));
+
+            if(PlanPlaceIterator.hasNext()){
+                PlanPlaceDTO planPlaceDTON = PlanPlaceIterator.next();
+                //이전 장소의 출발 날짜 == 다음 장소의 출발 날짜
+                if (planPlaceDTO.getPp_startDate().toLocalDate() == planPlaceDTON.getPp_startDate().toLocalDate()) {
+                    PlanPlace planPlaced = modelMapper.map(planPlaceDTO, PlanPlace.class);
+                    planPlaceRepository.save(planPlaced);
+
+                    //교통 정보 조회
+                    List<TransportParent> TransportParents = transportParentRepository.findByPpord(planPlaceDTON.getPpOrd());
+
+                    List<TransportParentDTO> transportParentDTOList = TransportParents.stream()
+                            .map(transportParent -> modelMapper.map(transportParent, TransportParentDTO.class)).collect(Collectors.toList());
+
+                    //모든 교통 정보 - loseTime
+                    for (TransportParentDTO transportParentDTO : transportParentDTOList){
+                        transportParentDTO
+                                .setT_startDateTime(transportParentDTO.getT_startDateTime()
+                                .minusHours(loseHour)
+                                .minusMinutes(loseMinute)
+                                .minusSeconds(loseSecond));
+
+                        transportParentDTO
+                                .setT_goalDateTime(transportParentDTO.getT_goalDateTime()
+                                .minusHours(loseHour)
+                                .minusMinutes(loseMinute)
+                                .minusSeconds(loseSecond));
+                    }
+
+                    //장소 더하기
+                    //교통정보가 2개일 경우
+                    if(transportParentDTOList.size() == 2){
+                        TransportParentDTO transportParentDTOPrev = TransportParentDTO.builder()
+                                .tno(transportParentDTOList.get(0).getTno())
+                                .ppOrd(transportParentDTOList.get(0).getPpOrd())
+                                .isCar(transportParentDTOList.get(0).getIsCar()) // planReposi
+                                .t_method(transportParentDTOList.get(0).getT_method()) // planReposi
+                                .t_startDateTime(transportParentDTOList.get(0).getT_startDateTime()) // storeReposi
+                                .t_takeTime(transportParentDTOList.get(0).getT_takeTime()
+                                        .plusHours(transportParentDTOList.get(1).getT_takeTime().getHour())
+                                        .plusMinutes(transportParentDTOList.get(1).getT_takeTime().getMinute())
+                                        .plusSeconds(transportParentDTOList.get(1).getT_takeTime().getSecond())
+                                        .plusSeconds(1)) // storeReposi
+                                .t_goalDateTime(transportParentDTOList.get(1).getT_goalDateTime()) // storeReposi
+                                .writer(transportParentDTOList.get(0).getWriter()) // planReposi
+                                .NightToNight((byte) 0)
+                                .build();
+                        //출발 시간 == 도착시간
+                        LocalDateTime finalTime = transportParentDTOPrev.getT_startDateTime().withHour(23).withMinute(59)
+                                .withSecond(59);
+                        if(transportParentDTOPrev.getT_startDateTime().toLocalDate() == transportParentDTOPrev.getT_goalDateTime().toLocalDate()){
+                            TransportParent transportParent = modelMapper.map(transportParentDTOPrev, TransportParent.class);
+                            transportParentRepository.save(transportParent);
+                        //출발 시간 != 도착시간
+                        }else{
+                            transportParentDTOPrev.setT_goalDateTime(finalTime);
+                            TransportParent transportParentNext1 = modelMapper.map(transportParentDTOPrev, TransportParent.class);
+                            transportParentRepository.save(transportParentNext1);
+
+                            transportParentDTOPrev.setT_startDateTime(transportParentDTOList.get(1).getT_startDateTime()
+                                    .withHour(0)
+                                    .withMinute(0)
+                                    .withSecond(0));
+                            transportParentDTOPrev.setT_goalDateTime(transportParentDTOList.get(1).getT_goalDateTime());
+                            TransportParent transportParentNext2 = modelMapper.map(transportParentDTOPrev, TransportParent.class);
+                            transportParentRepository.save(transportParentNext2);
+                        }
+                    } else {
+                        TransportParentDTO transportParentDTOPrev = TransportParentDTO.builder()
+                                .tno(transportParentDTOList.get(0).getTno())
+                                .ppOrd(transportParentDTOList.get(0).getPpOrd())
+                                .isCar(transportParentDTOList.get(0).getIsCar())
+                                .t_method(transportParentDTOList.get(0).getT_method())
+                                .t_startDateTime(transportParentDTOList.get(0).getT_startDateTime())
+                                .t_takeTime((transportParentDTOList.get(0).getT_takeTime()))
+                                .t_goalDateTime(transportParentDTOList.get(0).getT_goalDateTime())
+                                .writer(transportParentDTOList.get(0).getWriter())
+                                .NightToNight((byte) 0)
+                                .build();
+                        //출발 시간 == 도착시간
+                        LocalDateTime finalTime = transportParentDTOPrev.getT_startDateTime().withHour(23).withMinute(59)
+                                .withSecond(59);
+                        if (transportParentDTOPrev.getT_startDateTime().toLocalDate() == transportParentDTOPrev.getT_goalDateTime().toLocalDate()) {
+                            TransportParent transportParent = modelMapper.map(transportParentDTOPrev, TransportParent.class);
+                            transportParentRepository.save(transportParent);
+                            //출발 시간 != 도착시간
+                        } else {
+                            transportParentDTOPrev.setT_goalDateTime(finalTime);
+                            TransportParent transportParentNext1 = modelMapper.map(transportParentDTOPrev, TransportParent.class);
+                            transportParentRepository.save(transportParentNext1);
+
+                            transportParentDTOPrev.setT_startDateTime(transportParentDTOList.get(1).getT_startDateTime()
+                                    .withHour(0)
+                                    .withMinute(0)
+                                    .withSecond(0));
+                            transportParentDTOPrev.setT_goalDateTime(transportParentDTOList.get(1).getT_goalDateTime());
+                            TransportParent transportParentNext2 = modelMapper.map(transportParentDTOPrev, TransportParent.class);
+                            transportParentRepository.save(transportParentNext2);
+                        }
+                    }
+                } else {
+
+                    LocalTime endTime = LocalTime.of(23, 59, 59);
+
+                    // 23:59:59 - 출발시간
+                    LocalTime prevTime = endTime.minusHours(planPlaceDTON.getPp_startDate().getHour())
+                            .minusMinutes(planPlaceDTON.getPp_startDate().getMinute())
+                            .minusSeconds(planPlaceDTON.getPp_startDate().getSecond());
+                    // 머무는 시간 - prevTime - 1초
+                    LocalTime nextTime = planPlaceDTO.getPp_takeDate().minusHours(prevTime.getHour())
+                            .minusMinutes(prevTime.getMinute()).minusSeconds(prevTime.getSecond()).minusSeconds(1);
+
+                    PlanPlace planplace1 = PlanPlace.builder()
+                            .ppOrd(planPlaceDTO.getPpOrd())
+                            .pp_title(planPlaceDTO.getPp_title())
+                            .pp_startAddress(planPlaceDTO.getPp_startAddress()) // planReposi
+                            .pp_startDate(planPlaceDTO.getPp_startDate()) // planReposi
+                            .pp_takeDate(prevTime) // storeReposi
+                            .pp_mapx(planPlaceDTO.getPp_mapx()) // storeReposi
+                            .pp_mapy(planPlaceDTO.getPp_mapy()) // storeReposi
+                            .planSet(new PlanSet(planNo)) // planReposi
+                            .NightToNight((byte) 1)
+                            .build();
+                    planPlaceRepository.save(planplace1).getPpOrd();
+
+                    PlanPlace planplace2 = PlanPlace.builder()
+                            .ppOrd(planPlaceDTO.getPpOrd())
+                            .pp_title(planPlaceDTO.getPp_title())
+                            .pp_startAddress(planPlaceDTO.getPp_startAddress()) // planReposi
+                            .pp_startDate(planPlaceDTON.getPp_startDate().plusDays(1).withHour(0).withMinute(0).withSecond(0)) // planReposi
+                            .pp_takeDate(nextTime) // storeReposi
+                            .pp_mapx(planPlaceDTO.getPp_mapx()) // storeReposi
+                            .pp_mapy(planPlaceDTO.getPp_mapy()) // storeReposi
+                            .planSet(new PlanSet(planNo)) // planReposi
+                            .NightToNight((byte) 2)
+                            .build();
+
+                    planPlaceRepository.save(planplace2).getPpOrd();
+                }
+            }
+        }
     }
 }

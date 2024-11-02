@@ -11,6 +11,7 @@ import org.zerock.b01.dto.Search.GetXYRequest;
 import org.zerock.b01.dto.Search.GetXYResponse;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +35,9 @@ public interface PlanService {
 
     void removePlanSet(Long planNo);
 
-    void removePlanPlace(Long planNom, Long ppOrd);
+    void removePlanPlace(Long planNo, Long ppOrd);
+
+    void updatePlanPlaceTime(Long planNo, Long ppOrd, LocalTime takeTime);
 
     default PlanSet dtoToEntity(PlanSetDTO planSetDTO) {
 

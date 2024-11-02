@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, time
 
 from selenium.webdriver.chrome.service import Service
-from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean, ForeignKey, BigInteger, DateTime, Time
+from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean, ForeignKey, BigInteger, DateTime, Time, SmallInteger
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import declarative_base
 from selenium import webdriver 
@@ -860,14 +860,14 @@ async def transport_add(Plan_DTO: PlanDTO):
     class TransportParentModel(Base):
         __tablename__ = 'transportParent'
         tno = Column(BigInteger, primary_key=True, autoincrement=True)
-        ppOrd = Column(BigInteger, ForeignKey('plan_place.ppOrd'))
+        pp_ord = Column(BigInteger, ForeignKey('plan_place.ppOrd'))
         writer = Column(String(50))
-        isCar = Column(Boolean)  # 추가 데이터 예시
+        is_car = Column(Boolean)  # 추가 데이터 예시
         t_method = Column(String(13))
-        t_startDateTime = Column(DateTime)
-        t_takeTime = Column(Time)
-        t_goalDateTime = Column(DateTime)
-        NightToNight = Column(Boolean)
+        t_start_date_time = Column(DateTime)
+        t_take_time = Column(Time)
+        t_goal_date_time = Column(DateTime)
+        night_to_night = Column(SmallInteger)
 
         children = relationship("TransportChildModel", back_populates="parent")
 
@@ -876,7 +876,7 @@ async def transport_add(Plan_DTO: PlanDTO):
         tord = Column(BigInteger, primary_key=True, autoincrement=True)
         tno = Column(BigInteger, ForeignKey('transportParent.tno'))
         c_method = Column(String(36))
-        c_takeTime = Column(Time)
+        c_take_time = Column(Time)
 
         parent = relationship("TransportParentModel", back_populates="children")
 
@@ -892,12 +892,12 @@ async def transport_add(Plan_DTO: PlanDTO):
             TransportParent_data = [
                 {
                     'writer': writer,
-                    'isCar': isCar,
+                    'is_car': isCar,
                     't_method': t_method,
-                    't_startDateTime': t_startDateTime,
-                    't_takeTime': t_takeTime,
-                    't_goalDateTime': t_goalDateTime,
-                    'NightToNight' : False
+                    't_start_date_time': t_startDateTime,
+                    't_take_time': t_takeTime,
+                    't_goal_date_time': t_goalDateTime,
+                    'night_to_night' : 0
                 }
             ]
             # 세션에 추가
@@ -909,12 +909,12 @@ async def transport_add(Plan_DTO: PlanDTO):
             TransportParent_data = [
                 {
                     'writer': writer,
-                    'isCar': isCar,
+                    'is_car': isCar,
                     't_method': t_method,
-                    't_startDateTime': t_startDateTime,
-                    't_takeTime': t_takeTime,
-                    't_goalDateTime': t_startDateTime.replace(hour=23, minute=59, second = 59),
-                    'NightToNight': True
+                    't_start_date_time': t_startDateTime,
+                    't_take_time': t_takeTime,
+                    't_goal_date_time': t_startDateTime.replace(hour=23, minute=59, second = 59),
+                    'night_to_night': 1
                 }
             ]
             # 세션에 추가
@@ -924,12 +924,12 @@ async def transport_add(Plan_DTO: PlanDTO):
             TransportParent_data = [
                 {
                     'writer': writer,
-                    'isCar': isCar,
+                    'is_car': isCar,
                     't_method': t_method,
-                    't_startDateTime': t_goalDateTime.replace(hour=23, minute=59, second = 59),
-                    't_takeTime': t_takeTime,
-                    't_goalDateTime': t_goalDateTime,
-                    'NightToNight': True
+                    't_start_date_time': t_goalDateTime.replace(hour=0, minute=0, second = 0),
+                    't_take_time': t_takeTime,
+                    't_goal_date_time': t_goalDateTime,
+                    'night_to_night': 2
                 }
             ]
             # 세션에 추가
@@ -946,7 +946,7 @@ async def transport_add(Plan_DTO: PlanDTO):
                 {
                     'tno': tno,
                     'c_method': c_method,
-                    'c_takeTime': c_takeTime,
+                    'c_take_time': c_takeTime,
                 }
                 for c_method, c_takeTime
                 in zip(c_methodList, c_timeList)

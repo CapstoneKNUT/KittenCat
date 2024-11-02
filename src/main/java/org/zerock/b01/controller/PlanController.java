@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -281,6 +282,20 @@ public class PlanController {
 
     @DeleteMapping(value = "/{planNo}/planplace/{ppOrd}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Long>> removePlanPlace(@PathVariable Long planNo, @PathVariable Long ppOrd) {
+        try {
+            planService.removePlanPlace(planNo, ppOrd);
+
+            Map<String, Long> resultMap = new HashMap<>();
+            resultMap.put("ppOrd", ppOrd);
+
+            return ResponseEntity.ok(resultMap);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+    @PutMapping(value = "/{planNo}/planplace/{ppOrd}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, Long>> updatePlanPlaceTime(@PathVariable Long planNo, @PathVariable Long ppOrd, @RequestParam LocalTime takeTime){
         try {
             planService.removePlanPlace(planNo, ppOrd);
 
