@@ -1,9 +1,9 @@
-import HeaderPage from 'C:/Users/taewan/OneDrive/바탕 화면/KittenCat-KittenCat/src/main/frontend/src/components/menus/Header.js';
+import HeaderPage from './components/menus/Header.js';
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Lists from 'C:/Users/taewan/OneDrive/바탕 화면/KittenCat-KittenCat/src/main/frontend/src/pages/place/Lists.js';
-import Main from 'C:/Users/taewan/OneDrive/바탕 화면/KittenCat-KittenCat/src/main/frontend/src/pages/Main/Main.js';
-import Read from 'C:/Users/taewan/OneDrive/바탕 화면/KittenCat-KittenCat/src/main/frontend/src/pages/place/Read.js';
+import Lists from './pages/place/Lists.js';
+import Main from './pages/Main/Main.js';
+import Read from './pages/place/Read.js';
 import Store from './Store/Store.js';
 
 function App() {
