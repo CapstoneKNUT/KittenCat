@@ -22,6 +22,10 @@ public class PlanSet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long planNo;
 
+    @Column(length = 100, nullable = false)
+    private String title;
+
+    @Column(nullable = false)
     private Boolean isCar;
 
     @Column(length = 50, nullable = false)
