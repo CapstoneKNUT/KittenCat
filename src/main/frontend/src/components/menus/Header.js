@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 // Menubar.js
 import profileimages from './회원.jpg';
 import settingimages from './설정.jpg';
-import '../src/main/frontend/src/components/menus/Header.css'
+import '../src/components/menus/Header.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min'; // 메뉴바 전용 CSS 파일 (선택 사항)
 
