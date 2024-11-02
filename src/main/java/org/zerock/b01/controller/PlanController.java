@@ -295,9 +295,9 @@ public class PlanController {
     }
 
     @PutMapping(value = "/{planNo}/planplace/{ppOrd}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, Long>> updatePlanPlaceTime(@PathVariable Long planNo, @PathVariable Long ppOrd, @RequestParam LocalTime takeTime){
+    public ResponseEntity<Map<String, Long>> updatePlanPlaceTime(@PathVariable Long planNo, @PathVariable Long ppOrd, @RequestBody LocalTime takeTime){
         try {
-            planService.removePlanPlace(planNo, ppOrd);
+            planService.updatePlanPlaceTime(planNo, ppOrd, takeTime);
 
             Map<String, Long> resultMap = new HashMap<>();
             resultMap.put("ppOrd", ppOrd);
