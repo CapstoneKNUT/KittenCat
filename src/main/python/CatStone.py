@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta, time as dt_time
 
 from selenium.webdriver.chrome.service import Service
 from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean, ForeignKey, BigInteger, DateTime, Time, SmallInteger
@@ -23,7 +23,10 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
+
+import time as time_module  # time 모듈을 time_module로 임포트
+
 
 class PlaceSearchDTO(BaseModel):
     p_area: Optional[str]
@@ -32,19 +35,20 @@ class PlaceSearchDTO(BaseModel):
     p_count: Optional[int]
     p_keyword: Optional[str]
 
-class PlanDTO(BaseModel):
+class TransTimeDTO(BaseModel):
     writer: Optional[str]
-    t_startDateTime: Optional[datetime]
+    t_startdatetime: Optional[str]
     start_location: Optional[str]
     arrive_location: Optional[str]
     isCar: Optional[bool]
+
 
 # POST 요청을 받을 엔드포인트 설정
 @app.post("/place/list")
 async def get_place_list(place_search_dto: PlaceSearchDTO):
     p_count = place_search_dto.p_count or 10
     # 받은 데이터를 처리하거나 가공
-    search = f"{place_search_dto.p_area}{ place_search_dto.p_subArea}{ place_search_dto.p_category}{ place_search_dto.p_keyword}".strip()
+    search = f"{place_search_dto.p_area + ' '}{place_search_dto.p_subArea + ' '}{place_search_dto.p_category + ' '}{place_search_dto.p_keyword}".strip()
 
     list_url = f'https://map.naver.com/p/search/{search}?c=10.00,0,0,0,dh'
 
@@ -90,7 +94,7 @@ async def get_place_list(place_search_dto: PlaceSearchDTO):
         wd.switch_to.default_content()
         wd.switch_to.frame('searchIframe')
         time.sleep(2)
-        page_down(eleCount)
+        page_down(eleCount+1)
         time.sleep(2)
 
         for j in range(1, eleCount):
@@ -369,12 +373,16 @@ async def get_place_list(place_search_dto: PlaceSearchDTO):
     })
 
 @app.post("/plan/transport/add")
-async def transport_add(Plan_DTO: PlanDTO):
+async def transport_add(Plan_DTO: TransTimeDTO):
     writer = Plan_DTO.writer
-    t_startDateTime = Plan_DTO.t_startDateTime
+    t_startdatetime = Plan_DTO.t_startdatetime
     start_location = Plan_DTO.start_location
     arrive_location = Plan_DTO.arrive_location
     isCar = Plan_DTO.isCar
+    getTNumber = None
+
+    t_startdatetime = datetime.fromisoformat(t_startdatetime)  # 문자열을 datetime으로 변환
+    print("Parsed t_startDateTime:", t_startdatetime)
 
     list_url = f'https://map.naver.com/p/directions/-/-/-/transit?c=13.00,0,0,0,dh'
 
@@ -386,7 +394,7 @@ async def transport_add(Plan_DTO: PlanDTO):
     c_methodList = []
     c_timeList = []
 
-    def takeTime(goTime, goalTime, t_startDateTime):
+    def takeTime(goTime, goalTime, t_startdatetime):
         if hasattr(goTime, 'text'):
             goTime = goTime.text
         if hasattr(goalTime, 'text'):
@@ -403,8 +411,8 @@ async def transport_add(Plan_DTO: PlanDTO):
         else:
             t_goalHour = t_goalHour
 
-        t_takeHour = t_goalHour - t_startDateTime.hour
-        t_takeMinute = t_goalMinute - t_startDateTime.minute
+        t_takeHour = t_goalHour - t_startdatetime.hour
+        t_takeMinute = t_goalMinute - t_startdatetime.minute
 
         if t_takeMinute < 0:
             t_takeHour = t_takeHour - 1
@@ -434,7 +442,7 @@ async def transport_add(Plan_DTO: PlanDTO):
             tc_takeMinute = int(tc_takeMinute)
         else:
             tc_takeMinute = 0
-        c_time = time(hour=tc_takeHour, minute=tc_takeMinute)
+        c_time = dt_time(hour=tc_takeHour, minute=tc_takeMinute)  # dt_time을 사용
         c_timeList.append(c_time)
         return c_timeList
 
@@ -489,22 +497,24 @@ async def transport_add(Plan_DTO: PlanDTO):
                                     (By.XPATH, '//*[@id="section_content"]/div/div[2]/div[2]/ul/li[1]')),
                             )
                         )
+
                     except:
                         start.send_keys(Keys.ENTER)
                         try:
                             WebDriverWait(wd, 1).until(
                                 EC.any_of(
-                                    EC.presence_of_element_located(
-                                        (By.XPATH, '//*[@id="section_content"]/div/div[2]/div[2]/ul/li[1]')),
+                                    EC.presence_of_element_located((By.XPATH,
+                                                                            '//*[@id="section_content"]/div/div[2]/div[2]/ul/li[1]')),
                                 )
                             )
+
                         except:
                             start.send_keys(Keys.ENTER)
                             try:
                                 WebDriverWait(wd, 1).until(
                                     EC.any_of(
-                                        EC.presence_of_element_located(
-                                            (By.XPATH, '//*[@id="section_content"]/div/div[2]/div[2]/ul/li[1]')),
+                                        EC.presence_of_element_located((By.XPATH,
+                                                                                '//*[@id="section_content"]/div/div[2]/div[2]/ul/li[1]')),
                                     )
                                 )
 
@@ -513,8 +523,8 @@ async def transport_add(Plan_DTO: PlanDTO):
                                 try:
                                     WebDriverWait(wd, 1).until(
                                         EC.any_of(
-                                            EC.presence_of_element_located(
-                                                (By.XPATH, '//*[@id="section_content"]/div/div[2]/div[2]/ul/li[1]')),
+                                            EC.presence_of_element_located((By.XPATH,
+                                                                                    '//*[@id="section_content"]/div/div[2]/div[2]/ul/li[1]')),
                                         )
                                     )
 
@@ -524,7 +534,7 @@ async def transport_add(Plan_DTO: PlanDTO):
                                         WebDriverWait(wd, 1).until(
                                             EC.any_of(
                                                 EC.presence_of_element_located((By.XPATH,
-                                                                                '//*[@id="section_content"]/div/div[2]/div[2]/ul/li[1]')),
+                                                                                        '//*[@id="section_content"]/div/div[2]/div[2]/ul/li[1]')),
                                             )
                                         )
 
@@ -666,8 +676,8 @@ async def transport_add(Plan_DTO: PlanDTO):
             else:
                 t_takeMinute = 0
 
-            t_goalHour = t_startDateTime.hour + t_takeHour
-            t_goalMinute = t_startDateTime.minute + t_takeMinute
+            t_goalHour = t_startdatetime.hour + t_takeHour
+            t_goalMinute = t_startdatetime.minute + t_takeMinute
 
         else:
             # 차가 없음
@@ -699,12 +709,12 @@ async def transport_add(Plan_DTO: PlanDTO):
                 # 대중교통 이용
                 t_method = "대중교통"
                 # 대중교통 시간 설정
-                tx_startMinute = (t_startDateTime.minute + 9) // 10
+                tx_startMinute = (t_startdatetime.minute + 9) // 10
                 if tx_startMinute == 6:
-                    tx_startHour = t_startDateTime.hour + 1
+                    tx_startHour = t_startdatetime.hour + 1
                     tx_startMinute = 0
                 else:
-                    tx_startHour = t_startDateTime.hour
+                    tx_startHour = t_startdatetime.hour
                     # 대중교통 시간설정 창 열기
                     WebDriverWait(wd, 15).until(
                         EC.any_of(
@@ -783,35 +793,35 @@ async def transport_add(Plan_DTO: PlanDTO):
                         WebDriverWait(wd, 15).until(
                             EC.any_of(
                                 EC.presence_of_element_located((By.CSS_SELECTOR,
-                                                                '#sub_panel div.panel_content div.sc-1ngh13j.cupLro li:nth-child(1) div.detail_step_icon_area span.blind')),
+                                                                '//*[@id="sub_panel"]/div/div[1]/div/div/div[2]/ol/li[1]/div[2]/span')),
                             )
                         )
                     except:
                         print("대중교통 팝업 창 안 뜸 오류")
                     else:
-                        li_elements = wd.find_elements(By.CSS_SELECTOR,
-                                                       '#sub_panel > div > div.panel_content > div > div > div.sc-1ngh13j.cupLro > ol > li')
+                        li_elements = wd.find_elements(By.XPATH,
+                                                       '//*[@id="sub_panel"]/div/div[1]/div/div/div[2]/ol/li')
                         for i in range(1, len(li_elements)):
-                            c_method = wd.find_element(By.CSS_SELECTOR,
-                                                       '#sub_panel div.panel_content div.sc-1ngh13j.cupLro li:nth-child(%d) div.detail_step_icon_area span.blind' % i)
+                            c_method = wd.find_element(By.XPATH,
+                                                       '//*[@id="sub_panel"]/div/div[1]/div/div/div[2]/ol/li[%d]/div[1]/div/em/span' % i)
                             wd.execute_script("arguments[0].scrollIntoView();", c_method)
 
                             c_methodList.append(c_method.text)
 
-                            TimeSet = wd.find_element(By.CSS_SELECTOR,
-                                                      '#sub_panel div.panel_content div.sc-1ngh13j.cupLro li:nth-child(%d) div.detail_step_icon_area strong.time_travel' % i)
+                            TimeSet = wd.find_element(By.XPATH,
+                                                      '//*[@id="sub_panel"]/div/div[1]/div/div/div[2]/ol/li[%d]/div[1]/strong' % i)
 
                             c_timeList = childrenTakeTime(TimeSet)
 
-                        goalTime = wd.find_element(By.CSS_SELECTOR,
-                                                   '#sub_panel div.panel_content div.sc-1ngh13j.cupLro li:nth-child(%d) div time' % len(
+                        goalTime = wd.find_element(By.XPATH,
+                                                   '//*[@id="sub_panel"]/div/div[1]/div/div/div[2]/ol/li[%d]/div/time' % len(
                                                        li_elements))
                 else:
                     try:
                         WebDriverWait(wd, 15).until(
                             EC.any_of(
                                 EC.presence_of_element_located(
-                                    (By.CSS_SELECTOR, '#sub_panel div.panel_content div.sc-1ngh13j.cupLro')),
+                                    (By.XPATH, '//*[@id="sub_panel"]/div/div[1]/div/div/div[2]')),
                             )
                         )
                     except:
@@ -819,30 +829,30 @@ async def transport_add(Plan_DTO: PlanDTO):
                     else:
                         goTime = wd.find_element(By.CSS_SELECTOR,
                                                  '#tab_pubtrans_directions ul:nth-child(1) li.sc-1tj2a62.is_selected div.base_info')
-                        li_elements = wd.find_elements(By.CSS_SELECTOR,
-                                                       '#sub_panel > div > div.panel_content > div > div > div.sc-1ngh13j.cupLro > ol > li')
+                        li_elements = wd.find_elements(By.XPATH,
+                                                       '//*[@id="sub_panel"]/div/div[1]/div/div/div[2]/ol/li')
                         for i in range(1, len(li_elements)):
                             try:
-                                c_method = wd.find_element(By.CSS_SELECTOR,
-                                                           '#sub_panel div.panel_content div.sc-1ngh13j.cupLro li:nth-child(%d) div.detail_step_icon_area span.blind' % i)
+                                c_method = wd.find_element(By.XPATH,
+                                                           '//*[@id="sub_panel"]/div/div[1]/div/div/div[2]/ol/li[%d]/div[1]/div/em/span' % i)
                             except:
                                 continue
 
                             wd.execute_script("arguments[0].scrollIntoView();", c_method)
                             c_methodList.append(c_method.text)
 
-                            TimeSet = wd.find_element(By.CSS_SELECTOR,
-                                                      '#sub_panel div.panel_content div.sc-1ngh13j.cupLro li:nth-child(%d) div.detail_step_icon_area strong.time_travel' % i)
+                            TimeSet = wd.find_element(By.XPATH,
+                                                      '//*[@id="sub_panel"]/div/div[1]/div/div/div[2]/ol/li[%d]/div[1]/strong' % i)
 
                             c_timeList = childrenTakeTime(TimeSet)
 
-                        goalTime = wd.find_element(By.CSS_SELECTOR,
-                                                   '#sub_panel div.panel_content div.sc-1ngh13j.cupLro li:nth-child(%d) div time' % len(
+                        goalTime = wd.find_element(By.XPATH,
+                                                   '//*[@id="sub_panel"]/div/div[1]/div/div/div[2]/ol/li[%d]/div/time' % len(
                                                        li_elements))
-            t_takeHour, t_takeMinute, t_goalHour, t_goalMinute = takeTime(goTime, goalTime, t_startDateTime)
-    t_takeTime = time(hour=t_takeHour, minute=t_takeMinute)
-    t_goalDate = t_startDateTime.date()
-    t_goalTime = time(hour=0, minute=0)
+            t_takeHour, t_takeMinute, t_goalHour, t_goalMinute = takeTime(goTime, goalTime, t_startdatetime)
+    t_takeTime = dt_time(hour=t_takeHour, minute=t_takeMinute)
+    t_goalDate = t_startdatetime.date()
+    t_goalTime = dt_time(hour=0, minute=0)
     t_goalDateTime = datetime.combine(t_goalDate, t_goalTime)
     goalDelta = timedelta(hours=t_goalHour, minutes=t_goalMinute)
     t_goalDateTime = t_goalDateTime + goalDelta
@@ -857,24 +867,50 @@ async def transport_add(Plan_DTO: PlanDTO):
 
     Base = declarative_base()
 
+    class PlanSetModel(Base):
+        __tablename__ = 'plan_set'
+        plan_no = Column(BigInteger, primary_key=True, autoincrement=True)
+        is_car = Column(Boolean)
+        ps_start_date = Column(DateTime)
+        writer = Column(String(50))
+        title = Column(String(100))
+
+        children = relationship("PlanPlaceModel", back_populates="parent")
+
+    class PlanPlaceModel(Base):
+        __tablename__ = 'plan_place'
+        pp_ord = Column(BigInteger, primary_key=True, autoincrement=True)
+        pp_mapx = Column(Integer)
+        pp_mapy = Column(Integer)
+        pp_start_address = Column(String)
+        pp_start_date = Column(DateTime)
+        pp_take_date = Column(Time)
+        plan_no = Column(BigInteger, ForeignKey('plan_set.plan_no'))
+        pp_title = Column(String)
+        tp_night_to_night = Column(SmallInteger)
+
+        parent = relationship("PlanSetModel", back_populates="children")
+        children = relationship("TransportParentModel", back_populates="parent")
+
     class TransportParentModel(Base):
-        __tablename__ = 'transportParent'
+        __tablename__ = 'transportparent'
         tno = Column(BigInteger, primary_key=True, autoincrement=True)
-        pp_ord = Column(BigInteger, ForeignKey('plan_place.ppOrd'))
+        pp_ord = Column(BigInteger, ForeignKey('plan_place.pp_ord'))
         writer = Column(String(50))
         is_car = Column(Boolean)  # 추가 데이터 예시
         t_method = Column(String(13))
         t_start_date_time = Column(DateTime)
         t_take_time = Column(Time)
         t_goal_date_time = Column(DateTime)
-        night_to_night = Column(SmallInteger)
+        tp_night_to_night = Column(SmallInteger)
 
+        parent = relationship("PlanPlaceModel", back_populates="children")
         children = relationship("TransportChildModel", back_populates="parent")
 
     class TransportChildModel(Base):
-        __tablename__ = 'transportChild'
+        __tablename__ = 'transportchild'
         tord = Column(BigInteger, primary_key=True, autoincrement=True)
-        tno = Column(BigInteger, ForeignKey('transportParent.tno'))
+        tno = Column(BigInteger, ForeignKey('transportparent.tno'))
         c_method = Column(String(36))
         c_take_time = Column(Time)
 
@@ -887,17 +923,17 @@ async def transport_add(Plan_DTO: PlanDTO):
     # 데이터베이스 모델 정의
 
     try:
-        if t_startDateTime.date() == t_goalDateTime.date():
+        if t_startdatetime.date() == t_goalDateTime.date():
             # 데이터 삽입
             TransportParent_data = [
                 {
                     'writer': writer,
                     'is_car': isCar,
                     't_method': t_method,
-                    't_start_date_time': t_startDateTime,
+                    't_start_date_time': t_startdatetime,
                     't_take_time': t_takeTime,
                     't_goal_date_time': t_goalDateTime,
-                    'night_to_night' : 0
+                    'tp_night_to_night' : 0
                 }
             ]
             # 세션에 추가
@@ -911,10 +947,10 @@ async def transport_add(Plan_DTO: PlanDTO):
                     'writer': writer,
                     'is_car': isCar,
                     't_method': t_method,
-                    't_start_date_time': t_startDateTime,
+                    't_start_date_time': t_startdatetime,
                     't_take_time': t_takeTime,
-                    't_goal_date_time': t_startDateTime.replace(hour=23, minute=59, second = 59),
-                    'night_to_night': 1
+                    't_goal_date_time': t_startdatetime.replace(hour=23, minute=59, second = 59),
+                    'tp_night_to_night': 1
                 }
             ]
             # 세션에 추가
@@ -929,7 +965,7 @@ async def transport_add(Plan_DTO: PlanDTO):
                     't_start_date_time': t_goalDateTime.replace(hour=0, minute=0, second = 0),
                     't_take_time': t_takeTime,
                     't_goal_date_time': t_goalDateTime,
-                    'night_to_night': 2
+                    'tp_night_to_night': 2
                 }
             ]
             # 세션에 추가

@@ -4,7 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.zerock.b01.naver.dto.DrivingRequest;
+import org.zerock.b01.dto.Search.DrivingRequest;
 import org.zerock.b01.naver.dto.DrivingResponse;
 import org.zerock.b01.naver.dto.SearchLocalReq;
 import org.zerock.b01.naver.dto.SearchLocalRes;
@@ -97,8 +97,7 @@ public class NaverClient {
                         int responseCode = con.getResponseCode();
                         BufferedReader br;
                         if (responseCode == 200) {
-                                br = new BufferedReader(
-                                                new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8));
+                                br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8));
                         } else {
                                 br = new BufferedReader(new InputStreamReader(con.getErrorStream()));
                         }

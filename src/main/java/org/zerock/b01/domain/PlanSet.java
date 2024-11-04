@@ -32,7 +32,7 @@ public class PlanSet {
     private String writer;
 
     @Column(nullable = false)
-    private LocalDateTime startDate;
+    private LocalDateTime ps_startDate;
 
     @OneToMany(mappedBy = "planSet", cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, orphanRemoval = true)
     @Builder.Default

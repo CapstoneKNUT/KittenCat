@@ -1,9 +1,6 @@
 package org.zerock.b01.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -30,11 +27,11 @@ public class PlanPlace {
 
     private LocalTime pp_takeDate;
 
-    private Float pp_mapx;
+    private Double pp_mapx;
 
-    private Float pp_mapy;
+    private Double pp_mapy;
 
-    private Byte NightToNight;
+    private Byte pp_NightToNight;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "planNo")

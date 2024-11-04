@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.zerock.b01.domain.PlanPlace;
 import org.zerock.b01.domain.PlanSet;
@@ -43,7 +45,7 @@ public class PlanController {
         return ResponseEntity.ok().build();
     }
 
-    // 게시물 등록 화민
+    // 게시물 등록 화면
     @GetMapping("/register/{planNo}")
     public ResponseEntity<Void> registerGET(@PathVariable Long planNo) {
         return ResponseEntity.ok().build();
@@ -59,6 +61,7 @@ public class PlanController {
     }
 
     // 찜목록에서 가져와 일정표에 넣기
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @PostMapping(value = "/{planNo}/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, List<Long>>> registerPlanPlaceAdd(@RequestBody PlanPlaceBodyDTO planPlaceBodyDTO,
             @PathVariable Long planNo) {
@@ -80,8 +83,8 @@ public class PlanController {
 
         GetXYResponse.Address firstAddress = result.getAddresses().get(0);
 
-        Float mapx = Float.parseFloat(firstAddress.getX());
-        Float mapy = Float.parseFloat(firstAddress.getY());
+        Double mapx = Double.parseDouble(firstAddress.getX());
+        Double mapy = Double.parseDouble(firstAddress.getY());
 
         log.info("mapx: {}, mapy: {}", mapx, mapy);
 
@@ -90,105 +93,105 @@ public class PlanController {
         PlanPlace planplace;
 
         // 장소 저장
+        // 이전에 등록된 장소가 없을 경우
         if (planPlace == null) {
             // 출발일 == (출발일시 + 머무는 시간)
-            if (planSetDTO.getStartDate().toLocalDate() == planSetDTO.getStartDate()
-                    .plusHours(planPlaceBodyDTO.getTakeDate().getHour())
-                    .plusMinutes(planPlaceBodyDTO.getTakeDate().getMinute()).toLocalDate()) {
+            if (planSetDTO.getPs_startDate().toLocalDate() == planSetDTO.getPs_startDate()
+                    .plusHours(planPlaceBodyDTO.getTakeTime().getHour())
+                    .plusMinutes(planPlaceBodyDTO.getTakeTime().getMinute())
+                    .plusSeconds(planPlaceBodyDTO.getTakeTime().getSecond()).toLocalDate()) {
                 planplace = PlanPlace.builder()
                         .pp_title(storeDTO.getP_name())
                         .pp_startAddress(Address) // planReposi
-                        .pp_startDate(planSetDTO.getStartDate()) // planReposi
-                        .pp_takeDate(planPlaceBodyDTO.getTakeDate()) // storeReposi
+                        .pp_startDate(planSetDTO.getPs_startDate()) // planReposi
+                        .pp_takeDate(planPlaceBodyDTO.getTakeTime()) // storeReposi
                         .pp_mapx(mapx) // storeReposi
                         .pp_mapy(mapy) // storeReposi
                         .planSet(new PlanSet(planNo)) // planReposi
-                        .NightToNight((byte) 0)
+                        .pp_NightToNight((byte) 0)
                         .build();
                 log.info("planplace 초기화 확인 : {}", planplace);
 
                 ppOrdList.add(planPlaceRepository.save(planplace).getPpOrd());
 
-                return ResponseEntity.ok(Map.of("ppOrd", ppOrdList));
             } else {
                 LocalTime endTime = LocalTime.of(23, 59, 59);
 
                 // 23:59:59 - 출발시간
-                LocalTime prevTime = endTime.minusHours(planSetDTO.getStartDate().getHour())
-                        .minusMinutes(planSetDTO.getStartDate().getMinute())
-                        .minusSeconds(planSetDTO.getStartDate().getSecond());
+                LocalTime prevTime = endTime.minusHours(planSetDTO.getPs_startDate().getHour())
+                        .minusMinutes(planSetDTO.getPs_startDate().getMinute())
+                        .minusSeconds(planSetDTO.getPs_startDate().getSecond());
                 // 머무는 시간 - prevTime - 1초
-                LocalTime nextTime = planPlaceBodyDTO.getTakeDate().minusHours(prevTime.getHour())
+                LocalTime nextTime = planPlaceBodyDTO.getTakeTime().minusHours(prevTime.getHour())
                         .minusMinutes(prevTime.getMinute()).minusSeconds(prevTime.getSecond()).minusSeconds(1);
 
                 PlanPlace planplace1 = PlanPlace.builder()
                         .pp_title(storeDTO.getP_name())
                         .pp_startAddress(Address) // planReposi
-                        .pp_startDate(planSetDTO.getStartDate()) // planReposi
+                        .pp_startDate(planSetDTO.getPs_startDate()) // planReposi
                         .pp_takeDate(prevTime) // storeReposi
                         .pp_mapx(mapx) // storeReposi
                         .pp_mapy(mapy) // storeReposi
                         .planSet(new PlanSet(planNo)) // planReposi
-                        .NightToNight((byte) 1)
+                        .pp_NightToNight((byte) 1)
                         .build();
                 ppOrdList.add(planPlaceRepository.save(planplace1).getPpOrd());
 
                 PlanPlace planplace2 = PlanPlace.builder()
                         .pp_title(storeDTO.getP_name())
                         .pp_startAddress(Address) // planReposi
-                        .pp_startDate(planSetDTO.getStartDate().plusDays(1).withHour(0).withMinute(0).withSecond(0)) // planReposi
+                        .pp_startDate(planSetDTO.getPs_startDate().plusDays(1).withHour(0).withMinute(0).withSecond(0)) // planReposi
                         .pp_takeDate(nextTime) // storeReposi
                         .pp_mapx(mapx) // storeReposi
                         .pp_mapy(mapy) // storeReposi
                         .planSet(new PlanSet(planNo)) // planReposi
-                        .NightToNight((byte) 2)
+                        .pp_NightToNight((byte) 2)
                         .build();
                 ppOrdList.add(planPlaceRepository.save(planplace2).getPpOrd());
-                return ResponseEntity.ok(Map.of("ppOrd", ppOrdList));
             }
+            return ResponseEntity.ok(Map.of("ppOrd", ppOrdList));
         } else {
+        //두번째 이상의 저장일 경우
             Map<String, Object> timeResult = planService.startTime(planNo, Address, mapx, mapy, planSetDTO.getWriter());
             // Map에서 꺼낼 때 필요한 형으로 캐스팅
             LocalDateTime startTime = (LocalDateTime) timeResult.get("pp_startDate");
             Integer getTNumber = (Integer) timeResult.get("getTNumber");
 
             // 장소 저장
-            if (startTime.toLocalDate() == startTime.plusHours(planPlaceBodyDTO.getTakeDate().getHour())
-                    .plusMinutes(planPlaceBodyDTO.getTakeDate().getMinute())
-                    .plusSeconds(planPlaceBodyDTO.getTakeDate().getSecond()).toLocalDate()) {
+            if (startTime.toLocalDate() == startTime.plusHours(planPlaceBodyDTO.getTakeTime().getHour())
+                    .plusMinutes(planPlaceBodyDTO.getTakeTime().getMinute())
+                    .plusSeconds(planPlaceBodyDTO.getTakeTime().getSecond()).toLocalDate()) {
                 planplace = PlanPlace.builder()
                         .pp_title(storeDTO.getP_name())
                         .pp_startAddress(Address)
                         .pp_startDate(startTime)
-                        .pp_takeDate(planPlaceBodyDTO.getTakeDate())
+                        .pp_takeDate(planPlaceBodyDTO.getTakeTime())
                         .pp_mapx(mapx)
                         .pp_mapy(mapy)
                         .planSet(new PlanSet(planNo))
-                        .NightToNight((byte) 0)
+                        .pp_NightToNight((byte) 0)
                         .build();
 
                 log.info("planplace 초기화 확인 : {}", planplace);
 
                 ppOrdList.add(planPlaceRepository.save(planplace).getPpOrd());
-
-                return ResponseEntity.ok(Map.of("ppOrd", ppOrdList));
             } else {
                 LocalTime endTime = LocalTime.of(23, 59, 59);
                 // 23:59:59 - 출발시간
                 LocalTime prevTime = endTime.minusHours(startTime.getHour()).minusMinutes(startTime.getMinute())
                         .minusSeconds(startTime.getSecond());
                 // 머무는 시간 - prevTime - 1초
-                LocalTime nextTime = planPlaceBodyDTO.getTakeDate().minusHours(prevTime.getHour())
+                LocalTime nextTime = planPlaceBodyDTO.getTakeTime().minusHours(prevTime.getHour())
                         .minusMinutes(prevTime.getMinute()).minusSeconds(prevTime.getSecond()).minusSeconds(1);
                 PlanPlace planplace1 = PlanPlace.builder()
                         .pp_title(storeDTO.getP_name())
                         .pp_startAddress(Address)
-                        .pp_startDate(planSetDTO.getStartDate())
+                        .pp_startDate(planSetDTO.getPs_startDate())
                         .pp_takeDate(prevTime)
                         .pp_mapx(mapx)
                         .pp_mapy(mapy)
                         .planSet(new PlanSet(planNo))
-                        .NightToNight((byte) 1)
+                        .pp_NightToNight((byte) 1)
                         .build();
                 ppOrdList.add(planPlaceRepository.save(planplace1).getPpOrd());
 
@@ -200,15 +203,15 @@ public class PlanController {
                         .pp_mapx(mapx) // storeReposi
                         .pp_mapy(mapy) // storeReposi
                         .planSet(new PlanSet(planNo)) // planReposi
-                        .NightToNight((byte) 2)
+                        .pp_NightToNight((byte) 2)
                         .build();
                 ppOrdList.add(planPlaceRepository.save(planplace2).getPpOrd());
             }
 
             // 외래키 지정
 
+            log.info("현재 등록된 교통 수단의 갯수 : "+ getTNumber);
             if (getTNumber == 1) {
-
                 // 최신 교통수단 저장내용 조회
                 TransportParent LastTransportParent = transportParentRepository
                         .findLastTransportParent(planSetDTO.getWriter());
@@ -236,8 +239,8 @@ public class PlanController {
                 // 교통수단 저장
                 transportParentRepository.save(LastTransportParent2);
             }
-            return ResponseEntity.ok(Map.of("ppOrd", ppOrdList));
         }
+        return ResponseEntity.ok(Map.of("ppOrd", ppOrdList));
     }
 
     // 일정표에서 등록된 장소 조회
@@ -295,9 +298,10 @@ public class PlanController {
     }
 
     @PutMapping(value = "/{planNo}/planplace/{ppOrd}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, Long>> updatePlanPlaceTime(@PathVariable Long planNo, @PathVariable Long ppOrd, @RequestBody LocalTime takeTime){
+    public ResponseEntity<Map<String, Long>> updatePlanPlaceTime(@PathVariable Long planNo, @PathVariable Long ppOrd, @RequestBody PutPlanPlaceDTO putPlanPlaceDTO){
         try {
-            planService.updatePlanPlaceTime(planNo, ppOrd, takeTime);
+            log.info("버그찾기"+putPlanPlaceDTO.getTakeTime());
+            planService.updatePlanPlaceTime(planNo, ppOrd, putPlanPlaceDTO.getTakeTime());
 
             Map<String, Long> resultMap = new HashMap<>();
             resultMap.put("ppOrd", ppOrd);

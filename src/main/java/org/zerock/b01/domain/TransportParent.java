@@ -42,5 +42,5 @@ public class TransportParent {
     @Builder.Default
     private Set<TransportChild> transportChildrenSet = new HashSet<>();
 
-    private Byte NightToNight;
+    private Byte tp_NightToNight;
 }

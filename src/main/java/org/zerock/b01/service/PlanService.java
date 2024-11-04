@@ -23,9 +23,7 @@ public interface PlanService {
 
     GetXYResponse getXY(GetXYRequest getXYRequest);
 
-    DrivingResponse getTime(DrivingRequest drivingRequest);
-
-    Map<String, Object> startTime(Long planNo, String Address, Float mapx, Float mapy, String writer);
+    Map<String, Object> startTime(Long planNo, String Address, Double mapx, Double mapy, String writer);
 
     List<PlanPlaceDTO> listOfPlanPlace(Long planNo, Integer day);
 
@@ -42,10 +40,11 @@ public interface PlanService {
     default PlanSet dtoToEntity(PlanSetDTO planSetDTO) {
 
         PlanSet planSet = PlanSet.builder()
+                .title(planSetDTO.getTitle())
                 .planNo(planSetDTO.getPlanNo())
                 .writer(planSetDTO.getWriter())
                 .isCar(planSetDTO.getIsCar())
-                .startDate(planSetDTO.getStartDate())
+                .ps_startDate(planSetDTO.getPs_startDate())
 
                 .build();
 
@@ -58,7 +57,7 @@ public interface PlanService {
                 .planNo(planSet.getPlanNo())
                 .writer(planSet.getWriter())
                 .isCar(planSet.getIsCar())
-                .startDate(planSet.getStartDate())
+                .ps_startDate(planSet.getPs_startDate())
                 .build();
 
         return planSetDTO;

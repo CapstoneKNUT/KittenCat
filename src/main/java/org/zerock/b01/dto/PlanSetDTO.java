@@ -23,6 +23,6 @@ public class PlanSetDTO {
 
     private String writer;
 
-    private LocalDateTime startDate;
+    private LocalDateTime ps_startDate;
 
 }
