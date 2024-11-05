@@ -840,6 +840,8 @@ public class PlanServiceImpl implements PlanService {
                 .build();
         transportParentRepository.save(transportParentNext1);
 
+        planPlaceFunction.updateTnoKey(transportParentDTOPrev1.getTno()+1);
+
         TransportParentDTO transportParentDTOPrev2 = transportParentDTOPrev;
         transportParentDTOPrev2.setT_startDateTime(transportParentDTOPrev.getT_goalDateTime()
                 .withHour(0)
@@ -848,7 +850,7 @@ public class PlanServiceImpl implements PlanService {
         PlanPlace planPlace2 = planPlaceRepository.findById(transportParentDTOPrev1.getPpOrd()).get();
 
         TransportParent transportParentNext2 = TransportParent.builder()
-                .tno(transportParentDTOPrev2.getTno())
+                .tno(transportParentDTOPrev2.getTno()+1)
                 .t_method(transportParentDTOPrev2.getT_method())
                 .isCar(transportParentDTOPrev2.getIsCar())
                 .t_goalDateTime(transportParentDTOPrev2.getT_goalDateTime())
@@ -890,10 +892,13 @@ public class PlanServiceImpl implements PlanService {
                 .planSet(new PlanSet(planNo)) // planReposi
                 .pp_NightToNight((byte) 1)
                 .build();
+
         planPlaceRepository.save(planplace1).getPpOrd();
 
+        planPlaceFunction.updatePpOrdKey(planPlaceDTO.getPpOrd()+1);
+
         PlanPlace planplace2 = PlanPlace.builder()
-                .ppOrd(planPlaceDTO.getPpOrd())
+                .ppOrd(planPlaceDTO.getPpOrd()+1)
                 .pp_title(planPlaceDTO.getPp_title())
                 .pp_startAddress(planPlaceDTO.getPp_startAddress()) // planReposi
                 .pp_startDate(planPlaceDTON.getPp_startDate().withHour(0).withMinute(0).withSecond(0)) // planReposi

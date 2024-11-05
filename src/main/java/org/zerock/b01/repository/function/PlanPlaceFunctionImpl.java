@@ -37,7 +37,7 @@ public class PlanPlaceFunctionImpl extends QuerydslRepositorySupport implements 
     public void updatePpOrdKey(Long ppOrd){
         QPlanPlace planPlace = QPlanPlace.planPlace;
         QTransportParent transportParent = QTransportParent.transportParent;
-        QTransportChild transportChild = QTransportChild.transportParent;
+        QTransportChild transportChild = QTransportChild.transportChild;
 
         TransportParent foundTransportParent = queryFactory
                 .selectFrom(transportParent)
@@ -59,12 +59,18 @@ public class PlanPlaceFunctionImpl extends QuerydslRepositorySupport implements 
                     .execute();
         }
 
-        List<TransportParent> updateTransportParent = queryFactory
+        List<TransportParent> updateTransportParentList = queryFactory
                 .selectFrom(transportParent)
                 .where(transportParent.tno.goe(foundTransportChild))
                 .fetch();
 
-        for(TransportParent updateTransportParent : )
+        for(TransportParent updateTransportParent : updateTransportParentList){
+            queryFactory
+                    .update(transportChild)
+                    .set(transportChild.transportParent, updateTransportParent)
+                    .where(transportChild.transportParent.tno.eq(updateTransportParent.getTno()-1))
+                    .execute();
+        }
     }
 
     @Override
