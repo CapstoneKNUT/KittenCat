@@ -149,6 +149,99 @@ public class PlanServiceImpl implements PlanService {
         return planNo;
     }
 
+    private void saveTransportParent2(TransportParentDTO transportParentDTOPrev) {
+        TransportParentDTO transportParentDTOPrev1 = transportParentDTOPrev;
+        transportParentDTOPrev1.setT_goalDateTime(transportParentDTOPrev.getT_startDateTime()
+                .withHour(23)
+                .withMinute(59)
+                .withSecond(59));
+        PlanPlace planPlace1 = planPlaceRepository.findById(transportParentDTOPrev1.getPpOrd()).get();
+
+        TransportParent transportParentNext1 = TransportParent.builder()
+                .tno(transportParentDTOPrev1.getTno())
+                .t_method(transportParentDTOPrev1.getT_method())
+                .isCar(transportParentDTOPrev1.getIsCar())
+                .t_goalDateTime(transportParentDTOPrev1.getT_goalDateTime())
+                .t_startDateTime(transportParentDTOPrev1.getT_startDateTime())
+                .t_takeTime(transportParentDTOPrev1.getT_takeTime())
+                .writer(transportParentDTOPrev1.getWriter())
+                .tp_NightToNight((byte)1)
+                .planPlace(planPlace1)
+                .build();
+        transportParentRepository.save(transportParentNext1);
+
+        planPlaceFunction.updateTnoKey(transportParentDTOPrev1.getTno()+1);
+
+        TransportParentDTO transportParentDTOPrev2 = transportParentDTOPrev;
+        transportParentDTOPrev2.setT_startDateTime(transportParentDTOPrev.getT_goalDateTime()
+                .withHour(0)
+                .withMinute(0)
+                .withSecond(0));
+        PlanPlace planPlace2 = planPlaceRepository.findById(transportParentDTOPrev1.getPpOrd()).get();
+
+        TransportParent transportParentNext2 = TransportParent.builder()
+                .tno(transportParentDTOPrev2.getTno()+1)
+                .t_method(transportParentDTOPrev2.getT_method())
+                .isCar(transportParentDTOPrev2.getIsCar())
+                .t_goalDateTime(transportParentDTOPrev2.getT_goalDateTime())
+                .t_startDateTime(transportParentDTOPrev2.getT_startDateTime())
+                .t_takeTime(transportParentDTOPrev2.getT_takeTime())
+                .writer(transportParentDTOPrev2.getWriter())
+                .tp_NightToNight((byte)2)
+                .planPlace(planPlace2)
+                .build();
+        transportParentRepository.save(transportParentNext2);
+        log.info("뉴뉴정보"+transportParentNext2.getTno());
+    }
+
+    private void savePlanPlace2(PlanPlaceDTO planPlaceDTO, PlanPlaceDTO planPlaceDTON, Long planNo) {
+        //이전 장소의 출발 날짜 != 다음 장소의 출발 날짜
+        //planPlacDTO.toLocalDate() != planPlaceDTON.toLocalDate()
+        LocalTime endTime = LocalTime.of(0, 0, 0);
+
+        // prevTime = 00:00:00 - 현재 요소의 출발시간
+        LocalTime prevTime = endTime
+                .minusHours(planPlaceDTO.getPp_startDate().getHour())
+                .minusMinutes(planPlaceDTO.getPp_startDate().getMinute())
+                .minusSeconds(planPlaceDTO.getPp_startDate().getSecond());
+
+        // 머무는 시간 - prevTime
+        LocalTime nextTime = planPlaceDTO.getPp_takeDate()
+                .minusHours(prevTime.getHour())
+                .minusMinutes(prevTime.getMinute())
+                .minusSeconds(prevTime.getSecond());
+
+        PlanPlace planplace1 = PlanPlace.builder()
+                .ppOrd(planPlaceDTO.getPpOrd())
+                .pp_title(planPlaceDTO.getPp_title())
+                .pp_startAddress(planPlaceDTO.getPp_startAddress()) // planReposi
+                .pp_startDate(planPlaceDTO.getPp_startDate()) // planReposi
+                .pp_takeDate(prevTime) // storeReposi
+                .pp_mapx(planPlaceDTO.getPp_mapx()) // storeReposi
+                .pp_mapy(planPlaceDTO.getPp_mapy()) // storeReposi
+                .planSet(new PlanSet(planNo)) // planReposi
+                .pp_NightToNight((byte) 1)
+                .build();
+
+        planPlaceRepository.save(planplace1).getPpOrd();
+
+        planPlaceFunction.updatePpOrdKey(planPlaceDTO.getPpOrd()+1);
+
+        PlanPlace planplace2 = PlanPlace.builder()
+                .ppOrd(planPlaceDTO.getPpOrd()+1)
+                .pp_title(planPlaceDTO.getPp_title())
+                .pp_startAddress(planPlaceDTO.getPp_startAddress()) // planReposi
+                .pp_startDate(planPlaceDTON.getPp_startDate().withHour(0).withMinute(0).withSecond(0)) // planReposi
+                .pp_takeDate(nextTime) // storeReposi
+                .pp_mapx(planPlaceDTO.getPp_mapx()) // storeReposi
+                .pp_mapy(planPlaceDTO.getPp_mapy()) // storeReposi
+                .planSet(new PlanSet(planNo)) // planReposi
+                .pp_NightToNight((byte) 2)
+                .build();
+
+        planPlaceRepository.save(planplace2).getPpOrd();
+    }
+
     @Override
     public GetXYResponse getXY(GetXYRequest getXYRequest) {
         try {
@@ -764,7 +857,7 @@ public class PlanServiceImpl implements PlanService {
 
                 Long tno = transportParentRepository.save(transportParentNext).getTno();
                 log.info("뉴/뉴정보"+tno);
-            //출발 시간 != 도착시간
+                //출발 시간 != 도착시간
             }else{
                 saveTransportParent2(transportParentDTOPrev);
             }
@@ -817,98 +910,5 @@ public class PlanServiceImpl implements PlanService {
                 planPlaceRepository.save(planPlaced);
             }
         }
-    }
-
-    private void saveTransportParent2(TransportParentDTO transportParentDTOPrev) {
-        TransportParentDTO transportParentDTOPrev1 = transportParentDTOPrev;
-        transportParentDTOPrev1.setT_goalDateTime(transportParentDTOPrev.getT_startDateTime()
-                .withHour(23)
-                .withMinute(59)
-                .withSecond(59));
-        PlanPlace planPlace1 = planPlaceRepository.findById(transportParentDTOPrev1.getPpOrd()).get();
-
-        TransportParent transportParentNext1 = TransportParent.builder()
-                .tno(transportParentDTOPrev1.getTno())
-                .t_method(transportParentDTOPrev1.getT_method())
-                .isCar(transportParentDTOPrev1.getIsCar())
-                .t_goalDateTime(transportParentDTOPrev1.getT_goalDateTime())
-                .t_startDateTime(transportParentDTOPrev1.getT_startDateTime())
-                .t_takeTime(transportParentDTOPrev1.getT_takeTime())
-                .writer(transportParentDTOPrev1.getWriter())
-                .tp_NightToNight((byte)1)
-                .planPlace(planPlace1)
-                .build();
-        transportParentRepository.save(transportParentNext1);
-
-        planPlaceFunction.updateTnoKey(transportParentDTOPrev1.getTno()+1);
-
-        TransportParentDTO transportParentDTOPrev2 = transportParentDTOPrev;
-        transportParentDTOPrev2.setT_startDateTime(transportParentDTOPrev.getT_goalDateTime()
-                .withHour(0)
-                .withMinute(0)
-                .withSecond(0));
-        PlanPlace planPlace2 = planPlaceRepository.findById(transportParentDTOPrev1.getPpOrd()).get();
-
-        TransportParent transportParentNext2 = TransportParent.builder()
-                .tno(transportParentDTOPrev2.getTno()+1)
-                .t_method(transportParentDTOPrev2.getT_method())
-                .isCar(transportParentDTOPrev2.getIsCar())
-                .t_goalDateTime(transportParentDTOPrev2.getT_goalDateTime())
-                .t_startDateTime(transportParentDTOPrev2.getT_startDateTime())
-                .t_takeTime(transportParentDTOPrev2.getT_takeTime())
-                .writer(transportParentDTOPrev2.getWriter())
-                .tp_NightToNight((byte)2)
-                .planPlace(planPlace2)
-                .build();
-        transportParentRepository.save(transportParentNext2);
-        log.info("뉴뉴정보"+transportParentNext2.getTno());
-    }
-
-    private void savePlanPlace2(PlanPlaceDTO planPlaceDTO, PlanPlaceDTO planPlaceDTON, Long planNo) {
-        //이전 장소의 출발 날짜 != 다음 장소의 출발 날짜
-        //planPlacDTO.toLocalDate() != planPlaceDTON.toLocalDate()
-        LocalTime endTime = LocalTime.of(0, 0, 0);
-
-        // prevTime = 00:00:00 - 현재 요소의 출발시간
-        LocalTime prevTime = endTime
-                .minusHours(planPlaceDTO.getPp_startDate().getHour())
-                .minusMinutes(planPlaceDTO.getPp_startDate().getMinute())
-                .minusSeconds(planPlaceDTO.getPp_startDate().getSecond());
-
-        // 머무는 시간 - prevTime
-        LocalTime nextTime = planPlaceDTO.getPp_takeDate()
-                .minusHours(prevTime.getHour())
-                .minusMinutes(prevTime.getMinute())
-                .minusSeconds(prevTime.getSecond());
-
-        PlanPlace planplace1 = PlanPlace.builder()
-                .ppOrd(planPlaceDTO.getPpOrd())
-                .pp_title(planPlaceDTO.getPp_title())
-                .pp_startAddress(planPlaceDTO.getPp_startAddress()) // planReposi
-                .pp_startDate(planPlaceDTO.getPp_startDate()) // planReposi
-                .pp_takeDate(prevTime) // storeReposi
-                .pp_mapx(planPlaceDTO.getPp_mapx()) // storeReposi
-                .pp_mapy(planPlaceDTO.getPp_mapy()) // storeReposi
-                .planSet(new PlanSet(planNo)) // planReposi
-                .pp_NightToNight((byte) 1)
-                .build();
-
-        planPlaceRepository.save(planplace1).getPpOrd();
-
-        planPlaceFunction.updatePpOrdKey(planPlaceDTO.getPpOrd()+1);
-
-        PlanPlace planplace2 = PlanPlace.builder()
-                .ppOrd(planPlaceDTO.getPpOrd()+1)
-                .pp_title(planPlaceDTO.getPp_title())
-                .pp_startAddress(planPlaceDTO.getPp_startAddress()) // planReposi
-                .pp_startDate(planPlaceDTON.getPp_startDate().withHour(0).withMinute(0).withSecond(0)) // planReposi
-                .pp_takeDate(nextTime) // storeReposi
-                .pp_mapx(planPlaceDTO.getPp_mapx()) // storeReposi
-                .pp_mapy(planPlaceDTO.getPp_mapy()) // storeReposi
-                .planSet(new PlanSet(planNo)) // planReposi
-                .pp_NightToNight((byte) 2)
-                .build();
-
-        planPlaceRepository.save(planplace2).getPpOrd();
     }
 }
