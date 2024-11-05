@@ -96,10 +96,10 @@ public class PlanController {
         // 이전에 등록된 장소가 없을 경우
         if (planPlace == null) {
             // 출발일 == (출발일시 + 머무는 시간)
-            if (planSetDTO.getPs_startDate().toLocalDate() == planSetDTO.getPs_startDate()
+            if (planSetDTO.getPs_startDate().toLocalDate().isEqual(planSetDTO.getPs_startDate()
                     .plusHours(planPlaceBodyDTO.getTakeTime().getHour())
                     .plusMinutes(planPlaceBodyDTO.getTakeTime().getMinute())
-                    .plusSeconds(planPlaceBodyDTO.getTakeTime().getSecond()).toLocalDate()) {
+                    .plusSeconds(planPlaceBodyDTO.getTakeTime().getSecond()).toLocalDate())) {
                 planplace = PlanPlace.builder()
                         .pp_title(storeDTO.getP_name())
                         .pp_startAddress(Address) // planReposi
@@ -115,7 +115,7 @@ public class PlanController {
                 ppOrdList.add(planPlaceRepository.save(planplace).getPpOrd());
 
             } else {
-                LocalTime endTime = LocalTime.of(23, 59, 59);
+                LocalTime endTime = LocalTime.of(0, 0, 0);
 
                 // 23:59:59 - 출발시간
                 LocalTime prevTime = endTime.minusHours(planSetDTO.getPs_startDate().getHour())
@@ -158,9 +158,11 @@ public class PlanController {
             Integer getTNumber = (Integer) timeResult.get("getTNumber");
 
             // 장소 저장
-            if (startTime.toLocalDate() == startTime.plusHours(planPlaceBodyDTO.getTakeTime().getHour())
+            if (startTime.toLocalDate().isEqual(startTime
+                    .plusHours(planPlaceBodyDTO.getTakeTime().getHour())
                     .plusMinutes(planPlaceBodyDTO.getTakeTime().getMinute())
-                    .plusSeconds(planPlaceBodyDTO.getTakeTime().getSecond()).toLocalDate()) {
+                    .plusSeconds(planPlaceBodyDTO.getTakeTime().getSecond())
+                    .toLocalDate())) {
                 planplace = PlanPlace.builder()
                         .pp_title(storeDTO.getP_name())
                         .pp_startAddress(Address)
@@ -176,7 +178,7 @@ public class PlanController {
 
                 ppOrdList.add(planPlaceRepository.save(planplace).getPpOrd());
             } else {
-                LocalTime endTime = LocalTime.of(23, 59, 59);
+                LocalTime endTime = LocalTime.of(0, 0, 0);
                 // 23:59:59 - 출발시간
                 LocalTime prevTime = endTime.minusHours(startTime.getHour()).minusMinutes(startTime.getMinute())
                         .minusSeconds(startTime.getSecond());

@@ -6,4 +6,8 @@ import java.util.List;
 
 public interface PlanPlaceFunction {
     List<PlanPlace> findAllByDate(Long planNo, LocalDateTime startOfDay, LocalDateTime endOfDay);
+
+    void updatePpOrdKey(Long ppOrd);
+
+    void updateTnoKey(Long tno);
 }
