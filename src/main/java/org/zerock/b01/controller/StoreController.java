@@ -69,7 +69,6 @@ public class StoreController {
         return ResponseEntity.ok(responseDTO);
     }
 
-
     /*// 유저의 찜목록 중 이름을 검색하여 조회
     @GetMapping("/search")
     public ResponseEntity<PageResponseDTO<StoreDTO>> searchBookmarks(@RequestParam String username,@RequestParam String p_name, PageRequestDTO pageRequestDTO) {

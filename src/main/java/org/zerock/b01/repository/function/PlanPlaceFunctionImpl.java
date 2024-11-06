@@ -59,6 +59,7 @@ public class PlanPlaceFunctionImpl extends QuerydslRepositorySupport implements 
                     .execute();
         }
 
+
         List<TransportParent> updateTransportParentList = queryFactory
                 .selectFrom(transportParent)
                 .where(transportParent.tno.goe(foundTransportChild))

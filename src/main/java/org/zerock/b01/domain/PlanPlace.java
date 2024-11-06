@@ -40,4 +40,8 @@ public class PlanPlace {
     @OneToMany(mappedBy = "planPlace", cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, orphanRemoval = true)
     @Builder.Default
     private Set<TransportParent> transportParentSet = new HashSet<>();
+
+    @OneToOne(mappedBy = "planPlace", cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, orphanRemoval = true)
+    @Builder.Default
+    private StoreToPlan storeToPlan = new StoreToPlan();
 }

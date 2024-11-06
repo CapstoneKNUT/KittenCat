@@ -179,16 +179,23 @@ public class PlanController {
                 ppOrdList.add(planPlaceRepository.save(planplace).getPpOrd());
             } else {
                 LocalTime endTime = LocalTime.of(0, 0, 0);
+
                 // 23:59:59 - 출발시간
-                LocalTime prevTime = endTime.minusHours(startTime.getHour()).minusMinutes(startTime.getMinute())
+                LocalTime prevTime = endTime
+                        .minusHours(startTime.getHour())
+                        .minusMinutes(startTime.getMinute())
                         .minusSeconds(startTime.getSecond());
-                // 머무는 시간 - prevTime - 1초
-                LocalTime nextTime = planPlaceBodyDTO.getTakeTime().minusHours(prevTime.getHour())
-                        .minusMinutes(prevTime.getMinute()).minusSeconds(prevTime.getSecond()).minusSeconds(1);
+
+                // 머무는 시간 - prevTime
+                LocalTime nextTime = planPlaceBodyDTO.getTakeTime()
+                        .minusHours(prevTime.getHour())
+                        .minusMinutes(prevTime.getMinute())
+                        .minusSeconds(prevTime.getSecond());
+
                 PlanPlace planplace1 = PlanPlace.builder()
                         .pp_title(storeDTO.getP_name())
                         .pp_startAddress(Address)
-                        .pp_startDate(planSetDTO.getPs_startDate())
+                        .pp_startDate(startTime)
                         .pp_takeDate(prevTime)
                         .pp_mapx(mapx)
                         .pp_mapy(mapy)
