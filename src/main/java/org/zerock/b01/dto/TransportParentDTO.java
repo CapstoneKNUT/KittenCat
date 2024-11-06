@@ -31,5 +31,5 @@ public class TransportParentDTO {
 
     private String writer;
 
-    private Byte tp_NightToNight;
+    private Boolean NightToNight;
 }
