@@ -10,7 +10,6 @@ import org.springframework.data.domain.Sort;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.List;
 
 @Builder
 @Data
@@ -24,7 +23,17 @@ public class PageRequestDTO {
     @Builder.Default
     private int size = 10;
 
-//    private String userid;  // 사용자 ID 필드 추가
+    private String type; // 검색의 종류 t,c, w, tc,tw, twc
+
+    public String[] getTypes(){
+        if(type == null || type.isEmpty()){
+            return null;
+        }
+        return type.split("");
+    }
+
+    private String keyword;
+
 
     public Pageable getPageable(String...props) {
         return PageRequest.of(this.page -1, this.size, Sort.by(props).ascending());
@@ -41,13 +50,16 @@ public class PageRequestDTO {
 
             builder.append("&size=" + this.size);
 
-//            if (userid != null && !userid.isEmpty()) {
-//                try {
-//                    builder.append("&userid=" + URLEncoder.encode(userid, "UTF-8"));
-//                } catch (UnsupportedEncodingException e) {
-//                    e.printStackTrace();
-//                }
-//            }
+            if(type != null && type.length() > 0){
+                builder.append("&type=" + type);
+            }
+
+            if(keyword != null){
+                try {
+                    builder.append("&keyword=" + URLEncoder.encode(keyword,"UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+                }
+            }
 
             link = builder.toString();
         }

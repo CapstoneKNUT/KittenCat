@@ -1,0 +1,76 @@
+.detail-page {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    color: #333;
+}
+
+.header {
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    font-size: 32px;
+    margin: 0;
+}
+
+.header p {
+    font-size: 16px;
+    color: #888;
+    margin: 5px 0;
+}
+
+.content {
+    display: flex;
+    gap: 30px;
+}
+
+.store-image {
+    flex-basis: 35%;
+    height: 350px; /* 이미지 높이 고정 */
+    object-fit: cover; /* 이미지가 컨테이너를 채우도록 설정 */
+    border-radius: 8px;
+}
+
+.store-info {
+    flex-basis: 75%; /* 나머지 공간을 차지하도록 설정 */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.store-info p {
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.store-info p strong {
+    font-weight: bold;
+}
+
+.store-info a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.store-info a:hover {
+    text-decoration: underline;
+}
+.read-more, .read-less {
+    /*color: blue; !* 링크 색상 *!*/
+    cursor: pointer; /* 커서 모양 변경 */
+    text-decoration: underline; /* 밑줄 추가 */
+    margin-left: 5px; /* 간격 추가 */
+}
+
+.read-more:hover, .read-less:hover {
+    color: darkblue; /* 호버 시 색상 변경 */
+}
+.content-separator {
+    border: none; /* 기본 구분선 없애기 */
+    height: 1px; /* 높이 설정 */
+    background-color: #ccc; /* 구분선 색상 */
+    margin: 20px 0; /* 위아래 여백 설정 */
+}
