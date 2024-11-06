@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
-import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Data
@@ -14,8 +13,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PlanSetDTO {
-    @Size(min = 3, max = 50)
-    private String title;
 
     private Long planNo;
 
@@ -23,6 +20,6 @@ public class PlanSetDTO {
 
     private String writer;
 
-    private LocalDateTime ps_startDate;
+    private LocalDateTime startDate;
 
 }
