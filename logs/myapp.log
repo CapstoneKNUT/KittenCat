@@ -4829,3 +4829,308 @@ Caused by: java.lang.IllegalArgumentException: Could not resolve placeholder 'or
 	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:399) ~[spring-beans-5.3.23.jar:5.3.23]
 	... 22 common frames omitted
 
+2024-11-07 01:52:27.175  INFO 24436 --- [restartedMain] org.zerock.b01.B01Application            : Starting B01Application using Java 17.0.10 on DESKTOP-5BFHE3H with PID 24436 (C:\Users\youns\OneDrive\문서\KittenCat\bin\main started by youns in C:\Users\youns\OneDrive\문서\KittenCat)
+2024-11-07 01:52:27.176 DEBUG 24436 --- [restartedMain] org.zerock.b01.B01Application            : Running with Spring Boot v2.7.5, Spring v5.3.23
+2024-11-07 01:52:27.176  INFO 24436 --- [restartedMain] org.zerock.b01.B01Application            : No active profile set, falling back to 1 default profile: "default"
+2024-11-07 01:52:27.891  INFO 24436 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-11-07 01:52:28.224  INFO 24436 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 332 ms. Found 8 JPA repository interfaces.
+2024-11-07 01:52:28.401  INFO 24436 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2024-11-07 01:52:28.417  INFO 24436 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-11-07 01:52:28.417  INFO 24436 --- [restartedMain] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.68]
+2024-11-07 01:52:28.580  INFO 24436 --- [restartedMain] o.a.c.c.C.[Tomcat-10].[localhost].[/]    : Initializing Spring embedded WebApplicationContext
+2024-11-07 01:52:28.582  INFO 24436 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1402 ms
+2024-11-07 01:52:28.642  INFO 24436 --- [restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-11-07 01:52:28.659  INFO 24436 --- [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-13 - Starting...
+2024-11-07 01:52:28.664  INFO 24436 --- [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-13 - Start completed.
+2024-11-07 01:52:28.664  INFO 24436 --- [restartedMain] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.MariaDB53Dialect
+2024-11-07 01:52:28.759  INFO 24436 --- [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2024-11-07 01:52:28.760  INFO 24436 --- [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-11-07 01:52:28.995  WARN 24436 --- [restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-11-07 01:52:29.041  INFO 24436 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2024-11-07 01:52:29.097  WARN 24436 --- [restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2024-11-07 01:52:29.110  INFO 24436 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2024-11-07 01:52:29.238  INFO 24436 --- [restartedMain] org.zerock.b01.B01Application            : Started B01Application in 2.16 seconds (JVM running for 2164.086)
+2024-11-07 01:52:29.240  INFO 24436 --- [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2024-11-07 01:52:30.000  INFO 24436 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat-10].[localhost].[/]    : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-11-07 01:52:30.000  INFO 24436 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-11-07 01:52:30.002  INFO 24436 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2024-11-07 01:52:30.015 DEBUG 24436 --- [http-nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        place0_.pord as pord1_1_,
+        place0_.p_address as p_addres2_1_,
+        place0_.p_call as p_call3_1_,
+        place0_.p_category as p_catego4_1_,
+        place0_.p_content as p_conten5_1_,
+        place0_.p_image as p_image6_1_,
+        place0_.p_name as p_name7_1_,
+        place0_.p_opentime as p_openti8_1_,
+        place0_.p_park as p_park9_1_,
+        place0_.p_site as p_site10_1_,
+        place0_.p_star as p_star11_1_ 
+    from
+        place place0_ 
+    order by
+        place0_.pord asc limit ?
+2024-11-07 01:52:30.019 DEBUG 24436 --- [http-nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        count(place0_.pord) as col_0_0_ 
+    from
+        place place0_
+2024-11-07 01:52:30.028  INFO 24436 --- [http-nio-8080-exec-1] o.zerock.b01.controller.PlaceController  : PageResponseDTO(page=1, size=10, total=10, start=1, end=1, prev=false, next=false, dtoList=[PlaceDTO(pord=1, p_name=을지다락 강남, p_category=양식, p_address=서울 강남구 강남대로96길 22 2층2신분당강남역 11번 출구에서 269m미터, p_content=null, p_image=https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fvideo-phinf.pstatic.net%2F20240920_40%2F1726792574994KnzQC_JPEG%2F46o3j90jLU_03.jpg, p_call=0507-1343-9474, p_star=4.53, p_site=https://catchtable.co.kr/gangnamdarak, p_opentime=11:30에 영업 시작
+11시 30분에 영업 시작
+일
+11:30 - 21:15
+20:30 라스트오더
+월
+11:30 - 21:15
+15:10 - 16:30 브레이크타임
+14:25, 20:30 라스트오더
+화
+11:30 - 21:15
+15:10 - 16:30 브레이크타임
+14:25, 20:30 라스트오더
+수
+11:30 - 21:15
+15:10 - 16:30 브레이크타임
+14:25, 20:30 라스트오더
+목
+11:30 - 21:15
+15:10 - 16:30 브레이크타임
+14:25, 20:30 라스트오더
+금
+11:30 - 21:15
+15:10 - 16:30 브레이크타임
+14:25, 20:30 라스트오더
+토
+11:30 - 21:15
+20:30 라스트오더
+- 평일 런치, 디너 라스트 오더 (14:30/20:30), p_park=대중교통 이용시,
+지하철 2호선, 신분당선 강남역 11번 출구로 나와주세요 :)
+
+강남대로변을 따라 도보2분 거리에 뉴발란스 매장이 있습니다. 그곳을 끼고 오른쪽 골목으로 올라가서 도보 5분 후에 을지다락이 2층에 보입니다!
+
+강남역 12번출구로 나올 경우,
+도보 3분 후에, 바나프레소 카페에서 좌회전 후, 도보 3분 후, 을지다락이 보일 거에요 :)
+
+애플스토어, 강남역cgv, 강남역롯데시네마, 강남역메가박스에서도 가깝습니다~
+
+자가용 이용시,
+죄송하지만, 주차공간이 따로 없어서, 매장 근처 유료 주차장 이용을 부탁 드릴게요~
+
+역삼문화공원제1호공영주차장
+강남구 테헤란로7길 21
+5분당 300원
+
+강남역파스타, 강남역브런치, 강남역양식, 강남역청첩장모임, 강남역데이트, 강남역점심, 강남역소개팅, 강남역맛집), PlaceDTO(pord=2, p_name=디슬로우 청담, p_category=피자, p_address=서울 강남구 선릉로160길 7 지하1층수인분당압구정로데오역 4번 출구에서 91m미터, p_content=디슬로우 만의 감성으로 해석한 시카고 스타일 딥 디쉬 피자와 크래커 씬 피자를 즐기실 수 있는 공간 입니다., p_image=https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20230627_128%2F16878582143040C0NW_JPEG%2FIMG_7266-1.JPEG, p_call=0507-1330-8419, p_star=4.85, p_site=null, p_opentime=05:30에 라스트오더
+5시 30분에 라스트오더
+토
+12:00 - 06:00
+05:30 라스트오더
+일
+12:00 - 23:30
+23:00 라스트오더
+월
+12:00 - 23:30
+23:00 라스트오더
+화
+12:00 - 06:00
+05:30 라스트오더
+수
+12:00 - 06:00
+05:30 라스트오더
+목
+12:00 - 06:00
+05:30 라스트오더
+금
+12:00 - 06:00
+05:30 라스트오더, p_park=[주차정보] [발렛주차가능]
+- 매장 앞 검정색 발렛 파킹 부스에 차량을 맡기실 수 있습니다.
+- (유료) 2시간 이용 하실 시 5000원), PlaceDTO(pord=3, p_name=어거스트 힐 강남점, p_category=양식, p_address=서울 강남구 강남대로106길 259신분당신논현역 6번 출구에서 259m미터, p_content=<식사 이용 시간 >
+식사 이용시간은 100분으로, 매장상황에 따라 100분 이상은 어려울 수 있음을 사전 공지 및 양해바랍니다., p_image=https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20240220_241%2F1708398564214Rqc5U_JPEG%2F%25C6%25BC%25BA%25BB.jpg, p_call=0507-1478-8013, p_star=4.56, p_site=http://www.instagram.com/augusthill_official_/, p_opentime=11:30에 영업 시작
+11시 30분에 영업 시작
+일
+11:30 - 22:00
+21:00 라스트오더, p_park=1. 신논현역 5,6번 출구에서 출발 시,
+1블럭 직진 대연빌딩 좌측 골목 언덕길로 4블럭 직진하시면 좌측에 위치해 있습니다.), PlaceDTO(pord=4, p_name=울프강 스테이크하우스, p_category=스테이크,립, p_address=서울 강남구 선릉로152길 21 영인빌딩 1층수인분당압구정로데오역 4번 출구에서 371m미터, p_content=세계적으로 유명한 스테이크하우스의 한국 1호점, 울프강 스테이크하우스 코리아, p_image=https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20160630_10%2F14672593049284cNr4_JPEG%2F176580533161010_27.jpeg, p_call=0507-1486-8700, p_star=4.5, p_site=http://wolfgangssteakhouse.co.kr/, p_opentime=11:00에 영업 시작
+11시 0분에 영업 시작
+매일
+11:00 - 22:00
+20:30 라스트오더
+- 예약률에 따라 예약이 조기 마감될 수 있습니다., p_park=null), PlaceDTO(pord=5, p_name=미도인 강남, p_category=양식, p_address=서울 강남구 강남대로102길 16 지상 2층2신분당강남역 11번 출구에서 414m미터, p_content=과거와 현재, 동양과 서양이 공존하는 공간으로 젋은 연인들의 데이트 장소나 친구들과의 모임, 특별한 날에 찾아볼 만한 공간에서 특별한 순간을 만들어줍니다., p_image=https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20230626_128%2F168775914700784teo_JPEG%2FIMG_4115.jpeg, p_call=0507-1441-2065, p_star=4.4, p_site=null, p_opentime=11:30에 영업 시작
+11시 30분에 영업 시작
+일
+11:30 - 21:00
+월
+11:30 - 21:00
+화
+11:30 - 21:00
+수
+11:30 - 21:00
+목
+11:30 - 21:00
+금
+11:30 - 21:00
+토
+11:30 - 21:00, p_park=강남역: 2호선 강남역 10번 출구로 나와서 도보로 약 6분 거리에 위치합니다.), PlaceDTO(pord=6, p_name=틴틴 강남점, p_category=이탈리아음식, p_address=서울 강남구 봉은사로2길 199신분당신논현역 4번 출구에서 174m미터, p_content=캐주얼 레스토랑 & 브런치 카페 틴틴, p_image=https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20230329_38%2F1680077186912m9uzX_JPEG%2F%25C5%25EB%25BA%25A3%25C0%25CC%25C4%25C1.jpg, p_call=0507-1476-0558, p_star=null, p_site=https://www.instagram.com/tteenteen_official, p_opentime=11:30에 영업 시작
+11시 30분에 영업 시작
+매일
+11:30 - 22:00
+20:00 라스트오더, p_park=신논현역 4번 출구에서 5시방향으로 170m정도 위치에 있습니다.), PlaceDTO(pord=7, p_name=꽁티드툴레아, p_category=브런치, p_address=서울 강남구 도산대로49길 39수인분당압구정로데오역 5번 출구에서 437m미터, p_content=꽁티드툴레아는 내추럴 프래그런스 브랜드입니다., p_image=https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20200914_239%2F1600012748465FVukt_JPEG%2FdlyCQ41XRzwZcpmE1sPYTpuY.jpeg.jpg, p_call=0507-1325-8490, p_star=null, p_site=http://www.contedetulear.com, p_opentime=11:00에 영업 시작
+11시 0분에 영업 시작
+매일
+11:00 - 24:00
+- 브레이크 타임(5시-6시) : 디저트 및 음료 주문가능, p_park=발렛파킹이 가능하며 매장 오시기전에 위치해 있고 일방통행길입니다.), PlaceDTO(pord=8, p_name=트리드, p_category=양식, p_address=서울 강남구 선릉로162길 16 2층수인분당압구정로데오역 3번 출구에서 166m미터, p_content=Diversity, Delicious, Delight - t r i d 입니다., p_image=https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20231123_78%2F1700736475707ozbTJ_JPEG%2FKakaoTalk_20230926_172536936_09.jpg, p_call=02-512-8312, p_star=4.7, p_site=https://www.instagram.com/tridseoul, p_opentime=매주 일요일 휴무
+화~토
+12:00 - 22:00
+15:00 - 18:00 브레이크타임
+- Last order 13:30, 19:30, p_park=압구정로데오역 3번출구로 나오셔서 직진하신후 꼬르소꼬모 건물 맞은편), PlaceDTO(pord=9, p_name=이식일사, p_category=양식, p_address=서울 강남구 봉은사로4길 17 지하 1층9신분당신논현역 4번 출구에서 168m미터, p_content=신논현역 맛집 양식 이식일사, p_image=https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20240927_284%2F1727440202735bLOvg_JPEG%2F%25C4%25A1%25C1%25EE%25BE%25D8%25C5%25BE_1_%25281%2529.jpg, p_call=0507-1319-7102, p_star=null, p_site=null, p_opentime=12:00에 영업 시작
+12시 0분에 영업 시작
+매일
+12:00 - 22:00
+15:00 - 17:00 브레이크타임
+21:30 라스트오더, p_park=신논현역 4번 출구로 나오시자마자 골목으로 들어오신다음 50m직진입니다.), PlaceDTO(pord=10, p_name=달마시안 압구정점, p_category=양식, p_address=서울 강남구 압구정로42길 42수인분당압구정로데오역 5번 출구에서 638m미터, p_content=압구정에 압구정로데오맛집 유럽식 레스토랑 달마시안, p_image=https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20210913_18%2F1631492525833HWAbY_JPEG%2F3tYcm3RZh_CgstNdpODxOE2B.jpg, p_call=0507-1491-0926, p_star=null, p_site=https://app.catchtable.co.kr/ct/shop/dalmatian, p_opentime=09:00에 영업 시작
+9시 0분에 영업 시작
+매일
+09:00 - 23:00
+22:00 라스트오더
+- 17:00-18:00 음료와 디저트만 주문 가능합니다., p_park=발렛주차는 30m 전방 핑크색 카페 앞 발렛부스를 이용해주시면 됩니다.)])
+2024-11-07 01:52:30.042 DEBUG 24436 --- [http-nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        place0_.pord as pord1_1_,
+        place0_.p_address as p_addres2_1_,
+        place0_.p_call as p_call3_1_,
+        place0_.p_category as p_catego4_1_,
+        place0_.p_content as p_conten5_1_,
+        place0_.p_image as p_image6_1_,
+        place0_.p_name as p_name7_1_,
+        place0_.p_opentime as p_openti8_1_,
+        place0_.p_park as p_park9_1_,
+        place0_.p_site as p_site10_1_,
+        place0_.p_star as p_star11_1_ 
+    from
+        place place0_ 
+    order by
+        place0_.pord asc limit ?
+2024-11-07 01:52:30.046 DEBUG 24436 --- [http-nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        count(place0_.pord) as col_0_0_ 
+    from
+        place place0_
+2024-11-07 01:52:30.051  INFO 24436 --- [http-nio-8080-exec-2] o.zerock.b01.controller.PlaceController  : PageResponseDTO(page=1, size=10, total=10, start=1, end=1, prev=false, next=false, dtoList=[PlaceDTO(pord=1, p_name=을지다락 강남, p_category=양식, p_address=서울 강남구 강남대로96길 22 2층2신분당강남역 11번 출구에서 269m미터, p_content=null, p_image=https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fvideo-phinf.pstatic.net%2F20240920_40%2F1726792574994KnzQC_JPEG%2F46o3j90jLU_03.jpg, p_call=0507-1343-9474, p_star=4.53, p_site=https://catchtable.co.kr/gangnamdarak, p_opentime=11:30에 영업 시작
+11시 30분에 영업 시작
+일
+11:30 - 21:15
+20:30 라스트오더
+월
+11:30 - 21:15
+15:10 - 16:30 브레이크타임
+14:25, 20:30 라스트오더
+화
+11:30 - 21:15
+15:10 - 16:30 브레이크타임
+14:25, 20:30 라스트오더
+수
+11:30 - 21:15
+15:10 - 16:30 브레이크타임
+14:25, 20:30 라스트오더
+목
+11:30 - 21:15
+15:10 - 16:30 브레이크타임
+14:25, 20:30 라스트오더
+금
+11:30 - 21:15
+15:10 - 16:30 브레이크타임
+14:25, 20:30 라스트오더
+토
+11:30 - 21:15
+20:30 라스트오더
+- 평일 런치, 디너 라스트 오더 (14:30/20:30), p_park=대중교통 이용시,
+지하철 2호선, 신분당선 강남역 11번 출구로 나와주세요 :)
+
+강남대로변을 따라 도보2분 거리에 뉴발란스 매장이 있습니다. 그곳을 끼고 오른쪽 골목으로 올라가서 도보 5분 후에 을지다락이 2층에 보입니다!
+
+강남역 12번출구로 나올 경우,
+도보 3분 후에, 바나프레소 카페에서 좌회전 후, 도보 3분 후, 을지다락이 보일 거에요 :)
+
+애플스토어, 강남역cgv, 강남역롯데시네마, 강남역메가박스에서도 가깝습니다~
+
+자가용 이용시,
+죄송하지만, 주차공간이 따로 없어서, 매장 근처 유료 주차장 이용을 부탁 드릴게요~
+
+역삼문화공원제1호공영주차장
+강남구 테헤란로7길 21
+5분당 300원
+
+강남역파스타, 강남역브런치, 강남역양식, 강남역청첩장모임, 강남역데이트, 강남역점심, 강남역소개팅, 강남역맛집), PlaceDTO(pord=2, p_name=디슬로우 청담, p_category=피자, p_address=서울 강남구 선릉로160길 7 지하1층수인분당압구정로데오역 4번 출구에서 91m미터, p_content=디슬로우 만의 감성으로 해석한 시카고 스타일 딥 디쉬 피자와 크래커 씬 피자를 즐기실 수 있는 공간 입니다., p_image=https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20230627_128%2F16878582143040C0NW_JPEG%2FIMG_7266-1.JPEG, p_call=0507-1330-8419, p_star=4.85, p_site=null, p_opentime=05:30에 라스트오더
+5시 30분에 라스트오더
+토
+12:00 - 06:00
+05:30 라스트오더
+일
+12:00 - 23:30
+23:00 라스트오더
+월
+12:00 - 23:30
+23:00 라스트오더
+화
+12:00 - 06:00
+05:30 라스트오더
+수
+12:00 - 06:00
+05:30 라스트오더
+목
+12:00 - 06:00
+05:30 라스트오더
+금
+12:00 - 06:00
+05:30 라스트오더, p_park=[주차정보] [발렛주차가능]
+- 매장 앞 검정색 발렛 파킹 부스에 차량을 맡기실 수 있습니다.
+- (유료) 2시간 이용 하실 시 5000원), PlaceDTO(pord=3, p_name=어거스트 힐 강남점, p_category=양식, p_address=서울 강남구 강남대로106길 259신분당신논현역 6번 출구에서 259m미터, p_content=<식사 이용 시간 >
+식사 이용시간은 100분으로, 매장상황에 따라 100분 이상은 어려울 수 있음을 사전 공지 및 양해바랍니다., p_image=https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20240220_241%2F1708398564214Rqc5U_JPEG%2F%25C6%25BC%25BA%25BB.jpg, p_call=0507-1478-8013, p_star=4.56, p_site=http://www.instagram.com/augusthill_official_/, p_opentime=11:30에 영업 시작
+11시 30분에 영업 시작
+일
+11:30 - 22:00
+21:00 라스트오더, p_park=1. 신논현역 5,6번 출구에서 출발 시,
+1블럭 직진 대연빌딩 좌측 골목 언덕길로 4블럭 직진하시면 좌측에 위치해 있습니다.), PlaceDTO(pord=4, p_name=울프강 스테이크하우스, p_category=스테이크,립, p_address=서울 강남구 선릉로152길 21 영인빌딩 1층수인분당압구정로데오역 4번 출구에서 371m미터, p_content=세계적으로 유명한 스테이크하우스의 한국 1호점, 울프강 스테이크하우스 코리아, p_image=https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20160630_10%2F14672593049284cNr4_JPEG%2F176580533161010_27.jpeg, p_call=0507-1486-8700, p_star=4.5, p_site=http://wolfgangssteakhouse.co.kr/, p_opentime=11:00에 영업 시작
+11시 0분에 영업 시작
+매일
+11:00 - 22:00
+20:30 라스트오더
+- 예약률에 따라 예약이 조기 마감될 수 있습니다., p_park=null), PlaceDTO(pord=5, p_name=미도인 강남, p_category=양식, p_address=서울 강남구 강남대로102길 16 지상 2층2신분당강남역 11번 출구에서 414m미터, p_content=과거와 현재, 동양과 서양이 공존하는 공간으로 젋은 연인들의 데이트 장소나 친구들과의 모임, 특별한 날에 찾아볼 만한 공간에서 특별한 순간을 만들어줍니다., p_image=https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20230626_128%2F168775914700784teo_JPEG%2FIMG_4115.jpeg, p_call=0507-1441-2065, p_star=4.4, p_site=null, p_opentime=11:30에 영업 시작
+11시 30분에 영업 시작
+일
+11:30 - 21:00
+월
+11:30 - 21:00
+화
+11:30 - 21:00
+수
+11:30 - 21:00
+목
+11:30 - 21:00
+금
+11:30 - 21:00
+토
+11:30 - 21:00, p_park=강남역: 2호선 강남역 10번 출구로 나와서 도보로 약 6분 거리에 위치합니다.), PlaceDTO(pord=6, p_name=틴틴 강남점, p_category=이탈리아음식, p_address=서울 강남구 봉은사로2길 199신분당신논현역 4번 출구에서 174m미터, p_content=캐주얼 레스토랑 & 브런치 카페 틴틴, p_image=https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20230329_38%2F1680077186912m9uzX_JPEG%2F%25C5%25EB%25BA%25A3%25C0%25CC%25C4%25C1.jpg, p_call=0507-1476-0558, p_star=null, p_site=https://www.instagram.com/tteenteen_official, p_opentime=11:30에 영업 시작
+11시 30분에 영업 시작
+매일
+11:30 - 22:00
+20:00 라스트오더, p_park=신논현역 4번 출구에서 5시방향으로 170m정도 위치에 있습니다.), PlaceDTO(pord=7, p_name=꽁티드툴레아, p_category=브런치, p_address=서울 강남구 도산대로49길 39수인분당압구정로데오역 5번 출구에서 437m미터, p_content=꽁티드툴레아는 내추럴 프래그런스 브랜드입니다., p_image=https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20200914_239%2F1600012748465FVukt_JPEG%2FdlyCQ41XRzwZcpmE1sPYTpuY.jpeg.jpg, p_call=0507-1325-8490, p_star=null, p_site=http://www.contedetulear.com, p_opentime=11:00에 영업 시작
+11시 0분에 영업 시작
+매일
+11:00 - 24:00
+- 브레이크 타임(5시-6시) : 디저트 및 음료 주문가능, p_park=발렛파킹이 가능하며 매장 오시기전에 위치해 있고 일방통행길입니다.), PlaceDTO(pord=8, p_name=트리드, p_category=양식, p_address=서울 강남구 선릉로162길 16 2층수인분당압구정로데오역 3번 출구에서 166m미터, p_content=Diversity, Delicious, Delight - t r i d 입니다., p_image=https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20231123_78%2F1700736475707ozbTJ_JPEG%2FKakaoTalk_20230926_172536936_09.jpg, p_call=02-512-8312, p_star=4.7, p_site=https://www.instagram.com/tridseoul, p_opentime=매주 일요일 휴무
+화~토
+12:00 - 22:00
+15:00 - 18:00 브레이크타임
+- Last order 13:30, 19:30, p_park=압구정로데오역 3번출구로 나오셔서 직진하신후 꼬르소꼬모 건물 맞은편), PlaceDTO(pord=9, p_name=이식일사, p_category=양식, p_address=서울 강남구 봉은사로4길 17 지하 1층9신분당신논현역 4번 출구에서 168m미터, p_content=신논현역 맛집 양식 이식일사, p_image=https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20240927_284%2F1727440202735bLOvg_JPEG%2F%25C4%25A1%25C1%25EE%25BE%25D8%25C5%25BE_1_%25281%2529.jpg, p_call=0507-1319-7102, p_star=null, p_site=null, p_opentime=12:00에 영업 시작
+12시 0분에 영업 시작
+매일
+12:00 - 22:00
+15:00 - 17:00 브레이크타임
+21:30 라스트오더, p_park=신논현역 4번 출구로 나오시자마자 골목으로 들어오신다음 50m직진입니다.), PlaceDTO(pord=10, p_name=달마시안 압구정점, p_category=양식, p_address=서울 강남구 압구정로42길 42수인분당압구정로데오역 5번 출구에서 638m미터, p_content=압구정에 압구정로데오맛집 유럽식 레스토랑 달마시안, p_image=https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20210913_18%2F1631492525833HWAbY_JPEG%2F3tYcm3RZh_CgstNdpODxOE2B.jpg, p_call=0507-1491-0926, p_star=null, p_site=https://app.catchtable.co.kr/ct/shop/dalmatian, p_opentime=09:00에 영업 시작
+9시 0분에 영업 시작
+매일
+09:00 - 23:00
+22:00 라스트오더
+- 17:00-18:00 음료와 디저트만 주문 가능합니다., p_park=발렛주차는 30m 전방 핑크색 카페 앞 발렛부스를 이용해주시면 됩니다.)])
