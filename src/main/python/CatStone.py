@@ -100,7 +100,7 @@ async def get_place_list(place_search_dto: PlaceSearchDTO):
         for j in range(1, eleCount):
             try:
                 body = wd.find_element(By.CSS_SELECTOR,
-                                       '#_pcmap_list_scroll_container > ul > li:nth-child(%d) > div.CHC5F > a > div > div > span.TYaxT' % j)
+                    '#_pcmap_list_scroll_container > ul > li:nth-child(%d) > div.CHC5F > a > div > div > span.TYaxT' % j)
             except:
                 breakPoint = True
                 break
@@ -310,7 +310,13 @@ async def get_place_list(place_search_dto: PlaceSearchDTO):
 
     # 데이터베이스 연결
     DATABASE_URL = "mysql+pymysql://CatStone:catstone@localhost:3306/catstonedb"
-    engine = create_engine(DATABASE_URL, echo=True)
+    engine = create_engine(
+    DATABASE_URL,
+    pool_size=20,  # 기본 풀 크기 증가 (기본값: 5)
+    max_overflow=30,  # 최대 오버플로우 증가 (기본값: 10)
+    pool_timeout=60,  # 타임아웃 시간 증가 (기본값: 30)
+    pool_recycle=3600  # 연결 재활용 시간 설정 (1시간)
+)
 
     Base = declarative_base()
 
