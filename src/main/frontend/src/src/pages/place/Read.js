@@ -6,9 +6,9 @@ import './Read.css';
 function Read() {
   const { pord } = useParams();
   const [place, setPlace] = useState(null);
-  const [favorites, setFavorites] = useState(() => {
-    const savedFavorites = localStorage.getItem('bookmarks');
-    return savedFavorites ? JSON.parse(savedFavorites) : [];
+  const [bookmarks, setBookmarks] = useState(() => {
+    const savedBookmark = localStorage.getItem('bookmarks');
+    return savedBookmark ? JSON.parse(savedBookmark) : [];
   });
   const [isContentExpanded, setIsContentExpanded] = useState(false); // 내용 확장 상태 추가
 
@@ -41,31 +41,41 @@ function Read() {
   if (!place) {
     return <div>로딩 중...</div>;
   }
+  const toggleBookmark = async () => {
+  const isBookmarked = bookmarks.some(bookmark => bookmark.pord === pord);
 
-  const isFavorite = favorites.some(fav => fav && fav.pord === parseInt(pord));
+  try {
+    if (isBookmarked) {
+      // DELETE 요청 - pord만 사용
+      const response = await axios.delete('http://localhost:8080/api/store/remove',{
+        pord,
+        username: user.mid
+      });
 
-  const toggleFavorite = () => {
-    let updatedFavorites;
-
-    if (isFavorite) {
-      updatedFavorites = favorites.filter(fav => fav && fav.pord !== parseInt(pord));
+      if (response.status === 200) {
+        alert('북마크가 해제되었습니다.');
+        const updatedBookmarks = bookmarks.filter(bookmark => bookmark.pord !== pord);
+        setBookmarks(updatedBookmarks);
+        localStorage.setItem('bookmarks', JSON.stringify(updatedBookmarks));
+      }
     } else {
-      const newFavorite = {
-        pord: parseInt(pord),
-        p_name: place.p_name,
-        p_address: place.p_address,
-        p_call: place.p_call,
-        p_site: place.p_site,
-        p_opentime: place.p_opentime,
-        p_category: place.p_category,
-        p_park: place.p_park,
-      };
-      updatedFavorites = [...favorites, newFavorite];
-    }
+      // 북마크 추가
+      const response = await axios.post('http://localhost:8080/api/place/register', {
+        pord,
+        username: user.mid
+      });
 
-    setFavorites(updatedFavorites);
-    localStorage.setItem('bookmarks', JSON.stringify(updatedFavorites));
-    window.dispatchEvent(new Event('storage'));
+      if (response.status === 200) {
+        alert('북마크가 등록되었습니다.');
+        const updatedBookmarks = [...bookmarks, { pord }];
+        setBookmarks(updatedBookmarks);
+        localStorage.setItem('bookmarks', JSON.stringify(updatedBookmarks));
+      }
+    }
+  } catch (error) {
+    console.error('Error toggling bookmark:', error);
+    alert('처리 중 오류가 발생했습니다.');
+  }
   };
 
   const maxLength = 300; // 최대 글자 수 설정
@@ -105,8 +115,8 @@ function Read() {
             <p><strong>주차 안내:</strong> {place.p_park}</p>
           </div>
         </div>
-        <button className="favorite-button" onClick={toggleFavorite}>
-          {isFavorite ? (
+        <button className="favorite-button" onClick={() => toggleBookmark(place.pord)}>
+          {bookmarks.some((bookmark) => bookmark.pord === place.pord) ? (
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="pink" stroke="black" width="24px" height="24px">
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
               </svg>
