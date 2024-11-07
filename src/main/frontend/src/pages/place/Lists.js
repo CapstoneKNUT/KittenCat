@@ -98,25 +98,43 @@ function Lists() {
   }, [location, responseData.dtoList]);
 
   const toggleBookmark = async (pord) => {
-    /*if (!user || !user.username) {
-      alert('로그인이 필요합니다.');
-      return;
-    }*/
+    if (!user || !user.mid) {
+        alert('로그인이 필요합니다.');
+        return;
+    }
+
+    const isBookmarked = bookmarks.some(bookmark => bookmark.pord === pord);
 
     try {
-      const response = await axios.post('http://localhost:8080/api/place/register', { pord, username });
-      if (response.status === 200) {
-        alert('북마크가 등록되었습니다.');
-        setBookmarks((prev) => [...prev, { pord }]);
-        localStorage.setItem('bookmarks', JSON.stringify([...bookmarks, { pord }]));
-      } else {
-        alert('북마크 등록에 실패했습니다.');
-      }
+        if (isBookmarked) {
+            // DELETE 요청 - pord만 사용
+            const response = await axios.delete(`http://localhost:8080/api/store/remove/${pord}`);
+            
+            if (response.status === 200) {
+                alert('북마크가 해제되었습니다.');
+                const updatedBookmarks = bookmarks.filter(bookmark => bookmark.pord !== pord);
+                setBookmarks(updatedBookmarks);
+                localStorage.setItem('bookmarks', JSON.stringify(updatedBookmarks));
+            }
+        } else {
+            // 북마크 추가
+            const response = await axios.post('http://localhost:8080/api/place/register', {
+                pord,
+                username: user.mid
+            });
+            
+            if (response.status === 200) {
+                alert('북마크가 등록되었습니다.');
+                const updatedBookmarks = [...bookmarks, { pord }];
+                setBookmarks(updatedBookmarks);
+                localStorage.setItem('bookmarks', JSON.stringify(updatedBookmarks));
+            }
+        }
     } catch (error) {
-      console.error('Error registering bookmark:', error);
+        console.error('Error toggling bookmark:', error);
+        alert('처리 중 오류가 발생했습니다.');
     }
-  };
-
+};
   const filteredSubArea = selectedArea
       ? area.find((a) => a.name === selectedArea)?.subArea || []
       : [];
