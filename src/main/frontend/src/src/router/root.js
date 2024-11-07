@@ -12,8 +12,8 @@ const PlaceList = lazy(() => import("../pages/place/Lists"))
 const PlaceRead = lazy(() => import("../pages/place/Read"))
 const StoreList = lazy(() => import ("../Store/StoreLists"))
 const StoreRead = lazy(() => import ("../Store/StoreRead"))
-const Planplan = lazy(() => import ("../pages/plan/plan"))
-const Planregister = lazy(() => import ("../pages/plan/register"))
+const Plan = lazy(() => import ("../pages/plan/plan"))
+const PlanRegister = lazy(() => import ("../pages/plan/register"))
 
 /*
 const MemberJoin = lazy(() => import("../pages/member/join"))
