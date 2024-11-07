@@ -35,7 +35,7 @@ public class Member {
     @Column(length = 30)
     private String m_phone; // 전화번호
 
-    private LocalDate m_birth; // 생년월일
+    private String m_birth; // 생년월일
 
     @Column(length = 100)
     private String m_address; // 주소(거주지)

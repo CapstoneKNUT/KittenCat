@@ -25,7 +25,7 @@ public class MemberDTO {
 
     private String m_address;
 
-    private LocalDate m_birth;
+    private String m_birth;
 
     private String m_gender;
 
