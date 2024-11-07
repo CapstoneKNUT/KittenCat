@@ -32,4 +32,6 @@ public class StoreToPlanDTO {
 
     private String p_park;
 
+    private Long ppOrd;
+
 }

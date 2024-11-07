@@ -48,7 +48,7 @@ class TransTimeDTO(BaseModel):
 async def get_place_list(place_search_dto: PlaceSearchDTO):
     p_count = place_search_dto.p_count or 10
     # 받은 데이터를 처리하거나 가공
-    search = f"{place_search_dto.p_area + ' '}{place_search_dto.p_subArea + ' '}{place_search_dto.p_category + ' '}{place_search_dto.p_keyword}".strip()
+    search = f"{place_search_dto.p_area or '' + ' '}{place_search_dto.p_subArea or '' + ' '}{place_search_dto.p_category or '' + ' '}{place_search_dto.p_keyword or ''}".strip()
 
     list_url = f'https://map.naver.com/p/search/{search}?c=10.00,0,0,0,dh'
 

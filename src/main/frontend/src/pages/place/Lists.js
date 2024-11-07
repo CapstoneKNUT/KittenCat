@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import './Lists.css';
 import { area } from './Area';
-
+import { useUser } from '../member/UserContext';
 
 function Lists() {
   const [places, setPlaces] = useState([]);
@@ -15,15 +15,12 @@ function Lists() {
   const [selectedArea, setSelectedArea] = useState('');
   const [selectedSubArea, setSelectedSubArea] = useState('');
   const [keywordInput, setKeywordInput] = useState('');
-  const [p_area, setP_area] = useState('');
-  const [p_subArea, setP_subArea] = useState('');
-  const [p_category, setP_category] = useState('');
-  const [p_count, setP_count] = useState('');
-  const [p_keyword, setP_keyword] = useState('');
   const location = useLocation();
-  const navigate = useNavigate();
+  const { user } = useUser();
+  const username = user ? user.mid : null;
 
   const [pageRequest, setPageRequest] = useState({
+    page: 1,
     size: 10,
   });
   const [responseData, setResponseData] = useState({
@@ -34,25 +31,25 @@ function Lists() {
     end: 0,
     page: 1,
   });
-    // 데이터를 받아오는 함수
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('http://localhost:8080/api/place/list', {
-          params: pageRequest,
-        });
-        if (response.data?.dtoList) {
-          setResponseData(response.data);
-        } else {
-          console.error('Invalid data structure received from API.');
-        }
-      } catch (error) {
-        console.log(error);
+
+  const fetchData = useCallback(async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/place/list', {
+        params: pageRequest,
+      });
+      if (response.data?.dtoList) {
+        setResponseData(response.data);
+      } else {
+        console.error('Invalid data structure received from API.');
       }
-    };
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }, [pageRequest]);
 
   useEffect(() => {
     fetchData();
-  }, [pageRequest]);
+  }, [fetchData]);
 
   const handlePageChange = (pageNum) => {
     setPageRequest((prev) => ({
@@ -61,176 +58,141 @@ function Lists() {
     }));
   };
 
-  // 하위 지역 필터링 함수
-  const filteredSubArea = selectedArea
-    ? area.find((a) => a.name === selectedArea)?.subArea || []
-    : [];
-
-  // 검색 기능
   const handleSearch = async (e) => {
     e.preventDefault();
-
     const p_area = selectedArea;
     const p_subArea = selectedSubArea !== '지역 전체' ? selectedSubArea : '';
     const p_keyword = keywordInput;
 
-  try {
-    // 서버로 POST 요청을 보내고 응답 받기
-    const response = await axios.post('http://localhost:8080/api/place/list', {
-      p_area,
-      p_subArea,
-      p_category: '', // 카테고리가 필요하다면 추가하세요.
-      p_count: 20,    // 원하는 카운트 값을 넣으세요.
-      p_keyword
-    });
-  } catch (error) {
-    console.error('에러 발생:', error);
-  }
+    setPageRequest({ page: 1, size: 10 });
+
+    try {
+      const response = await axios.post('http://localhost:8080/api/place/list', {
+        p_area,
+        p_subArea,
+        p_category: '',
+        p_count: 20,
+        p_keyword,
+      });
+      setResponseData(response.data);
+    } catch (error) {
+      console.error('Error during search:', error);
+    }
   };
 
   useEffect(() => {
-    console.log('responseData:', responseData);
     const searchParams = new URLSearchParams(location.search);
     const locationParam = searchParams.get('location') || '';
     const districtParam = searchParams.get('district') || '';
     const keywordParam = searchParams.get('keyword') || '';
 
     const filteredPlaces = responseData.dtoList.filter((item) => {
-      const matchesLocation = locationParam ? item.p_add.includes(locationParam) : true;
-      const matchesDistrict = districtParam ? item.p_add.includes(districtParam) : true;
+      const matchesLocation = locationParam ? item.p_address.includes(locationParam) : true;
+      const matchesDistrict = districtParam ? item.p_address.includes(districtParam) : true;
       const matchesKeyword = keywordParam ? item.p_name.includes(keywordParam) : true;
 
       return matchesLocation && matchesDistrict && matchesKeyword;
     });
 
-    if (filteredPlaces.length > 0) {
-      setPlaces(filteredPlaces);
-    } else {
-      setPlaces(responseData.dtoList);
-    }
+    setPlaces(filteredPlaces.length > 0 ? filteredPlaces : responseData.dtoList);
   }, [location, responseData.dtoList]);
 
-  const toggleBookmark = (pord) => {
-    // places 배열이 비어있으면 함수 종료
-    if (!places || places.length === 0) {
-      console.error('No places available.');
+  const toggleBookmark = async (pord) => {
+    /*if (!user || !user.username) {
+      alert('로그인이 필요합니다.');
       return;
+    }*/
+
+    try {
+      const response = await axios.post('http://localhost:8080/api/place/register', { pord, username });
+      if (response.status === 200) {
+        alert('북마크가 등록되었습니다.');
+        setBookmarks((prev) => [...prev, { pord }]);
+        localStorage.setItem('bookmarks', JSON.stringify([...bookmarks, { pord }]));
+      } else {
+        alert('북마크 등록에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Error registering bookmark:', error);
     }
-
-    const bookmarkItem = places.find(item => item.pord === pord);
-
-    if (!bookmarkItem) {
-      console.error(`Bookmark item with pord ${pord} not found.`);
-      return; // 찾지 못했을 경우 함수 종료
-    }
-
-    const isBookmarked = bookmarks && bookmarks.some(bookmark => bookmark.pord === pord);
-    const updatedBookmarks = isBookmarked
-      ? bookmarks.filter(bookmark => bookmark && bookmark.pord !== pord)
-      : [...bookmarks, bookmarkItem];
-
-    setBookmarks(updatedBookmarks);
-    localStorage.setItem('bookmarks', JSON.stringify(updatedBookmarks));
-    window.dispatchEvent(new Event('storage'));
   };
 
+  const filteredSubArea = selectedArea
+      ? area.find((a) => a.name === selectedArea)?.subArea || []
+      : [];
+
   return (
-    <div className="results-page">
-      <h2>검색 결과</h2>
-      <form className="search-form" onSubmit={handleSearch}>
-        <select value={selectedArea} onChange={(e) => {setSelectedArea(e.target.value); setP_area(e.target.value);}}>
-          <option value="">지역 선택</option>
-          {area.map((a) => (
-            <option key={a.name} value={a.name}>
-              {a.name}
-            </option>
-          ))}
-        </select>
+      <div className="results-page">
+        <h2>검색 결과</h2>
+        <form className="search-form" onSubmit={handleSearch}>
+          <select value={selectedArea} onChange={(e) => setSelectedArea(e.target.value)}>
+            <option value="">지역 선택</option>
+            {area.map((a) => (
+                <option key={a.name} value={a.name}>
+                  {a.name}
+                </option>
+            ))}
+          </select>
 
-        <select value={selectedSubArea} onChange={(e) => {setSelectedSubArea(e.target.value); setP_subArea(e.target.value);}} disabled={!selectedArea}>
-          <option value="">시/구/군</option>
-          <option value="지역 전체">지역 전체</option>
-          {filteredSubArea.map((sub, index) => (
-            <option key={index} value={sub}>
-              {sub}
-            </option>
-          ))}
-        </select>
+          <select
+              value={selectedSubArea}
+              onChange={(e) => setSelectedSubArea(e.target.value)}
+              disabled={!selectedArea}
+          >
+            <option value="">시/구/군</option>
+            <option value="지역 전체">지역 전체</option>
+            {filteredSubArea.map((sub, index) => (
+                <option key={index} value={sub}>
+                  {sub}
+                </option>
+            ))}
+          </select>
 
-        <input
-          type="text"
-          value={keywordInput}
-          onChange={(e) => {setKeywordInput(e.target.value); setP_keyword(e.target.value);}}
-          placeholder="키워드 검색"
-        />
-        <button type="submit">검색</button>
-      </form>
+          <input
+              type="text"
+              value={keywordInput}
+              onChange={(e) => setKeywordInput(e.target.value)}
+              placeholder="키워드 검색"
+          />
+          <button type="submit">검색</button>
+        </form>
 
-      <ul className="results-list">
-        {places && places.map((place) => (
-          <li key={place.pord}>
-            <Link to={`/place/read/${place.pord}`}>
-              <div>{place.p_name}</div>
-              <div>{place.p_category}</div>
-              <div>{place.p_address}</div>
-              <img src={place.p_image} alt={place.p_name} style={{ width: '100px' }} />
-              <div>⭐ {place.p_star}</div>
-            </Link>
-            <button onClick={() => toggleBookmark(place.pord)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
-              {bookmarks && bookmarks.some(bookmark => bookmark && bookmark.pord === place.pord) ? (
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="pink" stroke="black" width="24px" height="24px">
-                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                </svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" width="24px" height="24px">
-                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                </svg>
-              )}
-            </button>
-          </li>
-        ))}
-      </ul>
-      <div className="float-end">
-        <ul className="pagination flex-wrap">
-          {responseData.prev && (
-            <li className="page-item">
-              <button
-                className="page-link"
-                onClick={() => handlePageChange(responseData.start - 1)}
-              >
-                Previous
-              </button>
-            </li>
-          )}
-          {Array.from({ length: responseData.end - responseData.start + 1 }).map((_, index) => (
-            <li
-              className={`page-item ${responseData.page === responseData.start + index ? 'active' : ''}`}
-              key={index}
-            >
-              <button
-                className="page-link"
-                onClick={() => handlePageChange(responseData.start + index)}
-              >
-                {responseData.start + index}
-              </button>
-            </li>
+        <ul className="results-list">
+          {places.map((place) => (
+              <li key={place.pord}>
+                <Link to={`/place/read/${place.pord}`}>
+                  <div>{place.p_name}</div>
+                  <div>{place.p_category}</div>
+                  <div>{place.p_address}</div>
+                  <img src={place.p_image} alt={place.p_name} style={{ width: '100px' }} />
+                  <div>⭐ {place.p_star}</div>
+                </Link>
+                <button onClick={() => toggleBookmark(place.pord)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                  {bookmarks.some((bookmark) => bookmark.pord === place.pord) ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="pink" stroke="black" width="24px" height="24px">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                      </svg>
+                  ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" width="24px" height="24px">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                      </svg>
+                  )}
+                </button>
+              </li>
           ))}
-          {responseData.next && (
-            <li className="page-item">
-              <button
-                className="page-link"
-                onClick={() => handlePageChange(responseData.end + 1)}
-              >
-                Next
-              </button>
-            </li>
-          )}
         </ul>
+
+        <div className="pagination">
+          {responseData.prev && <button onClick={() => handlePageChange(responseData.page - 1)}>이전</button>}
+          {Array.from({ length: responseData.end - responseData.start + 1 }, (_, index) => (
+              <button key={index + responseData.start} onClick={() => handlePageChange(index + responseData.start)}>
+                {index + responseData.start}
+              </button>
+          ))}
+          {responseData.next && <button onClick={() => handlePageChange(responseData.page + 1)}>다음</button>}
+        </div>
       </div>
-    </div>
   );
 }
-
-
 
 export default Lists;

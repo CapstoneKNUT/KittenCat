@@ -38,4 +38,8 @@ public class StoreToPlan {
 
     private String p_park;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ppOrd")
+    private PlanPlace planPlace;
+
 }
