@@ -9,13 +9,13 @@ const UserProfile = () => {
 
     useEffect(() => {
         if (user === null) {
-            navigate('/member');
+            navigate('/member/login');
         }
     }, [user, navigate]);
 
     const handleLogout = () => {
         logout();
-        navigate('/member');
+        navigate('/member/login');
     };
 
     const handleModify = () => {

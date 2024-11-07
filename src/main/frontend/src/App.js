@@ -22,7 +22,7 @@ function App() {
             <Router>
                 <HeaderPage />
                 <Routes>
-                    <Route path="/member" element={<LoginForm />} />
+                    <Route path="/member/login" element={<LoginForm />} />
                     <Route path="/member/join" element={<JoinForm />} />
                     <Route path="/member/profile" element={<UserProfile />} />
                     <Route path="/member/modify" element={<Modify />} />

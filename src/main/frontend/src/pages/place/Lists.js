@@ -17,7 +17,7 @@ function Lists() {
   const [keywordInput, setKeywordInput] = useState('');
   const location = useLocation();
   const { user } = useUser();
-  const username = user ? user.username : null;
+  const username = user ? user.mid : null;
 
   const [pageRequest, setPageRequest] = useState({
     page: 1,
@@ -102,8 +102,6 @@ function Lists() {
       alert('로그인이 필요합니다.');
       return;
     }*/
-
-    const username = user.username;
 
     try {
       const response = await axios.post('http://localhost:8080/api/place/register', { pord, username });

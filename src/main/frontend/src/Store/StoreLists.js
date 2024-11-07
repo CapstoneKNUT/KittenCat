@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { useUser } from '../pages/member/UserContext.js';
 import { area } from "../pages/place/Area";
@@ -28,6 +28,7 @@ function StoreLists() {
     });
 
     const location = useLocation();
+    const navigate = useNavigate();
 
     const fetchData = async (username) => {
         try {
@@ -49,8 +50,11 @@ function StoreLists() {
     useEffect(() => {
         if (user) {
             fetchData(user.mid);
+        } else {
+            alert("로그인 후 이용해주세요.");
+            navigate('/member/login');
         }
-    }, [user, pageRequest]);
+    }, [user, pageRequest, navigate]);
 
     const handlePageChange = (pageNum) => {
         setPageRequest((prev) => ({
@@ -105,7 +109,7 @@ function StoreLists() {
 
     return (
         <div className="results-page">
-            <h2>검색 결과</h2>
+            <h2>{user ? `${user.m_name}님의 찜 목록` : "찜 목록"}</h2>
             <form className="search-form" onSubmit={handleSearch}>
                 <select value={selectedArea} onChange={(e) => { setSelectedArea(e.target.value); setP_area(e.target.value); }}>
                     <option value="">지역 선택</option>
@@ -135,19 +139,24 @@ function StoreLists() {
                 <button type="submit">검색</button>
             </form>
 
-            <ul className="results-list">
-                {store && store.map((store) => (
-                    <li key={store.sno}>
-                        <Link to={`/store/read/${store.sno}`}>
-                            <div>{store.p_name}</div>
-                            <div>{store.p_category}</div>
-                            <div>{store.p_address}</div>
-                            <img src={store.p_image} alt={store.p_name} style={{ width: '100px' }} />
-                            <div>⭐ {store.p_star}</div>
-                        </Link>
-                    </li>
-                ))}
-            </ul>
+            {store.length > 0 ? (
+                <ul className="results-list">
+                    {store.map((storeItem) => (
+                        <li key={storeItem.sno}>
+                            <Link to={`/store/read/${storeItem.sno}`}>
+                                <div>{storeItem.p_name}</div>
+                                <div>{storeItem.p_category}</div>
+                                <div>{storeItem.p_address}</div>
+                                <img src={storeItem.p_image} alt={storeItem.p_name} style={{ width: '100px' }} />
+                                <div>⭐ {storeItem.p_star}</div>
+                            </Link>
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <div className="no-results">찜한 항목이 없습니다.</div>
+            )}
+
             <div className="float-end">
                 <ul className="pagination flex-wrap">
                     {responseData.prev && (
