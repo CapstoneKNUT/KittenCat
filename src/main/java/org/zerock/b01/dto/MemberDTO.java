@@ -1,5 +1,7 @@
 package org.zerock.b01.dto;
 
+import java.time.LocalDate;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +25,7 @@ public class MemberDTO {
 
     private String m_address;
 
-    private String m_birth;
+    private LocalDate m_birth;
 
     private String m_gender;
 
