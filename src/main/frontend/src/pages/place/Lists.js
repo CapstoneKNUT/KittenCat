@@ -108,7 +108,10 @@ function Lists() {
     try {
         if (isBookmarked) {
             // DELETE 요청 - pord만 사용
-            const response = await axios.delete(`http://localhost:8080/api/store/remove/${pord}`);
+            const response = await axios.delete('http://localhost:8080/api/store/remove',{
+                pord,
+                username: user.mid
+            });
             
             if (response.status === 200) {
                 alert('북마크가 해제되었습니다.');
