@@ -14,5 +14,5 @@ import java.time.LocalTime;
 @NoArgsConstructor
 public class PlanPlaceBodyDTO {
     private Long sno;
-    private LocalTime takeDate;
+    private LocalTime takeTime;
 }

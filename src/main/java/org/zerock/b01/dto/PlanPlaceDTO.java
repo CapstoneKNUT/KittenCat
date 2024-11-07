@@ -28,11 +28,11 @@ public class PlanPlaceDTO {
 
     private LocalTime pp_takeDate;
 
-    private Float pp_mapx;
+    private Double pp_mapx;
 
-    private Float pp_mapy;
+    private Double pp_mapy;
 
-    private Boolean NightToNight;
+    private Byte pp_NightToNight;
 
     private PlanSet planNo;
 

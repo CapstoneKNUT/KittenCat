@@ -14,12 +14,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class PlanSetDTO {
 
+    private String title;
+
     private Long planNo;
 
     private Boolean isCar;
 
     private String writer;
 
-    private LocalDateTime startDate;
+    private LocalDateTime ps_startDate;
 
 }

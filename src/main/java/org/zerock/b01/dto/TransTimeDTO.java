@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -13,9 +15,7 @@ public class TransTimeDTO {
 
     private String writer;
 
-    private Integer t_startHour;
-
-    private Integer t_startMinute;
+    private LocalDateTime t_startdatetime;
 
     private String start_location;
 
