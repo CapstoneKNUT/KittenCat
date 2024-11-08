@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import axios from "axios";
-import { useUser } from '../pages/member/UserContext.js';
-import { area } from "../pages/place/Area";
+import { useUser } from '../member/UserContext.js';
+import { area } from "../place/Area";
 
 function StoreLists() {
     const { user } = useUser();
@@ -13,9 +13,14 @@ function StoreLists() {
     const [p_area, setP_area] = useState('');
     const [p_subArea, setP_subArea] = useState('');
     const [p_keyword, setP_keyword] = useState('');
+    const [places, setPlaces] = useState([]);
+    const [bookmarks, setBookmarks] = useState(() => {
+        const savedBookmarks = localStorage.getItem('bookmarks');
+        return savedBookmarks ? JSON.parse(savedBookmarks) : [];
+    });
 
     const [pageRequest, setPageRequest] = useState({
-        size: 10,
+        size: 12,
         page: 1,
     });
     const [responseData, setResponseData] = useState({
@@ -28,6 +33,7 @@ function StoreLists() {
     });
 
     const location = useLocation();
+    const navigate = useNavigate();
 
     const fetchData = async (username) => {
         try {
@@ -49,8 +55,11 @@ function StoreLists() {
     useEffect(() => {
         if (user) {
             fetchData(user.mid);
+        } else {
+            alert("로그인 후 이용해주세요.");
+            navigate('/member/login');
         }
-    }, [user, pageRequest]);
+    }, [user, pageRequest, navigate]);
 
     const handlePageChange = (pageNum) => {
         setPageRequest((prev) => ({
@@ -103,9 +112,42 @@ function StoreLists() {
         }
     }, [location, responseData.dtoList]);
 
-    return (
+    const toggleBookmark = async (sno) => {
+        if (!user || !user.mid) {
+            alert('로그인이 필요합니다.');
+            return;
+        }
+
+        const isBookmarked = bookmarks.some(bookmark => bookmark.sno === sno);
+
+        try {
+            if (isBookmarked) {
+                // 북마크 제거
+                const response = await axios.delete('http://localhost:8080/api/store/remove', {
+                    params: {
+                        username: user.mid.mid,
+                        sno
+                    }
+                });
+
+                if (response.status === 200) {
+                    alert('북마크가 제거되었습니다.');
+                    const updatedBookmarks = [...bookmarks, {sno}];
+                    setBookmarks(updatedBookmarks);
+                    localStorage.setItem('bookmarks', JSON.stringify(updatedBookmarks));
+                }
+            }else{
+
+            }
+        } catch (error) {
+            console.error('Error toggling bookmark:', error);
+            alert('처리 중 오류가 발생했습니다.' + error);
+        }
+    };
+
+        return (
         <div className="results-page">
-            <h2>검색 결과</h2>
+            <h2>{user ? `${user.m_name}님의 찜 목록` : "찜 목록"}</h2>
             <form className="search-form" onSubmit={handleSearch}>
                 <select value={selectedArea} onChange={(e) => { setSelectedArea(e.target.value); setP_area(e.target.value); }}>
                     <option value="">지역 선택</option>
@@ -135,19 +177,40 @@ function StoreLists() {
                 <button type="submit">검색</button>
             </form>
 
-            <ul className="results-list">
-                {store && store.map((store) => (
-                    <li key={store.sno}>
-                        <Link to={`/store/read/${store.sno}`}>
-                            <div>{store.p_name}</div>
-                            <div>{store.p_category}</div>
-                            <div>{store.p_address}</div>
-                            <img src={store.p_image} alt={store.p_name} style={{ width: '100px' }} />
-                            <div>⭐ {store.p_star}</div>
-                        </Link>
-                    </li>
-                ))}
-            </ul>
+            {store.length > 0 ? (
+                <ul className="results-list">
+                    {store.map((storeItem) => (
+                        <li key={storeItem.sno}>
+                            <Link to={`/store/read/${storeItem.sno}`}>
+                                <div>{storeItem.p_name}</div>
+                                <div>{storeItem.p_category}</div>
+                                <div>{storeItem.p_address}</div>
+                                <img src={storeItem.p_image} alt={storeItem.p_name} style={{width: '100px'}}/>
+                                <div>⭐ {storeItem.p_star}</div>
+                            </Link>
+                            <button onClick={() => toggleBookmark(store.sno)}
+                                    style={{background: 'none', border: 'none', cursor: 'pointer'}}>
+                                {bookmarks.some((bookmark) => bookmark.sno === store.sno) ? (
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="pink"
+                                         stroke="black" width="24px" height="24px">
+                                        <path
+                                            d="M12 21.7l-1.6-1.4C5.1 16.1 2 12.7 2 8.8 2 5.6 4.6 3 7.8 3c1.9 0 3.7 0.9 4.7 2.3C13.5 3.9 15.3 3 17.2 3 20.4 3 23 5.6 23 8.8c0 3.9-3.1 7.3-8.4 11.5L12 21.7z"/>
+                                    </svg>
+                                ) : (
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                         stroke="black" width="24px" height="24px">
+                                        <path
+                                            d="M12 21.7l-1.6-1.4C5.1 16.1 2 12.7 2 8.8 2 5.6 4.6 3 7.8 3c1.9 0 3.7 0.9 4.7 2.3C13.5 3.9 15.3 3 17.2 3 20.4 3 23 5.6 23 8.8c0 3.9-3.1 7.3-8.4 11.5L12 21.7z"/>
+                                    </svg>
+                                )}
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <div className="no-results">찜한 항목이 없습니다.</div>
+            )}
+
             <div className="float-end">
                 <ul className="pagination flex-wrap">
                     {responseData.prev && (
@@ -160,12 +223,12 @@ function StoreLists() {
                             </button>
                         </li>
                     )}
-                    {Array.from({ length: responseData.end - responseData.start + 1 }).map((_, index) => (
+                    {Array.from({length: responseData.end - responseData.start + 1}).map((_, index) => (
                         <li
                             className={`page-item ${responseData.page === responseData.start + index ? 'active' : ''}`}
                             key={index}
                         >
-                            <button
+                        <button
                                 className="page-link"
                                 onClick={() => handlePageChange(responseData.start + index)}
                             >

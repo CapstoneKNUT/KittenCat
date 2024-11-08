@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class PlanSetDTO {
 
+    private String title;
+
     private Long planNo;
 
     private Boolean isCar;

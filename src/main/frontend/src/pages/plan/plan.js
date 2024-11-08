@@ -1,20 +1,83 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useContext, createContext} from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import './plan.css';
+import { useUser } from '../member/UserContext.js';
+import {Link, useLocation, useNavigate} from 'react-router-dom';
 
 function PlanRegister() {
-const [selectedPlaces, setSelectedPlaces] = useState([]);
-const [transportation, setTransportation] = useState('');
-const [startDate, setStartDate] = useState('');
-const [endDate, setEndDate] = useState('');
-const [bookmarkedPlaces, setBookmarkedPlaces] = useState([]);
-const [savedPlanId, setSavedPlanId] = useState(null);
+    const location = useLocation();
+    const { user } = useUser();
+    const [store, setStore] = useState([]);
+    const navigate = useNavigate();
+    const [selectedPlaces, setSelectedPlaces] = useState([]);
+    const [transportation, setTransportation] = useState('');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+    const [responseData, setResponseData] = useState({
+        dtoList: [],
+        prev: false,
+        next: false,
+        start: 0,
+        end: 0,
+        page: 1,
+    });
+
+    const [pageRequest, setPageRequest] = useState({
+        size: 10,
+        page: 1,
+    });
+    const [bookmarkedPlaces, setBookmarkedPlaces] = useState({
+        dtoList: [],
+        prev: false,
+        next: false,
+        start: 0,
+        end: 0,
+        page: 1,
+    });
+    const [savedPlanId, setSavedPlanId] = useState(null);
+
+    useEffect(() => {
+        if (user) {
+            loadBookmarkedPlaces(user.mid);
+        } else {
+            alert("로그인 후 이용해주세요.");
+            navigate('/member/login');
+        }
+    }, [user,pageRequest, navigate]);
+
+
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const locationParam = searchParams.get('location') || '';
+        const districtParam = searchParams.get('district') || '';
+        const keywordParam = searchParams.get('keyword') || '';
+
+        const filteredStores = responseData.dtoList.filter((item) => {
+            const matchesLocation = locationParam ? item.p_address.includes(locationParam) : true;
+            const matchesDistrict = districtParam ? item.p_address.includes(districtParam) : true;
+            const matchesKeyword = keywordParam ? item.p_name.includes(keywordParam) : true;
+
+            return matchesLocation && matchesDistrict && matchesKeyword;
+        });
+
+        if (filteredStores.length > 0) {
+            setStore(filteredStores);
+        } else {
+            setStore(responseData.dtoList);
+        }
+    }, [location, responseData.dtoList]);
 
 // 찜 목록 불러오기
-const loadBookmarkedPlaces = async () => {
+const loadBookmarkedPlaces = async (username) => {
     try {
-    const response = await axios.get('http://localhost:8080/api/place/bookmarks');
-    setBookmarkedPlaces(response.data);
+    const response = await axios.get('http://localhost:8080/api/store/list', {                params: {
+            username,
+        },});
+        if (response.data?.dtoList) {
+            setBookmarkedPlaces(response.data);
+        } else {
+            console.error('Invalid data structure received from API.');
+        }
     } catch (error) {
     console.error('Error loading bookmarks:', error);
     }
@@ -65,13 +128,13 @@ return (
 
     <div className="bookmarked-places">
         <h3>찜한 장소</h3>
-        {bookmarkedPlaces.map(place => (
+        {bookmarkedPlaces.dtoList.map(store => (
         <div 
-            key={place.pord} 
-            onClick={() => addPlace(place)}
-            className="place-item"
+            key={store.sno}
+            onClick={() => addPlace(store)}
+            className="store-item"
         >
-            {place.p_name}
+            {store.p_name}
         </div>
         ))}
     </div>

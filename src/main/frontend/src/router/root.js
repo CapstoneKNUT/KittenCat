@@ -9,8 +9,8 @@ const Loading = () => <div className="loading-spinner">Loading...</div>;
 const Main = lazy(() => import("../pages/main"));
 const PlaceList = lazy(() => import("../pages/place/Lists"));
 const PlaceRead = lazy(() => import("../pages/place/Read"));
-const StoreList = lazy(() => import("../Store/StoreLists"));
-const StoreRead = lazy(() => import("../Store/StoreRead")); 
+const StoreList = lazy(() => import("../pages/Store/StoreLists"));
+const StoreRead = lazy(() => import("../pages/Store/StoreRead"));
 const Plan = lazy(() => import("../pages/plan/plan"));
 const PlanRegister = lazy(() => import("../pages/plan/register"));
 
@@ -58,16 +58,7 @@ const router = createBrowserRouter([
         },
         {
             path: "plan",
-            children: [
-                {
-                    index: true, 
-                    element: withSuspense(Plan)
-                },
-                {
-                    path: "register",
-                    element: withSuspense(PlanRegister)
-                }
-            ]
+            element: withSuspense(Plan)
         }
     ]
 },

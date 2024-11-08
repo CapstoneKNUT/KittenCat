@@ -1,38 +1,145 @@
+/* plan.css */
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f4; /* 전체 배경색 */
+  margin: 0;
+  padding: 0;
+}
+
 .plan-register {
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 20px;
+  max-width: 800px;
+  margin: 20px auto;
   padding: 20px;
+  background-color: #ffffff; /* 카드 배경색 */
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.home-button,
+.list-button,
+.view-plan-button {
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  color: white;
+  background-color: #007bff;
+  transition: background-color 0.3s;
+}
+
+.home-button:hover,
+.list-button:hover,
+.view-plan-button:hover {
+  background-color: #0056b3; /* Hover 시 색상 변화 */
 }
 
 .bookmarked-places {
-  border-right: 1px solid #ddd;
-  padding-right: 20px;
+  margin-bottom: 20px;
 }
 
-.place-item {
+.bookmarked-places h3 {
+  margin: 0 0 10px;
+  font-size: 1.5em;
+  color: #333;
+}
+
+.store-item {
   padding: 10px;
-  margin: 5px 0;
-  border: 1px solid #ddd;
+  background-color: #f8f9fa; /* 배경색 */
   border-radius: 5px;
+  margin-bottom: 10px;
   cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.store-item:hover {
+  background-color: #e2e6ea; /* Hover 시 색상 변화 */
 }
 
 .schedule-timeline {
-  padding: 20px;
+  margin-top: 20px;
+}
+
+.date-selector {
+  margin-bottom: 20px;
+}
+
+.date-selector input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  font-size: 1em;
+}
+
+.selected-places {
+  margin-top: 20px;
 }
 
 .timeline-item {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  margin: 10px 0;
   padding: 10px;
-  border: 1px solid #ddd;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.time-input {
+  width: 30%;
+}
+
+.time-input input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ced4da;
   border-radius: 5px;
 }
 
+.place-info {
+  flex-grow: 1;
+  margin-left: 10px;
+  color: #333;
+}
+
 .transportation-info {
-  margin: 10px 0;
-  color: #666;
+  margin-top: 5px;
   font-size: 0.9em;
+  color: #6c757d; /* 회색 */
+}
+
+.save-success {
+  text-align: center;
+  margin: 20px 0;
+  padding: 20px;
+  background-color: #d4edda;
+  border-radius: 5px;
+  color: #155724; /* 성공 메시지 색상 */
+}
+
+.save-button {
+  display: block;
+  width: 200px;
+  margin: 20px auto;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.save-button:hover {
+  background-color: #0056b3; /* Hover 시 색상 변화 */
 }

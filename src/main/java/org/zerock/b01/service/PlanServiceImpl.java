@@ -279,7 +279,7 @@ public class PlanServiceImpl implements PlanService {
             br.close();
 
             JSONObject jsonResponse = new JSONObject(response.toString());
-            log.info("버그 체크" + jsonResponse.toString());
+            log.info("버그 체크" + jsonResponse);
             JSONArray addresses = jsonResponse.getJSONArray("addresses");
 
             GetXYResponse result = new GetXYResponse();
@@ -416,7 +416,7 @@ public class PlanServiceImpl implements PlanService {
                     try {
                         System.out.println("오류메세지 : " + e);
                         TransTimeDTO transTimeDTO = TransTimeDTO.builder()
-                                .t_startdatetime(pp_startDate.toString())
+                                .t_startdatetime(pp_startDate)
                                 .start_location(LastPlanPlace.getPp_startAddress())
                                 .arrive_location(Address)
                                 .isCar(true)
@@ -440,7 +440,7 @@ public class PlanServiceImpl implements PlanService {
                     } catch (Exception ex) {
                         System.out.println("오류메세지 : " + ex);
                         TransTimeDTO transTimeDTO = TransTimeDTO.builder()
-                                .t_startdatetime(pp_startDate.toString())
+                                .t_startdatetime(pp_startDate)
                                 .start_location(LastPlanPlace.getPp_startAddress())
                                 .arrive_location(Address)
                                 .isCar(false)
@@ -467,7 +467,7 @@ public class PlanServiceImpl implements PlanService {
                 log.info("출발시간 : " + pp_startDate);
                 TransTimeDTO transTimeDTO = TransTimeDTO.builder()
                         .writer(writer)
-                        .t_startdatetime(pp_startDate.toString())
+                        .t_startdatetime(pp_startDate)
                         .start_location(LastPlanPlace.getPp_startAddress())
                         .arrive_location(Address)
                         .isCar(false)

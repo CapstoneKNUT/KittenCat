@@ -4,8 +4,8 @@ import HeaderPage from '../src/components/menus/Header.js';
 import Main from './pages/Main/Main.js';
 import Lists from './pages/place/Lists.js';
 import Read from './pages/place/Read.js';
-import StoreLists from './Store/StoreLists.js';
-import StoreRead from './Store/StoreRead.js';
+import StoreLists from './pages/Store/StoreLists.js';
+import StoreRead from './pages/Store/StoreRead.js';
 import LoginForm from './pages/member/LoginForm.js';
 import UserProfile from './pages/member/UserProfile.js';
 import { UserProvider } from './pages/member/UserContext.js';
@@ -15,6 +15,7 @@ import BoardList from './pages/board/BoardList.js'; // BoardList 컴포넌트
 import BoardRegister from "./pages/board/BoardRegister.js";
 import BoardModify  from "./pages/board/BoardModify.js";
 import BoardRead from "./pages/board/BoardRead";
+import Plan from "./pages/plan/plan";
 
 function App() {
     return (
@@ -39,6 +40,7 @@ function App() {
                     <Route path="/board/register" element={<BoardRegister />} />
                     <Route path="/board/modify/:bno" element={<BoardModify />} />
                     <Route path="/board/read/:bno" element={<BoardRead />} />
+                    <Route path="/plan" element={<Plan />} />
 
                     {/* Uncomment the following lines if you want to include review routes */}
                     {/* <Route path="/review/list" element={<ReviewList />} />
