@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetXYResponse {
-    private List<GetXYResponse.Address> addresses;
+    private List<Address> addresses;
 
     @Data
     @NoArgsConstructor

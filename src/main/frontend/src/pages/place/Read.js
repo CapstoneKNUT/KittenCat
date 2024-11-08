@@ -78,44 +78,62 @@ function Read() {
       <div className="detail-page">
         <div className="header">
           <h1>{place.p_name}</h1>
-          <p>
-            {isContentExpanded || place.p_content.length <= maxLength
-                ? place.p_content
-                : `${place.p_content.substring(0, maxLength)}...`}
-            {!isContentExpanded && place.p_content.length > maxLength && (
-                <span onClick={toggleContent} className="read-more">
-              더보기
-            </span>
-            )}
-            {isContentExpanded && (
-                <span onClick={toggleContent} className="read-less">
-              간략히
-            </span>
-            )}
-          </p>
-          <hr className="content-separator" /> {/* 구분선 추가 */}
+          <p className="category">{place.p_category}</p>
+          {place.p_content && place.p_content.length > 0 ? (
+              <div>
+                <p>
+                  {isContentExpanded || place.p_content.length <= maxLength
+                      ? place.p_content
+                      : `${place.p_content.substring(0, maxLength)}...`}
+                  {!isContentExpanded && place.p_content.length > maxLength && (
+                      <span onClick={toggleContent} className="read-more">
+                        더보기
+                      </span>
+                  )}
+                  {isContentExpanded && (
+                      <span onClick={toggleContent} className="read-less">
+                        간략히
+                      </span>
+                  )}
+                </p>
+              </div>
+          ) : (
+              <div>내용이 없습니다.</div>
+          )}
+          <hr className="content-separator"/>
+          {/* 구분선 추가 */}
         </div>
         <div className="content">
           <img className="store-image" src={place.p_image} alt={place.p_name} />
-          <div className="store-info">
-            <p><strong>주소:</strong> {place.p_address}</p>
-            <p><strong>연락처:</strong> {place.p_call}</p>
-            <p><strong>홈페이지:</strong> <a href={place.p_site} target="_blank" rel="noopener noreferrer">{place.p_site}</a></p>
-            <p><strong>영업시간:</strong> {place.p_opentime}</p>
-            <p><strong>주차 안내:</strong> {place.p_park}</p>
-          </div>
+            <div className="store-info">
+                <div className="contact-info">
+                    <div>
+                        <p><strong>주소:</strong>
+                            <pre>{place.p_address}</pre>
+                        </p>
+                    </div>
+                    <div>
+                    <p><strong>연락처:</strong>
+                        <pre>{place.p_call}</pre>
+                    </p>
+                    </div>
+                    <div>
+                    <p><strong>홈페이지:</strong> <a href={place.p_site} target="_blank"
+                                                 rel="noopener noreferrer">{place.p_site}</a></p>
+                    </div>
+                </div>
+            </div>
         </div>
-        <button className="favorite-button" onClick={toggleFavorite}>
-          {isFavorite ? (
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="pink" stroke="black" width="24px" height="24px">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-              </svg>
-          ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" width="24px" height="24px">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-              </svg>
-          )}
-        </button>
+        <div className="info-section">
+            <div className="operating-hours">
+                <strong>영업시간:</strong>
+                <pre>{place.p_opentime}</pre>
+            </div>
+            <div className="parking-info">
+                    <strong>주차 안내:</strong>
+                    <pre>{place.p_park}</pre>
+            </div>
+        </div>
       </div>
   );
 }

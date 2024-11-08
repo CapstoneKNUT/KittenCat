@@ -279,7 +279,7 @@ public class PlanServiceImpl implements PlanService {
             br.close();
 
             JSONObject jsonResponse = new JSONObject(response.toString());
-            log.info("버그 체크" + jsonResponse.toString());
+            log.info("버그 체크" + jsonResponse);
             JSONArray addresses = jsonResponse.getJSONArray("addresses");
 
             GetXYResponse result = new GetXYResponse();
