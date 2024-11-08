@@ -1,0 +1,115 @@
+.profile-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    background-image: url('./background.jpg'); /* 배경 이미지 경로 */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh; /* 화면 전체 높이에 맞춤 */
+    width: 100%;
+    position: relative;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: #333;
+    background-attachment: fixed; /* 배경 고정 */
+}
+
+.profile-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8); /* 반투명 오버레이 */
+    z-index: 1;
+}
+
+.container {
+    max-width: 600px; /* 최대 너비 설정 */
+    margin: auto; /* 중앙 정렬 */
+    padding: 20px;
+    position: relative; /* 오버레이의 영향을 받지 않도록 설정 */
+    z-index: 2; /* 오버레이 위에 위치하도록 설정 */
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff; /* 카드 배경 색상 */
+}
+
+.card-header {
+    background-color: #ffcc80; /* 헤더 배경색 */
+    color: #333;
+    font-size: 24px;
+    padding: 15px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"] {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box; /* 패딩을 포함한 너비 계산 */
+    transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="date"]:focus {
+    border-color: #ff6f00; /* 포커스 시 테두리 색상 */
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #ff6f00;
+    color: #fff;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #e65100;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background-color: #d32f2f;
+    color: #fff;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background-color: #c62828;
+    transform: translateY(-2px);
+}
+
+.text-danger {
+    color: #d32f2f; /* 오류 메시지 색상 */
+}

@@ -7,10 +7,12 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.zerock.b01.domain.Place;
 import org.zerock.b01.dto.*;
 import org.zerock.b01.service.ApiService;
 import org.zerock.b01.service.PlaceService;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -58,13 +60,20 @@ public class PlaceController {
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, Long>> register(@RequestBody BookmarkDTO bookmarkDTO) {
-
+        log.info("Received request to register bookmark: {}", bookmarkDTO); // 로그 추가
         String mid = bookmarkDTO.getUsername();
-
         Long sno = placeService.register(bookmarkDTO.getPord(), mid);
-
         log.info("Registered place with sno: {}", sno);
-
         return ResponseEntity.ok(Map.of("sno", sno));
     }
+
+    /*@PostMapping("/register")
+    public ResponseEntity<Map<String, Long>> register(@RequestParam Integer pord, @RequestParam String username) {
+        log.info("Received request to register bookmark with pord: {}, username: {}", pord, username);
+        Long sno = placeService.register(pord, username);
+        log.info("Registered place with sno: {}", sno);
+        return ResponseEntity.ok(Map.of("sno", sno));
+    }*/
+
+
 }

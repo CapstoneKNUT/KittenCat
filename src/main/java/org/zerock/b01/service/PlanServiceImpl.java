@@ -18,7 +18,6 @@ import org.zerock.b01.domain.TransportParent;
 import org.zerock.b01.dto.TransportParentDTO;
 import org.zerock.b01.dto.*;
 import org.zerock.b01.dto.Search.DrivingRequest;
-import org.zerock.b01.dto.Search.DrivingResponse;
 import org.zerock.b01.dto.Search.GetXYRequest;
 import org.zerock.b01.dto.Search.GetXYResponse;
 import org.zerock.b01.naver.NaverClient;

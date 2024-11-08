@@ -84,8 +84,6 @@ public class PlaceServiceImpl implements PlaceService{
                 .p_park(place.getP_park())
                 .build();
 
-        Long sno = storeRepository.save(store).getSno();
-
-        return sno;
+        return storeRepository.save(store).getSno();
     }
 }

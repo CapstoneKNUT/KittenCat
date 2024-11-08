@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HeaderPage from '../src/components/menus/Header.js';
-import Main from './pages/Main/Main.js';
 import Lists from './pages/place/Lists.js';
 import Read from './pages/place/Read.js';
 import StoreLists from './pages/Store/StoreLists.js';
@@ -16,6 +15,7 @@ import BoardRegister from "./pages/board/BoardRegister.js";
 import BoardModify  from "./pages/board/BoardModify.js";
 import BoardRead from "./pages/board/BoardRead";
 import Plan from "./pages/plan/plan";
+import Main from './pages/Main/main.js';
 
 function App() {
     return (
@@ -29,6 +29,7 @@ function App() {
                     <Route path="/member/modify" element={<Modify />} />
 
                     <Route path="/main" element={<Main />} />
+                    <Route path="/" element={<Main />} />
 
                     <Route path="/place/list" element={<Lists />} />
                     <Route path="/place/read/:pord" element={<Read />} />
