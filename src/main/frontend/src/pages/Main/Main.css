@@ -1,44 +1,142 @@
-.App {
+/* Main.css */
+
+.main-page {
   text-align: center;
+  color: #333;
+  font-family: 'Arial', sans-serif;
 }
 
-.header {
-  padding: 20px;
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background-color: #ffcc80;
+  padding: 40px;
 }
 
-.header input {
-  margin-top: 10px;
-  padding: 10px;
-  width: 80%;
+.banner-content {
+  padding: 30px;
+  max-width: 600px;
+  text-align: left;
+
 }
 
-.tabs {
-  margin-top: 20px;
-}
-
-.tab {
-  display: inline-block;
-  margin: 0 10px;
-  cursor: pointer;
-}
-
-.tab.active {
+.banner-content h1 {
+  font-size: 48px;
   font-weight: bold;
-  border-bottom: 2px solid black;
+  margin: 20px 0;
+}
+
+.banner-content p {
+  margin: 20px 0;
+  line-height: 1.5;
+}
+
+.plan-now-btn {
+  background-color: #ff6f00;
+  color: #fff;
+  padding: 15px 40px;
+  font-size: 18px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 기본 그림자 */
+  transition: background-color 0.3s ease;
+}
+
+.plan-now-btn:hover {
+  background-color: #e65100;
+}
+
+.banner-images img {
+  width: 400px;
+  height: auto;
+  margin: 0 30px; /* 이미지 간격을 늘림 */
+}
+.banner-video {
+  width: 400px;
+  height: auto;
+  margin: 0 30px; /* 비디오 간격을 늘림 */
 }
 
 .travel-container {
   display: flex;
-  justify-content: center;
   flex-wrap: wrap;
+  gap: 180px; /* 아이템 간 간격을 늘림 */
+  justify-content: center; /* 중앙 정렬 */
+  margin-top: 40px;
 }
 
-.travel-card {
-  margin: 20px;
-  width: 200px;
+.travel-item {
+  text-align: center;
+  width: 230px; /* 아이템 너비 설정 */
+  background-color: #fff; /* 배경색 추가 */
+  border-radius: 10px; /* 모서리 둥글게 */
+  padding: 20px; /* 패딩 추가 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 기본 그림자 */
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease; /* 부드러운 전환 효과 */
 }
 
-.travel-card img {
-  width: 100%;
-  height: auto;
+.travel-item img {
+  width: 100px; /* 원하는 너비 설정 */
+  height: 100px; /* 원하는 높이 설정 */
+  object-fit: contain; /* 이미지 비율을 유지하며 크기에 맞추기 */
+  margin-bottom: 10px; /* 이미지와 텍스트 간의 간격 */
+}
+
+
+
+.travel-item p {
+  font-size: 16px;
+  font-weight: bold;
+  color: #ff6f00;
+  transition: color 0.3s ease; /* 텍스트 색상 변경 전환 */
+}
+
+.plan-be-section {
+  background-color: #EBE3D8;
+  padding: 40px 20px;
+}
+
+.plan-be-section h2 {
+  font-size: 32px;
+  color: #333;
+}
+
+.plan-be-section .plan-be-btn {
+  background-color: #ff6f00;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-top: 30px;
+  transition: background-color 0.3s ease;
+}
+
+.plan-be-section .plan-be-btn:hover {
+  background-color: #EBE3D8;
+}
+
+.travel-item:hover {
+  transform: translateY(-10px); /* 위로 살짝 이동 */
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* 그림자 강하게 */
+  background-color: #ffcc80; /* 배경색 살짝 변경 */
+}
+
+.travel-item img {
+  width: 100px; /* 원하는 너비 설정 */
+  height: 100px; /* 원하는 높이 설정 */
+  object-fit: contain; /* 이미지 비율을 유지하며 크기에 맞추기 */
+  margin-bottom: 15px; /* 이미지와 텍스트 간의 간격 */
+  transition: transform 0.3s ease; /* 이미지 효과 전환 */
+}
+
+.travel-item:hover img {
+  transform: scale(1.1); /* 이미지 살짝 확대 */
+}
+
+.travel-item:hover p {
+  color: #ffffff; /* 마우스를 올리면 텍스트 색상 변경 */
 }

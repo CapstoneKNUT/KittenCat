@@ -1,0 +1,37 @@
+/* LoginForm.css */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 80px;
+    background-image: url('./background.jpg'); /* 배경 이미지 경로 */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh; /* 화면 전체 높이에 맞춤 */
+    width: 100%;
+    position: relative;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: #333;
+    background-attachment: fixed; /* 배경 고정 */
+}
+
+.login-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8); /* 반투명 오버레이 */
+    z-index: 1;
+}
+
+.card {
+    position: relative;
+    z-index: 2;
+}
+
+.btn-primary {
+    width: 100%;
+}

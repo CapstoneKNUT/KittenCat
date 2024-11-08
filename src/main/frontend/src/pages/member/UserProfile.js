@@ -32,12 +32,20 @@ const UserProfile = () => {
                     </div>
                     <div className="profile-info-card">
                         <h2>프로필 정보</h2>
-                        <p><strong>Email:</strong> {user.m_email}</p>
-                        <p><strong>연락처:</strong> {user.m_phone}</p>
-                        <p><strong>주소:</strong> {user.m_address}</p>
-                        <p><strong>생일:</strong> {user.m_birth}</p>
-                        <p><strong>성별:</strong> {user.m_gender === 'man' ? 'Male' : 'Female'}</p>
-                        <p><strong>MBTI:</strong> {user.m_mbti || 'Not specified'}</p>
+                        <div className="profile-info">
+                            <p><strong>Email:</strong></p>
+                            <p>{user.m_email}</p>
+                            <p><strong>연락처:</strong></p>
+                            <p>{user.m_phone}</p>
+                            <p><strong>주소:</strong></p>
+                            <p>{user.m_address}</p>
+                            <p><strong>생일:</strong></p>
+                            <p>{user.m_birth}</p>
+                            <p><strong>성별:</strong></p>
+                            <p>{user.m_gender === 'man' ? 'Male' : 'Female'}</p>
+                            <p><strong>MBTI:</strong></p>
+                            <p>{user.m_mbti || 'Not specified'}</p>
+                        </div>
                         <div className="buttons">
                             <button className="modify-button" onClick={handleModify}>회원정보 수정</button>
                             <button className="logout-button" onClick={handleLogout}>로그아웃</button>

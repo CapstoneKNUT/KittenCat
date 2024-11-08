@@ -1,75 +1,151 @@
+/* UserProfile.css */
+
 .profile-container {
     display: flex;
     justify-content: center;
-    align-items: center; /* Align items vertically */
-    padding: 20px;
-    background-color: #f5f7fa;
-    min-height: 90vh; /* Full viewport height */
-    width: 100%; /* Full viewport width */
+    align-items: center;
+    padding: 40px;
+    background-image: url('./background.jpg'); /* 배경 이미지 경로 */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh; /* 화면 전체 높이에 맞춤 */
+    width: 100%;
+    position: relative;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: #333;
+    background-attachment: fixed; /* 배경 고정 */
+}
+
+.profile-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8); /* 반투명 오버레이 */
+    z-index: 1;
 }
 
 .greeting-card {
-    background-color: #0d47a1;
-    color: #fff;
-    padding: 20px;
-    border-radius: 8px;
+    background-color: #ffcc80; /* 밝은 오렌지색 배경 */
+    color: #333;
+    padding: 30px;
+    border-radius: 10px;
     text-align: center;
-    width: 400px; /* Increased width */
-    height: 500px; /* Increased height */
-    display: flex; /* Add flexbox */
-    flex-direction: column; /* Set flex direction to column */
-    justify-content: center; /* Center items vertically */
-    align-items: center; /* Center items horizontally  
- */
+    width: 450px;
+    height: 500px; /* 높이 조정 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.greeting-card, .profile-info-card {
+    position: relative;
+    z-index: 2; /* 오버레이 위에 표시되도록 설정 */
+}
+
+.greeting-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+    background-color: #ffb74d;
 }
 
 .greeting-card h1 {
-    font-size: 20px;
+    font-size: 24px;
     margin: 10px 0;
+    color: #d84315;
 }
 
-.greeting-card .profile-setting {
-    font-size: 14px;
-    margin-top: 10px;
-    cursor: pointer;
-    color: #bbdefb;
+.greeting-card h2 {
+    font-size: 20px;
+    color: #ff7043;
 }
 
 .profile-info-card {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 600px; /* Increased width */
-    height: 500px; /* Increased height */
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 600px;
+    height: 500px; /* 높이 조정 */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.profile-info-card:hover {
+    transform: translateY(-5px);
+}
+
+.profile-info-card h2 {
+    font-size: 22px;
+    color: #333;
+    margin-bottom: 15px;
 }
 
 .profile-info-card p {
-    font-size: 14px;
+    font-size: 16px;
     margin: 8px 0;
-    color: #333;
+    color: #555;
+    line-height: 1.4;
 }
 
-.buttons {
-    margin-top: 15px;
-    display: flex;
+.profile-info {
+    display: grid;
+    grid-template-columns: 1fr 2fr; /* 두 개의 열로 나누기 */
     gap: 10px;
 }
 
+.buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
 button {
-    padding: 5px 10px;
-    font-size: 14px;
+    padding: 12px 25px;
+    font-size: 16px;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .modify-button {
-    background-color: #1976d2;
+    background-color: #ff6f00;
     color: #fff;
 }
 
+.modify-button:hover {
+    background-color: #e65100;
+    transform: translateY(-3px);
+}
+
 .logout-button {
-    background-color: #e53935;
+    background-color: #d32f2f;
     color: #fff;
+}
+
+.logout-button:hover {
+    background-color: #c62828;
+    transform: translateY(-3px);
+}
+
+body, .main-page, .profile-container {
+    font-family: 'Noto Sans KR', Arial, sans-serif;
+    color: #333;
+}
+
+.main-page h1, .banner-content h1, .greeting-card h1, .profile-info-card h2 {
+    font-family: 'Noto Sans KR', Arial, sans-serif;
+    font-weight: 700;
+}
+
+.main-page p, .banner-content p, .greeting-card h2, .profile-info-card p {
+    font-family: 'Noto Sans KR', Arial, sans-serif;
+    font-weight: 400;
 }

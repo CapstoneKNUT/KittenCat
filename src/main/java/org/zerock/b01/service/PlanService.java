@@ -1,18 +1,20 @@
+/*
 package org.zerock.b01.service;
 
 import org.zerock.b01.domain.PlanPlace;
 import org.zerock.b01.domain.PlanSet;
 import org.zerock.b01.domain.TransportChild;
 import org.zerock.b01.domain.TransportParent;
-import org.zerock.b01.dto.*;
+import org.zerock.b01.dto.PlanPlaceDTO;
+import org.zerock.b01.dto.PlanSetDTO;
 import org.zerock.b01.dto.Search.DrivingRequest;
 import org.zerock.b01.dto.Search.DrivingResponse;
 import org.zerock.b01.dto.Search.GetXYRequest;
 import org.zerock.b01.dto.Search.GetXYResponse;
+import org.zerock.b01.dto.TransportChildDTO;
+import org.zerock.b01.dto.TransportParentDTO;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
 import java.util.Map;
 
 public interface PlanService {
@@ -23,28 +25,27 @@ public interface PlanService {
 
     GetXYResponse getXY(GetXYRequest getXYRequest);
 
-    Map<String, Object> startTime(Long planNo, String Address, Double mapx, Double mapy, String writer);
+    DrivingResponse getTime(DrivingRequest drivingRequest);
 
-    List<PlanPlaceDTO> listOfPlanPlace(Long planNo, Integer day);
+    Map<String,Object> startTime(Long planNo, String Address, Float mapx, Float mapy, String writer);
 
-    List<TransportParentDTO> listOfTransportParent(Long planNo, Long ppOrd, Integer day);
+    PlanPlaceDTO readPlanPlace(Long ppOrd);
 
-    List<TransportChildDTO> listOfTransportChild(Long tno);
+    TransportParentDTO readTransportParent(Long tno);
+
+    TransportChildDTO readTransportChild(Long tord);
 
     void removePlanSet(Long planNo);
 
-    void removePlanPlace(Long planNo, Long ppOrd);
-
-    void updatePlanPlaceTime(Long planNo, Long ppOrd, LocalTime takeTime);
+    void removePlanPlace(Long ppOrd);
 
     default PlanSet dtoToEntity(PlanSetDTO planSetDTO) {
 
         PlanSet planSet = PlanSet.builder()
-                .title(planSetDTO.getTitle())
                 .planNo(planSetDTO.getPlanNo())
                 .writer(planSetDTO.getWriter())
                 .isCar(planSetDTO.getIsCar())
-                .ps_startDate(planSetDTO.getPs_startDate())
+                .startDate(planSetDTO.getStartDate())
 
                 .build();
 
@@ -57,7 +58,7 @@ public interface PlanService {
                 .planNo(planSet.getPlanNo())
                 .writer(planSet.getWriter())
                 .isCar(planSet.getIsCar())
-                .ps_startDate(planSet.getPs_startDate())
+                .startDate(planSet.getStartDate())
                 .build();
 
         return planSetDTO;
@@ -105,3 +106,4 @@ public interface PlanService {
         return transportChildDTO;
     }
 }
+*/

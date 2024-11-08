@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useUser } from './UserContext';
 import { useNavigate, Link } from 'react-router-dom';
+import './LoginForm.css';
 
 const LoginForm = () => {
     const { user, setUser } = useUser(); // user 정보를 가져옵니다.
@@ -36,48 +37,48 @@ const LoginForm = () => {
     };
 
     return (
-
-        <div className="container mt-5">
-            <div className="card">
-                <div className="card-header">로그인</div>
-                <div className="card-body">
-                    <form onSubmit={handleLogin}>
-                        <div className="mb-3">
-                            <label htmlFor="mid" className="form-label">아이디</label>
-                            <input
-                                type="text"
-                                id="mid"
-                                placeholder="아이디"
-                                className="form-control"
-                                value={mid}
-                                onChange={(e) => setMid(e.target.value)}
-                                required
-                            />
+        <div className="login-container">
+            <div className="container mt-5">
+                <div className="card">
+                    <div className="card-header">로그인</div>
+                    <div className="card-body">
+                        <form onSubmit={handleLogin}>
+                            <div className="mb-3">
+                                <label htmlFor="mid" className="form-label">아이디</label>
+                                <input
+                                    type="text"
+                                    id="mid"
+                                    placeholder="아이디"
+                                    className="form-control"
+                                    value={mid}
+                                    onChange={(e) => setMid(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="mb-3">
+                                <label htmlFor="m_pw" className="form-label">비밀번호</label>
+                                <input
+                                    type="password"
+                                    id="m_pw"
+                                    placeholder="비밀번호"
+                                    className="form-control"
+                                    value={m_pw}
+                                    onChange={(e) => setMPw(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            {error && <div className="alert alert-danger" role="alert">{error}</div>}
+                            <button type="submit" className="btn btn-primary">로그인</button>
+                        </form>
+                        <div className="mt-3">
+                            <Link to="/member/join" className="btn btn-link">회원가입</Link>
                         </div>
-                        <div className="mb-3">
-                            <label htmlFor="m_pw" className="form-label">비밀번호</label>
-                            <input
-                                type="password"
-                                id="m_pw"
-                                placeholder="비밀번호"
-                                className="form-control"
-                                value={m_pw}
-                                onChange={(e) => setMPw(e.target.value)}
-                                required
-                            />
-                        </div>
-                        {error && <div className="alert alert-danger" role="alert">{error}</div>}
-                        <button type="submit" className="btn btn-primary">로그인</button>
-                    </form>
-                    <div className="mt-3">
-                        <Link to="/member/join" className="btn btn-link">회원가입</Link>
-                        {/*                            <Link to="#" className="btn btn-link" onClick={(e) => e.preventDefault()}>비밀번호를 잃어버렸나요?</Link>*/}
                     </div>
                 </div>
             </div>
         </div>
-
     );
+
 };
 
 export default LoginForm;
