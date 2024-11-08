@@ -21,7 +21,7 @@ function Lists() {
 
   const [pageRequest, setPageRequest] = useState({
     page: 1,
-    size: 10,
+    size: 12,
   });
   const [responseData, setResponseData] = useState({
     dtoList: [],
@@ -64,7 +64,7 @@ function Lists() {
     const p_subArea = selectedSubArea !== '지역 전체' ? selectedSubArea : '';
     const p_keyword = keywordInput;
 
-    setPageRequest({ page: 1, size: 10 });
+    setPageRequest({ page: 1, size: 12 });
 
     try {
       const response = await axios.post('http://localhost:8080/api/place/list', {
@@ -98,25 +98,35 @@ function Lists() {
   }, [location, responseData.dtoList]);
 
   const toggleBookmark = async (pord) => {
-    /*if (!user || !user.username) {
+    if (!user || !user.mid) {
       alert('로그인이 필요합니다.');
       return;
-    }*/
+    }
+
+    const isBookmarked = bookmarks.some(bookmark => bookmark.pord === pord);
 
     try {
-      const response = await axios.post('http://localhost:8080/api/place/register', { pord, username });
-      if (response.status === 200) {
-        alert('북마크가 등록되었습니다.');
-        setBookmarks((prev) => [...prev, { pord }]);
-        localStorage.setItem('bookmarks', JSON.stringify([...bookmarks, { pord }]));
+      if (isBookmarked) {
+        alert('북마크 해제는 찜목록에서 하실 수 있습니다.');
       } else {
-        alert('북마크 등록에 실패했습니다.');
+        // 북마크 추가
+        const response = await axios.post('http://localhost:8080/api/place/register', {
+          pord,
+          username: user.mid
+        });
+
+        if (response.status === 200) {
+          alert('북마크가 등록되었습니다.');
+          const updatedBookmarks = [...bookmarks, { pord }];
+          setBookmarks(updatedBookmarks);
+          localStorage.setItem('bookmarks', JSON.stringify(updatedBookmarks));
+        }
       }
     } catch (error) {
-      console.error('Error registering bookmark:', error);
+      console.error('Error toggling bookmark:', error);
+      alert('처리 중 오류가 발생했습니다.');
     }
   };
-
   const filteredSubArea = selectedArea
       ? area.find((a) => a.name === selectedArea)?.subArea || []
       : [];
@@ -170,11 +180,11 @@ function Lists() {
                 <button onClick={() => toggleBookmark(place.pord)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
                   {bookmarks.some((bookmark) => bookmark.pord === place.pord) ? (
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="pink" stroke="black" width="24px" height="24px">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                        <path d="M12 21.7l-1.6-1.4C5.1 16.1 2 12.7 2 8.8 2 5.6 4.6 3 7.8 3c1.9 0 3.7 0.9 4.7 2.3C13.5 3.9 15.3 3 17.2 3 20.4 3 23 5.6 23 8.8c0 3.9-3.1 7.3-8.4 11.5L12 21.7z" />
                       </svg>
                   ) : (
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" width="24px" height="24px">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                        <path d="M12 21.7l-1.6-1.4C5.1 16.1 2 12.7 2 8.8 2 5.6 4.6 3 7.8 3c1.9 0 3.7 0.9 4.7 2.3C13.5 3.9 15.3 3 17.2 3 20.4 3 23 5.6 23 8.8c0 3.9-3.1 7.3-8.4 11.5L12 21.7z" />
                       </svg>
                   )}
                 </button>

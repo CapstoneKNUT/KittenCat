@@ -25,6 +25,16 @@ body {
   margin-bottom: 20px;
 }
 
+.header h1 {
+  font-size: 32px;
+  margin: 0;
+}
+
+.header p {
+  font-size: 16px;
+  color: #888;
+  margin: 5px 0;
+}
 .home-button,
 .list-button,
 .view-plan-button {
@@ -87,15 +97,59 @@ body {
 
 .timeline-item {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  margin: 10px 0;
   padding: 10px;
-  border: 1px solid #ddd;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.time-input {
+  width: 30%;
+}
+
+.time-input input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ced4da;
   border-radius: 5px;
 }
 
+.place-info {
+  flex-grow: 1;
+  margin-left: 10px;
+  color: #333;
+}
+
 .transportation-info {
-  margin: 10px 0;
-  color: #666;
+  margin-top: 5px;
   font-size: 0.9em;
+  color: #6c757d; /* 회색 */
+}
+
+.save-success {
+  text-align: center;
+  margin: 20px 0;
+  padding: 20px;
+  background-color: #d4edda;
+  border-radius: 5px;
+  color: #155724; /* 성공 메시지 색상 */
+}
+
+.save-button {
+  display: block;
+  width: 200px;
+  margin: 20px auto;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.save-button:hover {
+  background-color: #0056b3; /* Hover 시 색상 변화 */
 }
