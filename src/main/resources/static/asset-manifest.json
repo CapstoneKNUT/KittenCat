@@ -1,21 +1,23 @@
 {
   "files": {
-    "main.css": "/static/css/main.c8870554.css",
-    "main.js": "/static/js/main.1d54e0de.js",
+    "main.css": "/static/css/main.789b9110.css",
+    "main.js": "/static/js/main.96fbfcf2.js",
     "static/js/453.8ab44547.chunk.js": "/static/js/453.8ab44547.chunk.js",
     "static/media/travel.gif": "/static/media/travel.83ab7c32515c5540c189.gif",
     "static/media/travel-icon3.png": "/static/media/travel-icon3.5514daba4e2fe5cdb9bd.png",
     "static/media/로고.jpg": "/static/media/로고.8960a0ce27b9cb7b6a5a.jpg",
     "static/media/travel-icon1.png": "/static/media/travel-icon1.0feee349518a7a575ac1.png",
     "static/media/travel-icon2.png": "/static/media/travel-icon2.4a41cfd8a05d42a0c956.png",
+    "static/media/subway.png": "/static/media/subway.fa5ee0ca488c52831371.png",
     "static/media/background.jpg": "/static/media/background.89ba4c74efed95e3673c.jpg",
+    "static/media/car.avif": "/static/media/car.561a2f359beaadd4a574.avif",
     "index.html": "/index.html",
-    "main.c8870554.css.map": "/static/css/main.c8870554.css.map",
-    "main.1d54e0de.js.map": "/static/js/main.1d54e0de.js.map",
+    "main.789b9110.css.map": "/static/css/main.789b9110.css.map",
+    "main.96fbfcf2.js.map": "/static/js/main.96fbfcf2.js.map",
     "453.8ab44547.chunk.js.map": "/static/js/453.8ab44547.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.c8870554.css",
-    "static/js/main.1d54e0de.js"
+    "static/css/main.789b9110.css",
+    "static/js/main.96fbfcf2.js"
   ]
 }

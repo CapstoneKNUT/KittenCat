@@ -61,6 +61,7 @@ function StoreLists() {
         }
     }, [user, pageRequest, navigate]);
 
+    //페이징
     const handlePageChange = (pageNum) => {
         setPageRequest((prev) => ({
             ...prev,
@@ -68,10 +69,12 @@ function StoreLists() {
         }));
     };
 
+    //지역 선택
     const filteredSubArea = selectedArea
         ? area.find((a) => a.name === selectedArea)?.subArea || []
         : [];
 
+    //검색
     const handleSearch = async (e) => {
         e.preventDefault();
 

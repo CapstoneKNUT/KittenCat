@@ -1,10 +1,6 @@
 .header {
+  margin-top: 20px;
   padding-bottom: 20px;
-}
-.header {
-  border-bottom: 2px solid #f8b400; /* 메인 컬러 */
-  padding-bottom: 20px;
-  margin-bottom: 20px;
 }
 
 .header h1 {

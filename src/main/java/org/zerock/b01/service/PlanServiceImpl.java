@@ -2,6 +2,9 @@ package org.zerock.b01.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional; // 이 줄이 필요합니다.
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -11,10 +14,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
-import org.zerock.b01.domain.PlanPlace;
-import org.zerock.b01.domain.PlanSet;
-import org.zerock.b01.domain.TransportChild;
-import org.zerock.b01.domain.TransportParent;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.zerock.b01.domain.*;
 import org.zerock.b01.dto.TransportParentDTO;
 import org.zerock.b01.dto.*;
 import org.zerock.b01.dto.Search.DrivingRequest;
@@ -81,6 +82,24 @@ public class PlanServiceImpl implements PlanService {
     private String naverDrivingSearchUrl;
 
     @Override
+    public PageResponseDTO<PlanSetDTO> list(PageRequestDTO pageRequestDTO) {
+
+        Pageable pageable = pageRequestDTO.getPageable("planNo");
+
+        Page<PlanSet> result = planRepository.findAll(pageable);
+
+        List<PlanSetDTO> dtoList = result.getContent().stream()
+                .map(place -> modelMapper.map(place,PlanSetDTO.class)).collect(Collectors.toList());
+
+        return PageResponseDTO.<PlanSetDTO>withAll()
+                .pageRequestDTO(pageRequestDTO)
+                .dtoList(dtoList)
+                .total((int)result.getTotalElements())
+                .build();
+
+    }
+
+    @Override
     public PlanSetDTO InitReadOne(Long planNo) {
 
         Optional<PlanSet> result = planRepository.findById(planNo);
@@ -90,6 +109,20 @@ public class PlanServiceImpl implements PlanService {
         PlanSetDTO planSetDTO = entityToDTO(plan);
 
         return planSetDTO;
+
+    }
+
+    @Override
+    public PlanSetDTO LastReadOne(String writer) {
+
+        Optional<PlanSet> result = Optional.ofNullable(planRepository.findLastPlanSetbyWriter(writer));
+
+        PlanSet plan = result.orElseThrow();
+
+        PlanSetDTO planSetDTO = entityToDTO(plan);
+
+        return planSetDTO;
+
 
     }
 

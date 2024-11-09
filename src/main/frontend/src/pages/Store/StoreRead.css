@@ -17,20 +17,10 @@ body {
 }
 
 .header {
+    margin-top: 20px;
     border-bottom: 2px solid #f8b400; /* 메인 컬러 */
-    margin-bottom: 20px;
 }
 
-.header h1 {
-    font-size: 32px;
-    margin: 0;
-}
-
-.header p {
-    font-size: 16px;
-    color: #888;
-    margin: 5px 0;
-}
 h1 {
     color: #333;
     font-size: 2em;

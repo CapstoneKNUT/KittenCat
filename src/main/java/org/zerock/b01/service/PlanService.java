@@ -14,7 +14,11 @@ import java.util.Map;
 
 public interface PlanService {
 
+    PageResponseDTO<PlanSetDTO> list(PageRequestDTO pageRequestDTO);
+
     PlanSetDTO InitReadOne(Long planNo);
+
+    PlanSetDTO LastReadOne(String username);
 
     Long registerInit(PlanSetDTO planSetDTO);
 

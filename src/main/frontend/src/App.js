@@ -15,6 +15,8 @@ import BoardRegister from "./pages/board/BoardRegister.js";
 import BoardModify  from "./pages/board/BoardModify.js";
 import BoardRead from "./pages/board/BoardRead";
 import Plan from "./pages/plan/plan";
+import PlanInit from "./pages/plan/PlanInit";
+import PlanRegister from "./pages/plan/PlanRegister";
 import Main from './pages/Main/main.js';
 
 function App() {
@@ -42,6 +44,7 @@ function App() {
                     <Route path="/board/modify/:bno" element={<BoardModify />} />
                     <Route path="/board/read/:bno" element={<BoardRead />} />
                     <Route path="/plan" element={<Plan />} />
+                    <Route path="/plan/init" element={<PlanInit />} />
 
                     {/* Uncomment the following lines if you want to include review routes */}
                     {/* <Route path="/review/list" element={<ReviewList />} />

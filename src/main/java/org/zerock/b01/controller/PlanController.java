@@ -44,12 +44,6 @@ public class PlanController {
         return ResponseEntity.ok().build();
     }
 
-    // 게시물 등록 화면
-    @GetMapping("/register/{planNo}")
-    public ResponseEntity<Void> registerGET(@PathVariable Long planNo) {
-        return ResponseEntity.ok().build();
-    }
-
     // 게시물 초기상태 등록
     @PostMapping(value = "/register/init", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Long>> registerInitPost(@RequestBody PlanSetDTO planSetDTO) {
@@ -57,6 +51,35 @@ public class PlanController {
         Long planNo = planService.registerInit(planSetDTO);
 
         return ResponseEntity.ok(Map.of("planNo", planNo));
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<PageResponseDTO<PlanSetDTO>> list(PageRequestDTO pageRequestDTO) {
+        PageResponseDTO<PlanSetDTO> responseDTO = planService.list(pageRequestDTO);
+        log.info(responseDTO);
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    // 일정표에서 등록된 장소 조회
+    @ApiOperation(value = "Read PlanSet", notes = "Get 방식으로 등록 일정 조회")
+    @GetMapping("/write")
+    public ResponseEntity<PlanSetDTO> DoRegisterGET(@RequestParam String writer) {
+        PlanSetDTO planSetDTO = planService.LastReadOne(writer);
+        return ResponseEntity.ok(planSetDTO);
+    }
+
+    // 일정표에서 등록된 장소 조회
+    @ApiOperation(value = "Read PlanSet", notes = "Get 방식으로 등록 일정 조회")
+    @GetMapping("/{planNo}")
+    public ResponseEntity<PlanSetDTO> InitGET(@PathVariable Long planNo) {
+        PlanSetDTO planSetDTO = planService.InitReadOne(planNo);
+        return ResponseEntity.ok(planSetDTO);
+    }
+
+    // 게시물 등록 화면
+    @GetMapping("/register/{planNo}")
+    public ResponseEntity<Void> registerGET(@PathVariable Long planNo) {
+        return ResponseEntity.ok().build();
     }
 
     // 찜목록에서 가져와 일정표에 넣기
@@ -67,8 +90,6 @@ public class PlanController {
         List<Long> ppOrdList = new ArrayList<>();
 
         StoreDTO storeDTO = storeService.read(planPlaceBodyDTO.getSno());
-
-        storeToPlanService.register(planPlaceBodyDTO.getSno());
 
         PlanSetDTO planSetDTO = planService.InitReadOne(planNo);
 
@@ -91,6 +112,7 @@ public class PlanController {
 
         PlanPlace planplace;
 
+        PlanPlace LastPlanPlace = null;
         // 장소 저장
         // 이전에 등록된 장소가 없을 경우
         if (planPlace == null) {
@@ -224,7 +246,7 @@ public class PlanController {
                 TransportParent LastTransportParent = transportParentRepository
                         .findLastTransportParent(planSetDTO.getWriter());
                 // 마지막 저장 장소 조회
-                PlanPlace LastPlanPlace = planPlaceRepository.findLastPlanPlaceByPlanNo(planNo);
+                LastPlanPlace = planPlaceRepository.findLastPlanPlaceByPlanNo(planNo);
                 // 교통수단의 장소 외래키 수정
                 LastTransportParent.setPlanPlace(LastPlanPlace);
                 // 교통수단 저장
@@ -237,7 +259,7 @@ public class PlanController {
                 TransportParent LastTransportParent2 = LastTransportParent.get(1); // 두 번째 최신
 
                 // 마지막 저장 장소 조회
-                PlanPlace LastPlanPlace = planPlaceRepository.findLastPlanPlaceByPlanNo(planNo);
+                LastPlanPlace = planPlaceRepository.findLastPlanPlaceByPlanNo(planNo);
                 // 교통수단의 장소 외래키 수정
                 LastTransportParent1.setPlanPlace(LastPlanPlace);
                 // 교통수단 저장
@@ -248,6 +270,9 @@ public class PlanController {
                 transportParentRepository.save(LastTransportParent2);
             }
         }
+        
+        storeToPlanService.register(planPlaceBodyDTO.getSno(), LastPlanPlace);
+
         return ResponseEntity.ok(Map.of("ppOrd", ppOrdList));
     }
 

@@ -12,7 +12,8 @@ const PlaceRead = lazy(() => import("../pages/place/Read"));
 const StoreList = lazy(() => import("../pages/Store/StoreLists"));
 const StoreRead = lazy(() => import("../pages/Store/StoreRead"));
 const Plan = lazy(() => import("../pages/plan/plan"));
-const PlanRegister = lazy(() => import("../pages/plan/register"));
+const PlanInit = lazy(() => import("../pages/plan/PlanInit"));
+const PlanRegister = lazy(() => import("../pages/plan/PlanRegister"));
 
 // 컴포넌트 래퍼
 const withSuspense = (Component) => (
@@ -58,7 +59,17 @@ const router = createBrowserRouter([
         },
         {
             path: "plan",
-            element: withSuspense(Plan)
+            element: withSuspense(Plan),
+            children: [
+                {
+                    path: "init",
+                    element: withSuspense(PlanInit)
+                },
+                {
+                    path: "register",
+                    element: withSuspense(PlanRegister)
+                },
+            ]
         }
     ]
 },

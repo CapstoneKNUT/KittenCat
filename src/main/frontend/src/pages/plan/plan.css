@@ -25,16 +25,7 @@ body {
   margin-bottom: 20px;
 }
 
-.header h1 {
-  font-size: 32px;
-  margin: 0;
-}
 
-.header p {
-  font-size: 16px;
-  color: #888;
-  margin: 5px 0;
-}
 .home-button,
 .list-button,
 .view-plan-button {
