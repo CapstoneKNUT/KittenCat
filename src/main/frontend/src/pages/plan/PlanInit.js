@@ -9,6 +9,7 @@ import './PlanInit.css';
 function PlanInit() {
     const navigate = useNavigate();
     const { user } = useUser(); // 로그인한 유저 정보 가져오기
+    const [day, setDay] = useState(null);
     const [store, setStore] = useState([]);
     const [title, setTitle] = useState(''); // 여행지 제목
     const [isCar, setIsCar] = useState(true); // 차량 이용 여부 (true: 차, false: 대중교통)
@@ -16,14 +17,14 @@ function PlanInit() {
     const [readOnly, setReadOnly] = useState(false); // 출발 날짜
     const [planSet, setPlanSet] = useState({planNo: null});
     const [takeTime, setTakeTime] = useState({ hours: '00', minutes: '00' }); // 시간과 분을 각각 관리
+    const [duration, setDuration] = useState(null); //몇일 차인가?
+    const [planPlaces, setPlanPlaces] = useState([]); //일정표의 장소
+    const [LatestDate, setLatestDate] = useState(''); //일정표의 장소
+    const [transportParents, setTransportParents] = useState([]); //일정표의 장소
+    const [transportChilds, setTransportChilds] = useState([]); //일정표의 장소
 
-    const handleTimeChange = (e) => {
-        const { name, value } = e.target;
-        setTakeTime((prev) => ({
-            ...prev,
-            [name]: value, // 시간 또는 분 값을 업데이트
-        }));
-    };
+
+    const ps_startDatePart = ps_startDate.split('T')[0];
 
     const [pageRequest, setPageRequest] = useState({
         size: 12,
@@ -37,6 +38,20 @@ function PlanInit() {
         end: 0,
         page: 1,
     });
+
+    //Axios------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //로그인 확인
+    useEffect(() => {
+        if (user) {
+            if(readOnly){
+            fetchData(user.mid);
+            }
+        } else {
+            alert("로그인 후 이용해주세요.");
+            navigate('/member/login');
+        }
+    }, [user, navigate]);
 
     // 일정 저장
     const savePlan = async () => {
@@ -105,17 +120,7 @@ function PlanInit() {
         }
     };
 
-    //로그인 확인
-    useEffect(() => {
-        if (user) {
-            fetchData(user.mid);
-        } else {
-            alert("로그인 후 이용해주세요.");
-            navigate('/member/login');
-        }
-    }, [user, navigate]);
-
-    // 장소 추가 시 교통 정보 계산
+    // 장소를 데이터베이스에 추가 + 장소 추가 시 교통 정보 계산
     const addPlace = async (sno) => {
         if(takeTime){
             try {
@@ -131,35 +136,121 @@ function PlanInit() {
         }
     };
 
-    //mock 데이터
-    useEffect(() => {
-        // API에서 받은 데이터가 없을 경우 확인용 기본 데이터 설정
-        if (responseData.dtoList && responseData.dtoList.length > 0) {
-            setStore(responseData.dtoList); // API에서 받아온 데이터 설정
-        } else {
-            // 임시 데이터 설정
-            const tempData = [
-                {
-                    sno: 1,
-                    p_name: "예시 장소 1",
-                    p_category: "음식점",
-                    p_address: "서울시 강남구 임시 주소 1",
-                    p_image: "https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fvideo-phinf.pstatic.net%2F20240920_40%2F1726792574994KnzQC_JPEG%2F46o3j90jLU_03.jpg",
-                    p_star: 4.5,
+    //내 일정 여행장소 가져오기
+    const fetchPPData = async (planNo) => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/plan/${planSet.planNo}/planplace`, {
+                params: {
+                    day,
                 },
-                {
-                    sno: 2,
-                    p_name: "예시 장소 2",
-                    p_category: "카페",
-                    p_address: "서울시 강남구 임시 주소 2",
-                    p_image: "https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20240220_241%2F1708398564214Rqc5U_JPEG%2F%25C6%25BC%25BA%25BB.jpg",
-                    p_star: 4.0,
-                },
-            ];
-            setStore(tempData); // 임시 데이터를 설정
+            });
+            if (response.data?.dtoList) {
+                setPlanPlaces(response.data);
+            } else {
+                console.error('Invalid data structure received from API.');
+            }
+        } catch (error) {
+            console.log(error);
         }
-    }, [responseData]);
+    };
 
+    //내 일정 교통정보 가져오기
+    const fetchTPData = async (planNo) => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/plan/${planSet.planNo}/TransportParent/${ppOrd}`, {
+                params: {
+                    day,
+                },
+            });
+            if (response.data?.dtoList) {
+                setTransportParents(response.data);
+            } else {
+                console.error('Invalid data structure received from API.');
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    //내 일정 자식 교통정보 가져오기
+    const fetchTCData = async (planNo) => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/plan/${planSet.planNo}/TransportParent/${tno}`);
+            if (response.data?.dtoList) {
+                setTransportChilds(response.data);
+            } else {
+                console.error('Invalid data structure received from API.');
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    //데이터 다루기------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //날짜 비교해서 며칠차인지 구하기
+    function compareDates(date1, date2) {
+        // Date 객체를 생성하거나 받은 값이 Date 형식인지 확인
+        const d1 = new Date(date1);
+        const d2 = new Date(date2);
+
+        // 두 날짜를 비교하기 위해 시간 부분 제거 (UTC 기준으로 비교)
+        d1.setHours(0, 0, 0, 0);
+        d2.setHours(0, 0, 0, 0);
+
+        // 날짜 차이 계산 (밀리초 단위 차이 계산 후 일 단위로 변환)
+        const timeDiff = Math.abs(d1 - d2);
+        const dayDiff = timeDiff / (1000 * 60 * 60 * 24);
+
+        // 날짜 차이 + 1 반환 (0일 차이 -> 1, 1일 차이 -> 2, 2일 차이 -> 3, ...)
+        return dayDiff + 1;
+    }
+
+    //최신날짜 구하기
+    const getLatestDate = (planPlaces) => {
+        // planPlaces 배열이 비어 있으면 빈 문자열 반환
+        if (!planPlaces || planPlaces.length === 0) {
+            return "";
+        }
+
+        // pp_startDate 값을 기준으로 최신 날짜 찾기
+        const latestDate = planPlaces.reduce((latest, current) => {
+            // current.pp_startDate가 존재하고 Date 형식으로 변환 가능하다면
+            if (current.pp_startDate) {
+                const currentDate = new Date(current.pp_startDate); // pp_startDate를 Date 객체로 변환
+
+                // 최신 날짜를 비교하여 반환
+                return currentDate > latest ? currentDate : latest;
+            }
+            return latest; // pp_startDate가 없는 경우, 기존 최신 날짜 반환
+        }, new Date(0)); // 기본값으로 아주 오래된 날짜 설정
+
+        // 최신 날짜의 년, 월, 일만 반환 (YYYY-MM-DD 형식)
+        const year = latestDate.getFullYear();
+        const month = String(latestDate.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작해서 1을 더함
+        const day = String(latestDate.getDate()).padStart(2, '0'); // 일도 두 자리로 맞추기
+
+        return `${year}-${month}-${day}`; // "YYYY-MM-DD" 형식으로 반환
+    }
+    const latestDate = getLatestDate(planPlaces);
+
+    //리액트 기능------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //시간 입력 메서드
+    const handleTimeChange = (e) => {
+        const { name, value } = e.target;
+        setTakeTime((prev) => ({
+            ...prev,
+            [name]: value, // 시간 또는 분 값을 업데이트
+        }));
+    };
+
+    //클릭 하면 몇일차 버튼 기능
+    const handleTabClick = (tabNumber) => {
+        setActiveTab(tabNumber); // 클릭된 탭으로 상태 업데이트
+    };
+
+    //0시부터 23시까지
     const generateHourOptions = () => {
         const options = [];
         for (let i = 0; i < 24; i++) {
@@ -187,12 +278,70 @@ function PlanInit() {
         return options;
     };
 
-    // useEffect(() => {
-    //     if (responseData.dtoList) {
-    //         setStore(responseData.dtoList); // API에서 받아온 데이터 설정
-    //     }
-    // }, [responseData.dtoList]);
+    //mock 데이터------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+/*
+    //찜 목록
+    useEffect(() => {
+        // API에서 받은 데이터가 없을 경우 확인용 기본 데이터 설정
+        if (responseData.dtoList && responseData.dtoList.length > 0) {
+            setStore(responseData.dtoList); // API에서 받아온 데이터 설정
+        } else {
+            // 임시 데이터 설정
+            const tempData = [
+                {
+                    sno: 1,
+                    p_name: "예시 장소 1",
+                    p_category: "음식점",
+                    p_address: "서울시 강남구 임시 주소 1",
+                    p_image: "https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fvideo-phinf.pstatic.net%2F20240920_40%2F1726792574994KnzQC_JPEG%2F46o3j90jLU_03.jpg",
+                    p_star: 4.5,
+                },
+                {
+                    sno: 2,
+                    p_name: "예시 장소 2",
+                    p_category: "카페",
+                    p_address: "서울시 강남구 임시 주소 2",
+                    p_image: "https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20240220_241%2F1708398564214Rqc5U_JPEG%2F%25C6%25BC%25BA%25BB.jpg",
+                    p_star: 4.0,
+                },
+            ];
+            setStore(tempData); // 임시 데이터를 설정
+        }
+    }, [responseData]);
+*/
+
+    //css기능
+    const [activeTab, setActiveTab] = useState(1); // 기본 활성화된 탭
+    // 각 일차별 일정 데이터
+    const scheduleData = {
+        1: [
+            { time: '09:00', place: '서울역', duration: '09:00~10:00' },
+            { time: '10:00', place: '고궁 투어', duration: '11:00~12:30' },
+        ],
+        2: [
+            { time: '09:00', place: '남산타워', duration: '09:00~10:30' },
+            { time: '11:00', place: '명동 쇼핑', duration: '11:00~12:30' },
+        ],
+        3: [
+            { time: '10:00', place: '한강 유람선', duration: '10:00~11:30' },
+            { time: '12:00', place: '인사동', duration: '12:00~13:30' },
+        ],
+    };
+
+    //계산 결과 데이터------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    useEffect(() => {
+        // planPlaces가 변경될 때마다 최신 날짜를 계산하는 메서드 호출
+        const latest = getLatestDate(planPlaces);
+        setLatestDate(latest);
+    }, [planPlaces]);
+
+    useEffect(() => {
+        // LastestDate 변경 때마다 함수 호출
+        const gapDate = compareDates(ps_startDatePart, LatestDate)
+        setDuration(gapDate);
+    }, [LatestDate]);
 
     return (
         <div className="container">
@@ -256,7 +405,7 @@ function PlanInit() {
                 {/* 시간 입력 필드 추가 */}
                 <div className="input-field">
                     <label>머물 시간:</label>
-                    <div style={{ display: 'inline-block', marginRight: '10px' }}>
+                    <div style={{display: 'inline-block', marginRight: '10px'}}>
                         <select
                             name="hours"
                             value={takeTime.hours} // 상태에 저장된 시간 값
@@ -266,10 +415,10 @@ function PlanInit() {
                             {generateHourOptions()} {/* 시간 옵션 렌더링 */}
                         </select>
                     </div>
-                    <div style={{ display: 'inline-block', marginRight: '10px' }}>
+                    <div style={{display: 'inline-block', marginRight: '10px'}}>
                         <span>:</span>
                     </div>
-                    <div style={{ display: 'inline-block' }}>
+                    <div style={{display: 'inline-block'}}>
                         <select
                             name="minutes"
                             value={takeTime.minutes} // 상태에 저장된 분 값
@@ -290,6 +439,7 @@ function PlanInit() {
                                      onClick={() => {
                                          if (readOnly) {
                                              addPlace(storeItem.sno);
+                                             fetchPPData(planSet.planNo);
                                          }
                                      }}
                                      className="place-item" className="store-card"
@@ -311,9 +461,32 @@ function PlanInit() {
             </div>
             <div className="plan-details">
                 <h3>일정표</h3>
-                <div className="details-content">
-                    {/* 일정표 세부 내용을 여기에 추가 */}
-                    <p>여기에 일정표를 작성하세요.</p>
+                <div className="tab-buttons">
+                    {Array.from({length: duration}).map((_, index) => (
+                        <div
+                            key={index+1} // key는 1부터 시작하는 값을 사용
+                            className={`tab-button ${activeTab === index+1 ? 'active' : ''}`}
+                            onClick={() => {
+                                handleTabClick(index+1);
+                                setDay(index+1);
+                            }} // 클릭 시 해당 일차로 설정
+                        >
+                            {index+1}일차
+                        </div>
+                    ))}
+                </div>
+                <div className="schedule-content">
+                    {planPlaces.map((planplace) => (
+                        <div className="schedule-item" key={planplace.ppOrd}>
+                            <span className="schedule-time">{planplace.pp_startDate}</span>
+                            <span>{planplace.pp_title}</span>
+                            <span>{planplace.pp_takeDate}</span>
+                            <div className="schedule-actions">
+                                <button>수정</button>
+                                <button>삭제</button>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>

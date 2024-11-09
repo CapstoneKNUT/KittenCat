@@ -7,7 +7,7 @@ body {
 
 .container {
   display: grid;
-  grid-template-columns: 300px 100%;
+  grid-template-columns: 300px 1fr; /* 두 개의 열로 구성 */
   gap: 20px;
   margin: 0; /* 부모 요소의 마진 제거 */
 }
@@ -18,7 +18,7 @@ body {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  /* margin-left: 0; */ /* 왼쪽 마진을 0으로 설정 */
+  width: 100%; /* 너비를 100%로 설정하여 전체 공간 차지 */
 }
 
 .input-card {
@@ -96,7 +96,7 @@ body {
   margin-top: 5px;
 }
 
-/*찜 목록*/
+/* 찜 목록 */
 .store-list {
   margin-top: 20px; /* 원하는 만큼의 값을 설정 */
 }
@@ -117,7 +117,6 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* 자동으로 카드가 채워짐 */
   gap: 10px; /* 카드 간의 간격 */
-  left: 0;
 }
 
 .store-card {
@@ -156,4 +155,61 @@ body {
 .no-results {
   text-align: left; /* 중앙 정렬 */
   margin: 7px; /* 여백 */
+}
+
+/* 일정표 스타일 */
+.plan-details {
+  background-color: #fff; /* 배경색을 하얀색으로 설정 */
+  border-radius: 8px; /* 모서리 둥글게 */
+  padding: 20px; /* 패딩 */
+  margin-top: 55px; /* 위쪽 여백 */
+  width: 450%; /* 너비를 100%로 설정하여 전체 공간 차지 */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 추가 */
+  height: auto; /* 높이를 자동으로 설정 */
+}
+
+.tab-buttons {
+  display: flex;
+  margin-bottom: 15px;
+}
+
+.tab-button {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px 15px;
+  margin-right: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s; /* 배경색이 부드럽게 변하도록 설정 */
+}
+
+.tab-button.active {
+  background-color: #f5c1c1; /* 활성화된 탭 색상 */
+  border-color: #f8b400; /* 활성화된 탭의 테두리 색상 */
+  font-weight: bold; /* 글씨 두껍게 */
+}
+
+.tab-button:hover {
+  background-color: #f0f0f0; /* Hover 시 색상 변화 */
+}
+
+
+.schedule-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 양쪽에 정렬 */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  background-color: #f8f9fa; /* 일정 항목 배경색 */
+}
+
+.schedule-time {
+  font-weight: bold;
+}
+
+.schedule-actions {
+  display: flex;
+  gap: 5px; /* 버튼 간격 */
 }
