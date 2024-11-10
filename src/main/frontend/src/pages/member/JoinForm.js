@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import './JoinForm.css';
 
 const JoinForm = () => {
     const [formData, setFormData] = useState({
         mid: '',
-        m_pw: '', // Changed to match MemberDTO field names
+        m_pw: '',
         mpwc: '',
-        m_name: '', // Changed to match MemberDTO field names
+        m_name: '',
         m_email: '',
         m_phone: '',
         m_address: '',
@@ -31,25 +32,23 @@ const JoinForm = () => {
 
         const { m_pw, mpwc } = formData;
 
-        // 비밀번호 일치 확인
         if (m_pw !== mpwc) {
             setError('비밀번호가 서로 다릅니다.');
             return;
         }
 
-        // 비밀번호 패턴 확인
         const passwordPattern = /^(?=.*[a-zA-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
         if (!passwordPattern.test(m_pw)) {
             setError('비밀번호는 8자 이상의 문자와 숫자의 조합이어야 합니다.');
             return;
         }
 
-        // 추가적인 폼 검증 (전화번호, 주소, 생년월일 등)
-        const phonePattern = /^\d{10,15}$/;
+        const phonePattern = /^010-\d{4}-\d{4}$/;
         if (!phonePattern.test(formData.m_phone)) {
-            setError('전화번호는 10자에서 15자 사이의 숫자여야 합니다.');
+            setError('전화번호는 010-1111-2222 형식으로 입력해 주세요.');
             return;
         }
+
 
         if (!formData.m_birth) {
             setError('생년월일을 입력해 주세요.');
@@ -57,15 +56,13 @@ const JoinForm = () => {
         }
 
         try {
-            // API 호출
             const response = await axios.post('http://localhost:8080/api/member/join', formData);
             console.log('Join Response:', response.data);
             alert('회원가입 성공! 로그인 페이지로 이동합니다.');
-            navigate('/member');
+            navigate('/member/login');
         } catch (err) {
             if (err.response) {
-                // 서버에서 반환한 에러 메시지
-                setError(err.response.data.error === "mid" ? "이미 사용 중인 ID입니다." : "회원가입 실패. 다시 시도해 주세요.");
+                setError(err.response.data.error === 'mid' ? '이미 사용 중인 ID입니다.' : '회원가입 실패. 다시 시도해 주세요.');
             } else {
                 setError('알 수 없는 오류가 발생했습니다.');
             }
@@ -73,145 +70,65 @@ const JoinForm = () => {
     };
 
     return (
-        <div className="container mt-3">
+        <div className="join-container">
             <div className="card">
-                <div className="card-header">
-                    JOIN
-                </div>
+                <div className="card-header">회원가입</div>
                 <div className="card-body">
-                    <form id="registerForm" onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit}>
                         <div className="form-group">
-                            <label htmlFor="mid">아이디</label>
-                            <input
-                                className="form-control"
-                                id="mid"
-                                name="mid"
-                                type="text"
-                                value={formData.mid}
-                                onChange={handleChange}
-                                required
-                            />
+                            <label>아이디</label>
+                            <input name="mid" value={formData.mid} onChange={handleChange} className="form-control" required />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="m_pw">비밀번호</label>
-                            <input
-                                className="form-control"
-                                id="m_pw"
-                                name="m_pw"
-                                type="password"
-                                value={formData.m_pw}
-                                onChange={handleChange}
-                                required
-                            />
+                            <label>비밀번호</label>
+                            <input name="m_pw" type="password" value={formData.m_pw} onChange={handleChange} className="form-control" required />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="mpwc">비밀번호 확인</label>
-                            <input
-                                className="form-control"
-                                id="mpwc"
-                                name="mpwc"
-                                type="password"
-                                value={formData.mpwc}
-                                onChange={handleChange}
-                                required
-                            />
+                            <label>비밀번호 확인</label>
+                            <input name="mpwc" type="password" value={formData.mpwc} onChange={handleChange} className="form-control" required />
                         </div>
-                        {error && <div id="errorMessage" className="text-danger">{error}</div>}
+                        {error && <div className="text-danger">{error}</div>}
                         <div className="form-group">
-                            <label htmlFor="m_name">이름</label>
-                            <input
-                                className="form-control"
-                                id="m_name"
-                                name="m_name"
-                                type="text"
-                                value={formData.m_name}
-                                onChange={handleChange}
-                                required
-                            />
+                            <label>이름</label>
+                            <input name="m_name" value={formData.m_name} onChange={handleChange} className="form-control" required />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="m_email">이메일</label>
-                            <input
-                                className="form-control"
-                                id="m_email"
-                                name="m_email"
-                                type="email"
-                                value={formData.m_email}
-                                onChange={handleChange}
-                                required
-                            />
+                            <label>이메일</label>
+                            <input name="m_email" type="email" value={formData.m_email} onChange={handleChange} className="form-control" required />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="m_phone">전화번호</label>
+                            <label>전화번호</label>
                             <input
-                                className="form-control"
-                                id="m_phone"
                                 name="m_phone"
-                                type="text"
                                 value={formData.m_phone}
                                 onChange={handleChange}
+                                className="form-control"
+                                placeholder="010-1111-2222"
+                                pattern="^010-\d{4}-\d{4}$"
+                                title="010-1111-2222 형식으로 입력해 주세요."
                                 required
                             />
                         </div>
+
                         <div className="form-group">
-                            <label htmlFor="m_address">집주소</label>
-                            <input
-                                className="form-control"
-                                id="m_address"
-                                name="m_address"
-                                type="text"
-                                value={formData.m_address}
-                                onChange={handleChange}
-                                required
-                            />
+                            <label>집주소</label>
+                            <input name="m_address" value={formData.m_address} onChange={handleChange}
+                                   className="form-control" required/>
                         </div>
                         <div className="form-group">
-                            <label htmlFor="m_birth">생년월일</label>
-                            <input
-                                className="form-control"
-                                id="m_birth"
-                                name="m_birth"
-                                type="date"
-                                value={formData.m_birth}
-                                onChange={handleChange}
-                                required
-                            />
+                        <label>생년월일</label>
+                            <input name="m_birth" type="date" value={formData.m_birth} onChange={handleChange} className="form-control" required />
                         </div>
                         <div className="form-group">
                             <label>성별</label>
-                            <fieldset>
-                                <label>
-                                    <input
-                                        className="form-check-input"
-                                        value="man"
-                                        name="gender"
-                                        type="radio"
-                                        checked={formData.gender === 'man'}
-                                        onChange={handleChange}
-                                    />
-                                    남성
-                                </label>
-                                <label>
-                                    <input
-                                        className="form-check-input"
-                                        value="woman"
-                                        name="gender"
-                                        type="radio"
-                                        checked={formData.gender === 'woman'}
-                                        onChange={handleChange}
-                                    />
-                                    여성
-                                </label>
-                            </fieldset>
+                            <div>
+                                <input type="radio" name="m_gender" value="man" checked={formData.m_gender === 'man'} onChange={handleChange} /> 남성
+                                <input type="radio" name="m_gender" value="woman" checked={formData.m_gender === 'woman'} onChange={handleChange} /> 여성
+                            </div>
                         </div>
                         <div className="form-group">
-                            <label>MBTI(선택)</label>
-                            <select
-                                className="form-select"
-                                name="mbti"
-                                value={formData.mbi}
-                                onChange={handleChange}
-                            >
+                            <label>MBTI</label>
+                            <select name="m_mbti" value={formData.m_mbti} onChange={handleChange} className="form-select">
                                 <option value="">---</option>
                                 <option value="ISTJ">ISTJ</option>
                                 <option value="ISTP">ISTP</option>
@@ -231,14 +148,7 @@ const JoinForm = () => {
                                 <option value="ENFP">ENFP</option>
                             </select>
                         </div>
-                        <div className="my-4">
-                            <div className="float-end">
-                                <button type="submit" className="btn btn-primary">등록하기</button>
-                                <button type="button" className="btn btn-secondary" onClick={() => navigate('/member/login')}>
-                                    이전
-                                </button>
-                            </div>
-                        </div>
+                        <button type="submit" className="btn btn-primary">가입하기</button>
                     </form>
                 </div>
             </div>

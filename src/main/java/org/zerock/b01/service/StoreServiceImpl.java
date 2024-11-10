@@ -75,6 +75,12 @@ public class StoreServiceImpl implements StoreService {
     public void remove(String username, Long sno) {
         storeRepository.deleteByMid_MidAndSno(username,sno);
     }
+    /*@Override
+    @Transactional
+    public void remove(Long sno) {
+        storeRepository.deleteById(sno);
+    }*/
+
 
     // 여행지 이름 검색하여 찜목록 조회
     @Override

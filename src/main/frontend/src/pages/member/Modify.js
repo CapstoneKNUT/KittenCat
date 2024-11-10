@@ -107,10 +107,14 @@ const Modify = () => {
                                 <input className="form-control" id="m_mbti" name="m_mbti" type="text" value={formData.m_mbti} onChange={handleChange} />
                             </div>
                             <div className="my-4">
-                                <div className="float-end">
-                                    <button type="submit" className="btn btn-primary">수정하기</button>
-                                    <button type="button" className="btn btn-secondary" onClick={() => navigate('/profile')}>취소</button>
+                                <div className="my-4">
+                                    <button type="submit" className="btn btn-primary" style={{width: '100%'}}>수정하기
+                                    </button>
+                                    <button type="button" className="btn btn-secondary" style={{width: '100%'}}
+                                            onClick={() => navigate('/profile')}>취소
+                                    </button>
                                 </div>
+
                             </div>
                         </form>
                     </div>

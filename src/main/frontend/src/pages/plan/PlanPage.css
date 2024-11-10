@@ -1,0 +1,49 @@
+.plan-page {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.day-selector {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.day-selector button {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+.day-selector .active {
+    background-color: #007bff;
+    color: white;
+}
+
+.add-plan-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.add-plan-form input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.plan-list {
+    margin-top: 20px;
+}
+
+.plan-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #ccc;
+}
+
+.plan-item span {
+    display: inline-block;
+    width: 150px;
+}

@@ -59,9 +59,7 @@ public class BoardController {
 
     // 게시물 수정
     @PostMapping("/modify")
-    public ResponseEntity<Map<String, String>> modify(
-            @RequestBody @Valid BoardDTO boardDTO,
-            PageRequestDTO pageRequestDTO) {
+    public ResponseEntity<Map<String, String>> modify(@RequestBody @Valid BoardDTO boardDTO, PageRequestDTO pageRequestDTO) {
         log.info("board modify post......." + boardDTO);
         boardService.modify(boardDTO);
         return ResponseEntity.ok(Map.of("result", "modified"));

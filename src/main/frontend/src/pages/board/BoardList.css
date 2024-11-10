@@ -1,5 +1,6 @@
 /* components/BoardList.css */
-.detail-page {
+
+.board-detail-page {
     display: flex;
     flex-direction: column;
     padding: 20px;
@@ -8,7 +9,7 @@
 }
 
 .board-list {
-    padding: 20px;
+    padding: 100px;
 }
 
 .board-list h1 {
@@ -16,12 +17,13 @@
     margin-bottom: 20px;
 }
 
-.results-list {
+.board-results-list {
     list-style-type: none;
-    padding: 0;
+    padding: 150px; /* padding: 150; 를 0으로 수정 */
+    /*width : 100px;*/
 }
 
-.results-list li {
+.board-results-list li {
     background-color: #f9f9f9;
     margin-bottom: 10px;
     padding: 15px;
@@ -29,21 +31,21 @@
     transition: background-color 0.3s;
 }
 
-.results-list li:hover {
+.board-results-list li:hover {
     background-color: #f1f1f1;
 }
 
-.results-list li a {
+.board-results-list li a {
     text-decoration: none;
     color: #333;
     display: block;
 }
 
-.results-list li a p {
+.board-results-list li a p {
     margin: 5px 0;
     font-size: 16px;
 }
 
-.results-list li a p strong {
+.board-results-list li a p strong {
     color: #007BFF;
 }

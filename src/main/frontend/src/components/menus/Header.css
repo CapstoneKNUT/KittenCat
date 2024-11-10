@@ -4,12 +4,15 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 60px;
+  height: 60px; /* 헤더 높이 */
   background-color: #fff;
   border-bottom: 1px solid #e0e0e0;
   z-index: 1000; /* 다른 요소들 위에 표시 */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* 기본 헤더 스타일 */
@@ -17,25 +20,30 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
 }
 
 /* 본문 내용이 헤더와 겹치지 않도록 패딩 추가 */
 body {
-  padding-top: 60px;
+  padding-top: 60px; /* 헤더 높이만큼 여백 추가 */
+  margin: 0;
 }
 
+/* 로고 스타일 */
 .home {
   width: 120px;
   height: auto;
   cursor: pointer;
 }
 
+/* 네비게이션 링크 스타일 */
 .nav-links {
   display: flex;
   align-items: center;
   gap: 20px;
 }
 
+/* 여행 정보 스타일 */
 .travel-info {
   font-size: 16px;
   color: #333;
@@ -43,7 +51,7 @@ body {
   padding: 5px 15px;
   border: 1px solid #ddd;
   border-radius: 20px;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
 }
 
 .travel-info a {
@@ -56,22 +64,52 @@ body {
   background-color: #e8e5df;
 }
 
+/* 메뉴 아이콘 스타일 */
 .menu-icons {
   display: flex;
   align-items: center;
   gap: 20px;
 }
 
+/* 버튼 스타일 */
 .btn-outline-primary {
   font-size: 16px;
   color: #333;
   border-color: #333;
   border-radius: 20px;
   padding: 5px 15px;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
 }
 
 .btn-outline-primary:hover {
   background-color: #333;
   color: #fff;
+}
+
+/* 반응형 디자인: 작은 화면에서 메뉴 스타일 */
+@media (max-width: 768px) {
+  .menubar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .menu-icons {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .travel-info {
+    font-size: 14px; /* 작은 화면에서는 글씨 크기 줄이기 */
+    padding: 5px 10px;
+  }
+
+  .btn-outline-primary {
+    font-size: 14px;
+    padding: 5px 10px;
+  }
 }

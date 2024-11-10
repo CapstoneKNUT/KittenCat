@@ -42,3 +42,34 @@
     padding: 15px;
     border-radius: 4px;
 }
+.board-detail-page {
+    padding: 20px;
+}
+
+.button-group {
+    display: flex; /* Flexbox를 사용하여 버튼을 나란히 정렬 */
+    justify-content: space-between; /* 버튼 사이에 공간을 균등하게 배치 */
+    margin-top: 20px;
+}
+
+.button-group button {
+    flex: 1; /* 버튼을 동일한 너비로 설정 */
+    margin: 0 10px; /* 버튼 사이의 여백 */
+    padding: 10px; /* 버튼 내부 패딩 */
+    font-size: 14px; /* 버튼 글자 크기 */
+}
+
+.btn-secondary {
+    background-color: #6c757d; /* 기본 회색 */
+    color: white; /* 글자 색상 */
+}
+
+.btn-warning {
+    background-color: #ffc107; /* 노란색 */
+    color: black; /* 글자 색상 */
+}
+
+.btn-danger {
+    background-color: #dc3545; /* 빨간색 */
+    color: white; /* 글자 색상 */
+}

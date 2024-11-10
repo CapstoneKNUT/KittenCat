@@ -1,60 +1,86 @@
-// src/pages/board/BoardModify.js
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import './BoardModify.css'; // 스타일 파일 추가
 
 const BoardModify = () => {
-    const { bno } = useParams();
-    const navigate = useNavigate();
-    const [board, setBoard] = useState({ title: '', content: '' });
+    const { bno } = useParams(); // URL에서 bno를 가져옵니다
+    const navigate = useNavigate(); // navigate 함수 사용
+    const [board, setBoard] = useState({
+        title: '',
+        content: '',
+        writer: '',
+        regDate: '',
+        modDate: ''
+    });
+
+    // 게시물 데이터를 가져오는 함수
+    const fetchBoardData = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/board/read`, {
+                params: { bno: bno }
+            });
+            setBoard(response.data);
+        } catch (error) {
+            console.error('게시물 데이터를 가져오는 중 오류 발생:', error);
+        }
+    };
 
     useEffect(() => {
-        const fetchBoard = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8080/api/board/read?bno=${bno}`);
-                setBoard(response.data);
-            } catch (error) {
-                console.error('Error fetching board:', error);
-            }
-        };
-
-        fetchBoard();
+        fetchBoardData();
     }, [bno]);
 
-    const handleModify = async () => {
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setBoard({ ...board, [name]: value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault(); // 기본 폼 제출 방지
         try {
             await axios.post('http://localhost:8080/api/board/modify', board);
-            navigate('/board');
+            alert('게시물이 수정되었습니다.');
+            navigate(`/board/read/${bno}`); // 수정 후 게시글 보기 페이지로 이동
         } catch (error) {
-            console.error('Error modifying board:', error);
+            console.error('게시물 수정 중 오류 발생:', error);
+            alert('게시물 수정에 실패했습니다.');
         }
     };
 
-    const handleDelete = async () => {
-        try {
-            await axios.post('http://localhost:8080/api/board/remove', { bno });
-            navigate('/board');
-        } catch (error) {
-            console.error('Error deleting board:', error);
-        }
-    };
+    if (!board) {
+        return <div>로딩 중...</div>;
+    }
 
     return (
-        <div>
+        <div className="board-modify-page">
             <h1>게시물 수정</h1>
-            <input
-                type="text"
-                value={board.title}
-                onChange={(e) => setBoard({ ...board, title: e.target.value })}
-                placeholder="제목"
-            />
-            <textarea
-                value={board.content}
-                onChange={(e) => setBoard({ ...board, content: e.target.value })}
-                placeholder="내용"
-            />
-            <button onClick={handleModify}>수정하기</button>
-            <button onClick={handleDelete}>삭제하기</button>
+            <form onSubmit={handleSubmit}>
+                <div className="mb-3">
+                    <label htmlFor="title" className="form-label">제목</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        id="title"
+                        name="title"
+                        value={board.title}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="content" className="form-label">내용</label>
+                    <textarea
+                        className="form-control"
+                        id="content"
+                        name="content"
+                        rows="5"
+                        value={board.content}
+                        onChange={handleChange}
+                        required
+                    ></textarea>
+                </div>
+                <button type="submit" className="btn btn-primary">수정 완료</button>
+            </form>
         </div>
     );
 };

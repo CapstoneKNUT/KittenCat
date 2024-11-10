@@ -10,8 +10,8 @@ const App = lazy(() => import("../App"))
 const Main = lazy(() => import("../pages/main"))
 const PlaceList = lazy(() => import("../pages/place/Lists"))
 const PlaceRead = lazy(() => import("../pages/place/Read"))
-const StoreList = lazy(() => import ("../Store/StoreLists"))
-const StoreRead = lazy(() => import ("../Store/StoreRead"))
+const StoreList = lazy(() => import ("../pages/Store/StoreLists"))
+const StoreRead = lazy(() => import ("../pages/Store/StoreRead"))
 
 /*
 const MemberJoin = lazy(() => import("../pages/member/join"))

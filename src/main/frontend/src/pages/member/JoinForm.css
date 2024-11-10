@@ -1,0 +1,48 @@
+/* 전체 페이지 스타일 */
+.join-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 80px;
+    min-height: 100vh;
+    background-image: url('./background.jpg'); /* 배경 이미지 경로 */
+    background-size: cover; /* 이미지 크기를 화면에 맞춤 */
+    background-position: center; /* 이미지를 중앙에 배치 */
+    background-repeat: no-repeat;
+    position: relative; /* 오버레이를 위해 position 설정 */
+}
+
+/* 반투명 오버레이 */
+.join-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8); /* 흰색 반투명 오버레이 */
+    z-index: 1;
+}
+
+/* 카드 스타일 */
+.card {
+    width: 100%;
+    max-width: 500px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    border-radius: 10px;
+    z-index: 2; /* 오버레이 위에 표시 */
+}
+
+/* 버튼 스타일 */
+.btn-primary {
+    width: 100%;
+    margin-top: 15px;
+}
+
+/* 에러 메시지 스타일 */
+.text-danger {
+    color: red;
+    margin-bottom: 10px;
+}

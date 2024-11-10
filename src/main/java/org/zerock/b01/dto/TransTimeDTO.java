@@ -15,7 +15,7 @@ public class TransTimeDTO {
 
     private String writer;
 
-    private String t_startdatetime;
+    private LocalDateTime t_startdatetime;
 
     private String start_location;
 

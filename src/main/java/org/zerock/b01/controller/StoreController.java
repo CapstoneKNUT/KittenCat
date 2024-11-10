@@ -1,16 +1,13 @@
 package org.zerock.b01.controller;
 
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.zerock.b01.domain.Store;
 import org.zerock.b01.dto.PageRequestDTO;
 import org.zerock.b01.dto.PageResponseDTO;
+import org.zerock.b01.dto.RemoveRequest;
 import org.zerock.b01.dto.StoreDTO;
 import org.zerock.b01.service.StoreService;
 
@@ -48,13 +45,21 @@ public class StoreController {
     }
 
     //사용자의 찜목록 제거
-    @DeleteMapping("/remove")
-    public ResponseEntity<String> remove(@RequestParam String username, @RequestParam Long sno, RedirectAttributes redirectAttributes) {
+    /*@PostMapping("/remove")
+    public ResponseEntity<String> remove(@RequestParam String username, @RequestParam Long sno*//*, RedirectAttributes redirectAttributes*//*) {
         log.info("remove store with sno: " + sno + " by user: " + username);
         storeService.remove(username, sno);
-        redirectAttributes.addFlashAttribute("result", "removed");
+//        redirectAttributes.addFlashAttribute("result", "removed");
         return ResponseEntity.ok("Store removed successfully");
     }
+*/
+    @PostMapping("/remove")
+    public ResponseEntity<String> remove(@RequestBody RemoveRequest request) {
+        log.info("remove store with sno: {}, by user: {}", request.getSno(), request.getUsername());
+        storeService.remove(request.getUsername(), request.getSno());
+        return ResponseEntity.ok("Store removed successfully");
+    }
+
 
     // 유저의 찜목록 중 이름을 검색하여 조회
     @GetMapping("/list")

@@ -1,5 +1,6 @@
 package org.zerock.b01.service;
 
+import org.zerock.b01.domain.PlanPlace;
 import org.zerock.b01.domain.StoreToPlan;
 import org.zerock.b01.dto.StoreToPlanDTO;
 
@@ -7,7 +8,7 @@ public interface StoreToPlanService {
 
     StoreToPlanDTO readOne(Long spNo);
 
-    Long register(Long sno);
+    Long register(Long sno, PlanPlace LastPlanPlace);
 
     default StoreToPlanDTO entityToDTO(StoreToPlan storeToPlan) {
 

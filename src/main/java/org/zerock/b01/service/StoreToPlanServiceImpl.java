@@ -3,6 +3,7 @@ package org.zerock.b01.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.zerock.b01.domain.PlanPlace;
 import org.zerock.b01.domain.Store;
 import org.zerock.b01.domain.StoreToPlan;
 import org.zerock.b01.dto.StoreToPlanDTO;
@@ -35,7 +36,7 @@ public class StoreToPlanServiceImpl implements StoreToPlanService{
     }
 
     @Override
-    public Long register(Long sno){
+    public Long register(Long sno, PlanPlace LastPlanPlace){
         Store store = storeRepository.findById(sno)
                 .orElseThrow(() -> new RuntimeException("StoreToPlan not found"));
 
@@ -50,6 +51,7 @@ public class StoreToPlanServiceImpl implements StoreToPlanService{
                 .p_site(store.getP_site())
                 .p_opentime(store.getP_opentime())
                 .p_park(store.getP_park())
+                .planPlace(LastPlanPlace)
                 .build();
 
         Long spNo = storeToPlanRepository.save(storeToPlan).getSpNo();

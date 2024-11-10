@@ -20,6 +20,7 @@ public interface StoreService {
 
     // 제거하기
     void remove(String username, Long sno);
+//    void remove(Long sno);
 
     // 여행지 이름 검색하여 찜목록 조회
     PageResponseDTO<StoreDTO> searchBookmarks(String username, String p_name, String p_address, PageRequestDTO pageRequestDTO);

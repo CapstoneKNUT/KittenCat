@@ -113,3 +113,40 @@ input[type="date"]:focus {
 .text-danger {
     color: #d32f2f; /* 오류 메시지 색상 */
 }
+
+.my-4 {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center; /* 중앙 정렬 */
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    margin: 5px; /* 버튼 사이의 간격 추가 */
+    width: calc(100% - 10px); /* 버튼 사이의 여백을 고려하여 너비 설정 */
+}
+
+.btn-primary {
+    background-color: #ff6f00;
+    color: #fff;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #e65100;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background-color: #d32f2f;
+    color: #fff;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background-color: #c62828;
+    transform: translateY(-2px);
+}

@@ -1,3 +1,4 @@
+/*
 package org.zerock.b01.repository.search;
 
 import com.querydsl.core.BooleanBuilder;
@@ -44,7 +45,8 @@ public class StoreSearchImpl extends QuerydslRepositorySupport implements StoreS
 
     }
 
-    /*@Override
+    */
+/*@Override
     public Page<Store> searchAll(String bookmark, String keyword, Pageable pageable) {
 
         QStore store = QStore.store;
@@ -79,15 +81,79 @@ public class StoreSearchImpl extends QuerydslRepositorySupport implements StoreS
 
         return new PageImpl<>(list, pageable, count);
 
-    }*/
+    }*//*}
+*/
+package org.zerock.b01.repository.search;
 
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.JPQLQuery;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.zerock.b01.domain.QStore;
+import org.zerock.b01.domain.Store;
+
+import java.util.List;
+
+public class StoreSearchImpl extends QuerydslRepositorySupport implements StoreSearch {
+
+    public StoreSearchImpl() {
+        super(Store.class);
+    }
+
+    @Override
+    public Page<Store> searchAll(String username, String type, String keyword, Pageable pageable) {
+
+        QStore store = QStore.store;
+        JPQLQuery<Store> query = from(store);
+
+        // username으로 필터링
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        booleanBuilder.and(store.mid.mid.eq(username));
+
+        // 검색 조건(type)에 따른 필터링
+        if (type != null && !type.isEmpty() && keyword != null && !keyword.isEmpty()) {
+            BooleanBuilder searchBuilder = new BooleanBuilder();
+
+            switch (type) {
+                case "t":
+                    searchBuilder.or(store.p_name.containsIgnoreCase(keyword));
+                    break;
+                case "c":
+                    searchBuilder.or(store.p_address.containsIgnoreCase(keyword));
+                    break;
+//                case "w":
+//                    searchBuilder.or(store.mid.mid.containsIgnoreCase(keyword));
+//                    break;
+                case "tc":
+                    searchBuilder.or(store.p_name.containsIgnoreCase(keyword))
+                            .or(store.p_content.containsIgnoreCase(keyword));
+                    break;
+//                case "tcw":
+//                    searchBuilder.or(store.p_name.containsIgnoreCase(keyword))
+//                            .or(store.p_content.containsIgnoreCase(keyword))
+//                            .or(store.mid.mid.containsIgnoreCase(keyword));
+//                    break;
+                default:
+                    break;
+            }
+
+            booleanBuilder.and(searchBuilder);
+        }
+
+        query.where(booleanBuilder);
+
+        // sno > 0 조건 추가
+        query.where(store.sno.gt(0L));
+
+        // 페이징 적용
+        this.getQuerydsl().applyPagination(pageable, query);
+
+        // 결과 리스트 및 총 개수 조회
+        List<Store> list = query.fetch();
+        long count = query.fetchCount();
+
+        return new PageImpl<>(list, pageable, count);
+    }
 }
-
-
-
-
-
-
-
-
-
