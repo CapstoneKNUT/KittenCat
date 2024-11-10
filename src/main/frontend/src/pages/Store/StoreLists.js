@@ -110,16 +110,18 @@ function StoreLists() {
         const isBookmarked = bookmarks.some(bookmark => bookmark.sno === sno);
 
         try {
-            if (isBookmarked) {
-                // 찜 목록에서 해당 아이템을 제거
-                const updatedBookmarks = bookmarks.filter(bookmark => bookmark.sno !== sno);
-                setBookmarks(updatedBookmarks);
-                localStorage.setItem('bookmarks', JSON.stringify(updatedBookmarks));
-            } else {
-                // 찜 목록에 해당 아이템을 추가
+            const response = await axios.post('http://localhost:8080/api/store/remove', {
+                sno,
+                username: user.mid
+            });
+
+            if (response.status === 200) {
+                alert('북마크가 해제되었습니다.');
                 const updatedBookmarks = [...bookmarks, { sno }];
                 setBookmarks(updatedBookmarks);
                 localStorage.setItem('bookmarks', JSON.stringify(updatedBookmarks));
+                // 페이지 새로고침
+                window.location.reload();
             }
         } catch (error) {
             console.error('Error toggling bookmark:', error);

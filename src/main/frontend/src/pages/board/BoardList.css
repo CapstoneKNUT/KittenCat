@@ -8,6 +8,28 @@
     color: #333;
 }
 
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 40px;
+}
+
+.pagination button {
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.pagination button:hover {
+    background-color: #ffcc80;
+    color: white;
+    border-color: #ffcc80;
+    transform: translateY(-2px); /* 호버 시 약간 위로 이동 */
+}
 .board-list {
     padding: 100px;
 }
@@ -17,10 +39,51 @@
     margin-bottom: 20px;
 }
 
+/* 검색창 스타일 추가 */
+.search-form {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 40px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.search-form select,
+.search-form input {
+    padding: 10px 15px;
+    border-radius: 25px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.search-form select:focus,
+.search-form input:focus {
+    border-color: #007BFF; /* 포커스 시 테두리 색상 */
+}
+
+.search-form button {
+    padding: 10px 20px;
+    border-radius: 25px;
+    border: none;
+    background-color: #007BFF;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.search-form button:hover {
+    background-color: #0056b3; /* 호버 시 색상 변경 */
+}
+
 .board-results-list {
     list-style-type: none;
-    padding: 150px; /* padding: 150; 를 0으로 수정 */
-    /*width : 100px;*/
+    padding: 0; /* padding: 150; 를 0으로 수정 */
 }
 
 .board-results-list li {

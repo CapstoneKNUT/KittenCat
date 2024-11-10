@@ -71,10 +71,11 @@ function Lists() {
         p_area,
         p_subArea,
         p_category: '',
-        p_count: 20,
+        p_count: 15,
         p_keyword,
       });
       setResponseData(response.data);
+      window.location.reload()
     } catch (error) {
       console.error('Error during search:', error);
     }
