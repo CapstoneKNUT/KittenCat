@@ -65,46 +65,4 @@ public interface PlanService {
 
         return planSetDTO;
     }
-
-    default PlanPlaceDTO entityToDTOPP(PlanPlace planplace) {
-
-        PlanPlaceDTO planplaceDTO = PlanPlaceDTO.builder()
-                .ppOrd(planplace.getPpOrd())
-                .pp_startAddress(planplace.getPp_startAddress())
-                .pp_takeDate(planplace.getPp_takeDate())
-                .pp_mapx(planplace.getPp_mapx())
-                .pp_mapy(planplace.getPp_mapy())
-                .planNo(planplace.getPlanSet().getPlanNo())
-                .build();
-
-        return planplaceDTO;
-    }
-
-    default TransportParentDTO entityToDTOTP(TransportParent transportParent) {
-
-        TransportParentDTO transportParentDTO = TransportParentDTO.builder()
-                .tno(transportParent.getTno())
-                .ppOrd(transportParent.getPlanPlace().getPpOrd())
-                .isCar(transportParent.getIsCar())
-                .t_method(transportParent.getT_method())
-                .t_startDateTime(transportParent.getT_startDateTime())
-                .t_takeTime(transportParent.getT_takeTime())
-                .t_goalDateTime(transportParent.getT_goalDateTime())
-                .writer(transportParent.getWriter())
-                .build();
-
-        return transportParentDTO;
-    }
-
-    default TransportChildDTO entityToDTOTP(TransportChild transportChild) {
-
-        TransportChildDTO transportChildDTO = TransportChildDTO.builder()
-                .tord(transportChild.getTord())
-                .tno(transportChild.getTransportParent().getTno())
-                .c_method(transportChild.getC_method())
-                .c_takeTime(transportChild.getC_takeTime())
-                .build();
-
-        return transportChildDTO;
-    }
 }

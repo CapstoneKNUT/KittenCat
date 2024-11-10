@@ -67,17 +67,8 @@ public class PlanServiceImpl implements PlanService {
     @Value("${naver.client.secret}")
     private String naverSecret;
 
-    @Value("${naver.client.id2}")
-    private String naverClientId2;
-
-    @Value("${naver.client.secret2}")
-    private String naverSecret2;
-
     @Value("${naver.url.search.local}")
     private String naverLocalSearchUrl;
-
-    @Value("https://naveropenapi.apigw.gov-ntruss.com/map-direction-15/v1/driving")
-    private String naverDrivingSearchUrl;
 
     @Override
     public PageResponseDTO<PlanSetDTO> list(PageRequestDTO pageRequestDTO) {

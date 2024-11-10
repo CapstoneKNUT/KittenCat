@@ -17,14 +17,14 @@ function PlanInit() {
     const [readOnly, setReadOnly] = useState(false); // 출발 날짜
     const [planSet, setPlanSet] = useState({planNo: null});
     const [takeTime, setTakeTime] = useState(''); // 시간과 분을 각각 관리
-    const [takeHourTime, setTakeHourTime] = useState(''); // 시간과 분을 각각 관리
-    const [takeMinuteTime, setTakeMinuteTime] = useState(''); // 시간과 분을 각각 관리
+/*    const [takeHourTime, setTakeHourTime] = useState(''); // 시간과 분을 각각 관리
+    const [takeMinuteTime, setTakeMinuteTime] = useState(''); // 시간과 분을 각각 관리*/
     const [duration, setDuration] = useState(null); //몇일 차인가?
     const [planPlaces, setPlanPlaces] = useState([]); //일정표의 장소
     const [planPlaceAlls, setPlanPlaceAlls] = useState([]); //일정표의 장소
     const [LatestDate, setLatestDate] = useState(''); //장소 중 제일 마지막 일차
-    const [transportParents, setTransportParents] = useState([]); //일정표의 장소
-    const [transportChilds, setTransportChilds] = useState([]); //일정표의 장소
+/*    const [transportParents, setTransportParents] = useState([]); //일정표의 장소
+    const [transportChilds, setTransportChilds] = useState([]); //일정표의 장소*/
 
     const ps_startDatePart = ps_startDate.split('T')[0];
 
