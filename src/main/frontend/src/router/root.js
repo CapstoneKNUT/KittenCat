@@ -1,82 +1,82 @@
-import {lazy, Suspense} from "react";
-import loginRedirect from "../components/redirect/LoginRedirect";
-import {Plan, PlanProvider} from "../pages/plan/plan";
-import PlanRegister from "../pages/plan/register";
-const {createBrowserRouter} = require("react-router-dom");
+import { lazy, Suspense } from "react";
+import { createBrowserRouter } from "react-router-dom";
+import Layout from "../layouts/Layout";
 
-const Loading = <div>Loading....</div>
+// 로딩 컴포넌트 
+const Loading = () => <div className="loading-spinner">Loading...</div>;
 
-const App = lazy(() => import("../App"))
-const Main = lazy(() => import("../pages/main"))
-const PlaceList = lazy(() => import("../pages/place/Lists"))
-const PlaceRead = lazy(() => import("../pages/place/Read"))
-const StoreList = lazy(() => import ("../pages/Store/StoreLists"))
-const StoreRead = lazy(() => import ("../pages/Store/StoreRead"))
+// 컴포넌트 lazy 로딩
+const Main = lazy(() => import("../pages/main"));
+const PlaceList = lazy(() => import("../pages/place/Lists"));
+const PlaceRead = lazy(() => import("../pages/place/Read"));
+const StoreList = lazy(() => import("../pages/Store/StoreLists"));
+const StoreRead = lazy(() => import("../pages/Store/StoreRead"));
+const Plan = lazy(() => import("../pages/plan/plan"));
+const PlanInit = lazy(() => import("../pages/plan/PlanInit"));
+const PlanRegister = lazy(() => import("../pages/plan/PlanRegister"));
 
-/*
-const MemberJoin = lazy(() => import("../pages/member/join"))
-const MemberLogin = lazy(() => import("../pages/member/login"))
-*/
+// 컴포넌트 래퍼
+const withSuspense = (Component) => (
+<Suspense fallback={<Loading />}>
+    <Component />
+</Suspense>
+);
 
-const root = createBrowserRouter([
-    {
-        path: "",
-        element: <Suspense fallback={Loading}><Main><loginRedirect/></Main></Suspense>,
-    },
-    {
-        path: "main",
-        element: <Suspense fallback={Loading}><Main/></Suspense>,
-    },
-    {
-        path: "place",
-        children: [
-            {
-                path:'list',
-                element:<Suspense fallback={Loading}><PlaceList/></Suspense>
-            },
-            {
-                path:'read/:pord',
-                element:<Suspense fallback={Loading}><PlaceRead/></Suspense>
-            }
-        ]
-    },
-    {
-        path: "store",
-        children: [
-            {
-                path:'list',
-                element:<Suspense fallback={Loading}><StoreList/></Suspense>
-            },
-            {
-                path:'read/:sno',
-                element:<Suspense fallback={Loading}><StoreRead/></Suspense>
-            }
-        ]
-    },
-/*
-    {
-        path: "plan",
-        element:<Suspense fallback={Loading}><PlanProvider><Plan /></PlanProvider></Suspense>,
-        children: [
-            {
-                path:'register',
-                element:<Suspense fallback={Loading}><PlanProvider><PlanRegister/></PlanProvider></Suspense>
-            },
-        ]
-    },
-    {
-        path: "member",
-        children: [
-            {
-                path:'login',
-                element:<Suspense fallback={Loading}><MemberLogin/></Suspense>
-            },
-            {
-                path:'join',
-                element:<Suspense fallback={Loading}><MemberJoin/></Suspense>
-            },
-        ]
-    },*/
+const router = createBrowserRouter([
+{
+    path: "/",
+    element: <Layout />,
+    children: [
+        {
+            index: true,
+            element: withSuspense(Main)
+        },
+        {
+            path: "place",
+            children: [
+                {
+                    path: "list",
+                    element: withSuspense(PlaceList)
+                },
+                {
+                    path: "read/:pord",
+                    element: withSuspense(PlaceRead)
+                }
+            ]
+        },
+        {
+            path: "store",
+            children: [
+                {
+                    path: "list",
+                    element: withSuspense(StoreList)
+                },
+                {
+                    path: "read/:sno",
+                    element: withSuspense(StoreRead)
+                }
+            ]
+        },
+        {
+            path: "plan",
+            element: withSuspense(Plan),
+            children: [
+                {
+                    path: "init",
+                    element: withSuspense(PlanInit)
+                },
+                {
+                    path: "register",
+                    element: withSuspense(PlanRegister)
+                },
+            ]
+        }
+    ]
+},
+{
+    path: "*",
+    element: <div>404 Not Found</div>
+}
 ]);
 
-export default root
+export default router;

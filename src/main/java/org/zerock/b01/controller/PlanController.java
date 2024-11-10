@@ -76,17 +76,11 @@ public class PlanController {
         return ResponseEntity.ok(planSetDTO);
     }
 
-    // 게시물 등록 화면
-    @GetMapping("/register/{planNo}")
-    public ResponseEntity<Void> registerGET(@PathVariable Long planNo) {
-        return ResponseEntity.ok().build();
-    }
-
     // 찜목록에서 가져와 일정표에 넣기
     @Transactional(isolation = Isolation.READ_COMMITTED)
     @PostMapping(value = "/{planNo}/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, List<Long>>> registerPlanPlaceAdd(@RequestBody PlanPlaceBodyDTO planPlaceBodyDTO,
-                                                                        @PathVariable Long planNo) {
+            @PathVariable Long planNo) {
         List<Long> ppOrdList = new ArrayList<>();
 
         StoreDTO storeDTO = storeService.read(planPlaceBodyDTO.getSno());
@@ -112,7 +106,6 @@ public class PlanController {
 
         PlanPlace planplace;
 
-        PlanPlace LastPlanPlace = null;
         // 장소 저장
         // 이전에 등록된 장소가 없을 경우
         if (planPlace == null) {
@@ -172,7 +165,7 @@ public class PlanController {
             }
             return ResponseEntity.ok(Map.of("ppOrd", ppOrdList));
         } else {
-            //두번째 이상의 저장일 경우
+        //두번째 이상의 저장일 경우
             Map<String, Object> timeResult = planService.startTime(planNo, Address, mapx, mapy, planSetDTO.getWriter());
             // Map에서 꺼낼 때 필요한 형으로 캐스팅
             LocalDateTime startTime = (LocalDateTime) timeResult.get("pp_startDate");
@@ -240,6 +233,7 @@ public class PlanController {
 
             // 외래키 지정
 
+            PlanPlace LastPlanPlace;
             log.info("현재 등록된 교통 수단의 갯수 : "+ getTNumber);
             if (getTNumber == 1) {
                 // 최신 교통수단 저장내용 조회
@@ -271,15 +265,21 @@ public class PlanController {
             }
         }
 
-        storeToPlanService.register(planPlaceBodyDTO.getSno(), LastPlanPlace);
-
         return ResponseEntity.ok(Map.of("ppOrd", ppOrdList));
     }
 
     // 일정표에서 등록된 장소 조회
     @ApiOperation(value = "Read PlanPlace", notes = "Get 방식으로 등록 장소 조회")
+    @GetMapping("/{planNo}/planplaceAll")
+    public ResponseEntity<List<PlanPlaceDTO>> getPlanPlaceList(@PathVariable Long planNo) {
+        List<PlanPlaceDTO> planPlaceDTO = planService.listOfPlanPlaceAll(planNo);
+        return ResponseEntity.ok(planPlaceDTO);
+    }
+
+    // 일정표에서 등록된 장소 조회
+    @ApiOperation(value = "Read PlanPlace", notes = "Get 방식으로 등록 장소 조회")
     @GetMapping("/{planNo}/planplace")
-    public ResponseEntity<List<PlanPlaceDTO>> getPlanPlaceList(@PathVariable Long planNo, @RequestParam Integer day) {
+    public ResponseEntity<List<PlanPlaceDTO>> getPlanPlace(@PathVariable Long planNo, @RequestParam Integer day) {
         List<PlanPlaceDTO> planPlaceDTO = planService.listOfPlanPlace(planNo, day);
         return ResponseEntity.ok(planPlaceDTO);
     }
@@ -288,7 +288,7 @@ public class PlanController {
     @ApiOperation(value = "Read TransportParent", notes = "Get 방식으로 등록 이동수단 조회")
     @GetMapping("/{planNo}/TransportParent/{ppOrd}")
     public ResponseEntity<List<TransportParentDTO>> getTransportParent(@PathVariable Long planNo,
-                                                                       @PathVariable Long ppOrd, @RequestParam Integer day) {
+            @PathVariable Long ppOrd, @RequestParam Integer day) {
         List<TransportParentDTO> transportParentDTO = planService.listOfTransportParent(planNo, ppOrd, day);
         return ResponseEntity.ok(transportParentDTO);
     }

@@ -1,171 +1,109 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useUser } from '../member/UserContext.js'; // UserContext에서 유저 정보를 가져오기
+import carAvif from './components/car.avif';
+import subwayPng from './components/subway.png';
+import './PlanInit.css';
 
-function PlanRegister() {
-    const [selectedPlaces, setSelectedPlaces] = useState([]);
-    const [transportation, setTransportation] = useState('');
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
-    const [bookmarkedPlaces, setBookmarkedPlaces] = useState([]);
-    const [savedPlanId, setSavedPlanId] = useState(null);
+function PlanInit() {
+    const navigate = useNavigate();
+    const { user } = useUser(); // 로그인한 유저 정보 가져오기
+    const [title, setTitle] = useState(''); // 여행지 제목
+    const [isCar, setIsCar] = useState(true); // 차량 이용 여부 (1: 차, 0: 대중교통)
+    const [ps_startDate, setPsStartDate] = useState(''); // 출발 날짜
 
-// 찜 목록 불러오기
-    const loadBookmarkedPlaces = async () => {
-        try {
-            const response = await axios.get('http://localhost:8080/api/store/list');
-            setBookmarkedPlaces(response.data);
-        } catch (error) {
-            console.error('Error loading bookmarks:', error);
+    useEffect(() => {
+        if (!user) {
+            alert("로그인 후 이용해주세요.");
+            navigate('/member/login'); // 로그인 페이지로 이동
         }
-    };
+    }, [user, navigate]);
 
-// 장소 추가 시 교통 정보 계산
-    const addPlace = (place) => {
-        setSelectedPlaces(prev => {
-            const newPlaces = [...prev, place];
-            if (newPlaces.length > 1) {
-                calculateTransportation(newPlaces[newPlaces.length - 2], place);
-            }
-            return newPlaces;
-        });
-    };
-
-    const calculateTransportation = (from, to) => {
-        return "30분"; // 예시 값
-    };
-
-// 일정 저장
+    // 일정 저장
     const savePlan = async () => {
+        // 필수 입력값 확인
+        if (!title) {
+            alert("일정표 제목을 입력하세요."); // 제목이 비어있을 때 경고
+            return;
+        }
+
+        if (!ps_startDate) {
+            alert("출발 날짜를 선택하세요."); // 출발 날짜가 비어있을 때 경고
+            return;
+        }
+
         try {
             const planData = {
-                title: "새로운 여행",
-                startDate,
-                places: selectedPlaces.map((place, index) => ({
-                    pord: place.pord,
-                    visitOrder: index + 1,
-                    startTime: place.startTime,
-                    duration: place.duration
-                }))
+                title,
+                isCar,
+                writer : user.mid,
+                ps_startDate,
             };
 
-            const response = await axios.post('http://localhost:8080/api/plan/register', planData);
-            setSavedPlanId(response.data.pid); // 저장된 plan의 ID를 상태에 저장
+            await axios.post('http://localhost:8080/api/plan/register/init', planData);
+
+            // 저장 후 다른 페이지로 이동
+            navigate('/plan/register');
         } catch (error) {
             console.error('Error saving plan:', error);
         }
     };
 
     return (
-        <div className="plan-register-container">
-            {/* 찜한 장소 목록 */}
-            <div className="bookmarked-places">
-                <h3>찜한 장소</h3>
-                <div className="places-list">
-                    {bookmarkedPlaces.map(place => (
-                        <div
-                            key={place.pord}
-                            className="place-item"
-                            onClick={() => addPlace(place)}
-                        >
-                            <img src={place.p_image} alt={place.p_name} className="place-image" />
-                            <p>{place.p_name}</p>
-                        </div>
-                    ))}
+        <div className="plan-init">
+            <h3>일정표 정보 입력</h3>
+            <div className="input-card">
+                <div className="input-field">
+                    <label>일정표 제목:</label>
+                    <input
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="일정표 제목을 입력하세요"
+                    />
                 </div>
-            </div>
-
-            {/* 일정 등록 섹션 */}
-            <div className="schedule-section">
-                <h3>일정 등록</h3>
-                <input
-                    type="datetime-local"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="date-input"
-                />
-                <div className="selected-places">
-                    {selectedPlaces.map((place, index) => (
-                        <div key={index} className="timeline-item">
-                            <div className="time-input">
-                                <input
-                                    type="time"
-                                    value={place.startTime || ''}
-                                    onChange={(e) => {
-                                        const newPlaces = [...selectedPlaces];
-                                        newPlaces[index].startTime = e.target.value;
-                                        setSelectedPlaces(newPlaces);
-                                    }}
-                                />
-                            </div>
-                            <div className="place-info">
-                                <span>{place.p_name}</span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* 저장 버튼 및 일정 표시 */}
-            <div className="save-section">
-                {savedPlanId ? (
-                    <div className="save-success">
-                        <p>일정이 저장되었습니다!</p>
-                        <Link to={`/plan/detail/${savedPlanId}`} className="view-plan-button">
-                            저장된 일정 보기
-                        </Link>
+                <div className="input-field">
+                    <label>교통수단:</label>
+                    <div className="transportation-options">
+                        <label className={`transport-option ${isCar === 1 ? 'selected' : ''}`}>
+                            <input
+                                type="radio"
+                                value={true}
+                                checked={isCar === true}
+                                onChange={() => setIsCar(true)}
+                            />
+                            <img src={carAvif} alt="차" style={{ width: 'auto', height: "43px" }}/>
+                            <span>
+                                차
+                            </span>
+                        </label>
+                        <label className={`transport-option ${isCar === 0 ? 'selected' : ''}`}>
+                            <input
+                                type="radio"
+                                value={false}
+                                checked={isCar === false}
+                                onChange={() => setIsCar(false)}
+                            />
+                            <img src={subwayPng} alt="대중교통" style={{ width: 'auto', height: "50px" }}/>
+                            <span>
+                                대중교통
+                            </span>
+                        </label>
                     </div>
-                ) : (
-                    <button onClick={savePlan} className="save-button">저장하기</button>
-                )}
+                </div>
+                <div className="input-field">
+                <label>출발 날짜:</label>
+                    <input
+                        type="datetime-local"
+                        value={ps_startDate}
+                        onChange={(e) => setPsStartDate(e.target.value)}
+                    />
+                </div>
             </div>
+            <button onClick={savePlan} className="save-button">저장하기</button>
         </div>
     );
 }
 
-// 추가된 CSS
-const additionalStyles = `
-.header {
-    display: flex;
-    justify-content: space-between;
-    padding: 20px;
-    background-color: #f5f5f5;
-    margin-bottom: 20px;
-}
-
-.home-button,
-.list-button,
-.view-plan-button {
-    padding: 10px 20px;
-    border-radius: 5px;
-    text-decoration: none;
-    color: white;
-    background-color: #007bff;
-}
-
-.save-success {
-    text-align: center;
-    margin: 20px 0;
-    padding: 20px;
-    background-color: #d4edda;
-    border-radius: 5px;
-}
-
-.save-button {
-    display: block;
-    width: 200px;
-    margin: 20px auto;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-}
-
-.save-button:hover {
-    background-color: #0056b3;
-}
-`;
-
-export default PlanRegister;
+export default PlanInit;

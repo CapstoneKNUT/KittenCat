@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional; // 이 줄이 필요합니다.
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -14,7 +13,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.zerock.b01.domain.*;
 import org.zerock.b01.dto.TransportParentDTO;
 import org.zerock.b01.dto.*;
@@ -69,17 +67,8 @@ public class PlanServiceImpl implements PlanService {
     @Value("${naver.client.secret}")
     private String naverSecret;
 
-    @Value("${naver.client.id2}")
-    private String naverClientId2;
-
-    @Value("${naver.client.secret2}")
-    private String naverSecret2;
-
     @Value("${naver.url.search.local}")
     private String naverLocalSearchUrl;
-
-    @Value("https://naveropenapi.apigw.gov-ntruss.com/map-direction-15/v1/driving")
-    private String naverDrivingSearchUrl;
 
     @Override
     public PageResponseDTO<PlanSetDTO> list(PageRequestDTO pageRequestDTO) {
@@ -124,6 +113,17 @@ public class PlanServiceImpl implements PlanService {
         return planSetDTO;
 
 
+    }
+
+    @Override
+    public List<PlanPlaceDTO> listOfPlanPlaceAll(Long planNo) {
+
+        List<PlanPlace> result = planPlaceRepository.findAllPlanNo(planNo);
+
+        List<PlanPlaceDTO> dtoList = result.stream()
+                .map(planPlace -> modelMapper.map(planPlace, PlanPlaceDTO.class)).collect(Collectors.toList());
+
+        return dtoList;
     }
 
     @Override
@@ -350,7 +350,7 @@ public class PlanServiceImpl implements PlanService {
                 .pp_takeDate(LastPlanPlace.getPp_takeDate())
                 .pp_mapx(LastPlanPlace.getPp_mapx())
                 .pp_mapy(LastPlanPlace.getPp_mapy())
-                .planNo(LastPlanPlace.getPlanSet())
+                .planNo(LastPlanPlace.getPlanSet().getPlanNo())
                 .pp_NightToNight(LastPlanPlace.getPp_NightToNight())
                 .build();
         if (!LastPlanPlace.getPp_startAddress().equals(Address)) {
@@ -738,7 +738,7 @@ public class PlanServiceImpl implements PlanService {
                 // 이전 장소의 출발 날짜 == 다음 장소의 출발 날짜
                 if (planPlaceDTO.getPp_startDate().toLocalDate()
                         .isEqual(planPlaceDTON.getPp_startDate().toLocalDate())) {
-                    PlanSet planSet = planRepository.findById(planPlaceDTO.getPlanNo().getPlanNo()).get();
+                    PlanSet planSet = planRepository.findById(planPlaceDTO.getPlanNo()).get();
 
                     PlanPlace planPlaced = PlanPlace.builder()
                             .ppOrd(planPlaceDTO.getPpOrd())
@@ -773,7 +773,7 @@ public class PlanServiceImpl implements PlanService {
 
         planPlaceDTO1.setPp_takeDate(takeTime);
 
-        PlanSet planSet1 = planRepository.findById(planPlaceDTO1.getPlanNo().getPlanNo()).get();
+        PlanSet planSet1 = planRepository.findById(planPlaceDTO1.getPlanNo()).get();
 
         PlanPlace updatePlanPlace = PlanPlace.builder()
                 .ppOrd(planPlaceDTO1.getPpOrd())
@@ -933,7 +933,7 @@ public class PlanServiceImpl implements PlanService {
                 // 이전 장소의 출발 날짜 == 다음 장소의 출발 날짜
                 if (planPlaceDTO.getPp_startDate().toLocalDate()
                         .isEqual(planPlaceDTON.getPp_startDate().toLocalDate())) {
-                    PlanSet planSet = planRepository.findById(planPlaceDTO.getPlanNo().getPlanNo()).get();
+                    PlanSet planSet = planRepository.findById(planPlaceDTO.getPlanNo()).get();
 
                     PlanPlace planPlaced = PlanPlace.builder()
                             .ppOrd(planPlaceDTO.getPpOrd() + j)
@@ -954,7 +954,7 @@ public class PlanServiceImpl implements PlanService {
                 }
             } else {
                 // 다음 요소가 하나뿐일 경우
-                PlanSet planSet = planRepository.findById(planPlaceDTO.getPlanNo().getPlanNo()).get();
+                PlanSet planSet = planRepository.findById(planPlaceDTO.getPlanNo()).get();
 
                 PlanPlace planPlaced = PlanPlace.builder()
                         .ppOrd(planPlaceDTO.getPpOrd() + j)

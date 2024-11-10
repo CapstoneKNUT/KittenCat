@@ -14,7 +14,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.zerock.b01.controller.PlaceController;
-import org.zerock.b01.domain.Member;
 import org.zerock.b01.domain.Place;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -41,7 +40,7 @@ public class PlaceRepositoryTests {
     @Test
     public void testInsert(){
         Place place1 = Place.builder()
-                .pord(11)
+                .pord(1)
                 .p_name("을지다락 강남")
                 .p_category("양식")
                 .p_content(null)
@@ -103,7 +102,7 @@ public class PlaceRepositoryTests {
 
         log.info("pord: " + result.getPord());
         Place place2 = Place.builder()
-                .pord(12)
+                .pord(2)
                 .p_name("디슬로우 청담")
                 .p_category("피자")
                 .p_content("'디슬로우' 는 디슬로우 만의 감성으로 해석한 시카고 스타일 딥 디쉬 피자와 크래커 씬 피자를 즐기실 수 있는 공간 입니다.\n" +
@@ -163,7 +162,7 @@ public class PlaceRepositoryTests {
         log.info("pord: " + result.getPord());
 
         Place place3 = Place.builder()
-                .pord(13)
+                .pord(3)
                 .p_name("어거스트 힐 강남점")
                 .p_category("양식")
                 .p_content("<식사 이용 시간 >\n" +
@@ -234,7 +233,7 @@ public class PlaceRepositoryTests {
         log.info("pord: " + result3.getPord());
 
         Place place4 = Place.builder()
-                .pord(14)
+                .pord(4)
                 .p_name("울프강 스테이크하우스")
                 .p_category("스테이크,립")
                 .p_content("세계적으로 유명한 스테이크하우스의 한국 1호점,\n" +
@@ -277,7 +276,7 @@ public class PlaceRepositoryTests {
         log.info("pord: " + result4.getPord());
 
         Place place5 = Place.builder()
-                .pord(15)
+                .pord(5)
                 .p_name("미도인 강남")
                 .p_category("양식")
                 .p_content("과거와 현재, 동양과 서양이 공존하는 공간으로 젋은 연인들의 데이트 장소나 친구들과의 모임, 특별한 날에 찾아볼 만한 공간에서 특별한 순간을 만들어줍니다.\n" +
@@ -315,7 +314,7 @@ public class PlaceRepositoryTests {
         log.info("pord: " + result5.getPord());
 
         Place place6 = Place.builder()
-                .pord(16)
+                .pord(6)
                 .p_name("틴틴 강남점")
                 .p_category("이탈리아음식")
                 .p_content("<캐주얼 레스토랑 & 브런치 카페 틴틴>\n" +
@@ -343,7 +342,7 @@ public class PlaceRepositoryTests {
         log.info("pord: " + result6.getPord());
 
         Place place7 = Place.builder()
-                .pord(17)
+                .pord(7)
                 .p_name("꽁티드툴레아")
                 .p_category("브런치")
                 .p_content("꽁티드툴레아는 내추럴 프래그런스 브랜드입니다. 꽁티드툴레아가 추구하는 개성과 라이프스타일의 방향성을 명확히 프레젠테이션하기 위해서 카페를 운영하게 되었습니다. 자연친화적인 요소들을 담고 있으며 브런치 및 와인을 즐길 수 있는 공간입니다.")
@@ -380,7 +379,7 @@ public class PlaceRepositoryTests {
         log.info("pord: " + result7.getPord());
 
         Place place8 = Place.builder()
-                .pord(18)
+                .pord(8)
                 .p_name("트리드")
                 .p_category("양식")
                 .p_content("Diversity, Delicious, Delight - t r i d 입니다.\n" +
@@ -423,7 +422,7 @@ public class PlaceRepositoryTests {
         log.info("pord: " + result8.getPord());
 
         Place place9 = Place.builder()
-                .pord(19)
+                .pord(9)
                 .p_name("이식일사")
                 .p_category("양식")
                 .p_content("신논현역 맛집 양식 이식일사\n" +
@@ -481,7 +480,7 @@ public class PlaceRepositoryTests {
         log.info("pord: " + result9.getPord());
 
         Place place10 = Place.builder()
-                .pord(20)
+                .pord(10)
                 .p_name("달마시안 압구정점")
                 .p_category("양식")
                 .p_content("압구정에 압구정로데오맛집 유럽식 레스토랑 달마시안은 도심 속에서 마치 유럽의 정원에 온 듯한 분위기를 자아내는 매력적인 공간입니다.\n" +

@@ -26,6 +26,8 @@ public interface PlanService {
 
     Map<String, Object> startTime(Long planNo, String Address, Double mapx, Double mapy, String writer);
 
+    List<PlanPlaceDTO> listOfPlanPlaceAll(Long planNo);
+
     List<PlanPlaceDTO> listOfPlanPlace(Long planNo, Integer day);
 
     List<TransportParentDTO> listOfTransportParent(Long planNo, Long ppOrd, Integer day);
@@ -46,7 +48,6 @@ public interface PlanService {
                 .writer(planSetDTO.getWriter())
                 .isCar(planSetDTO.getIsCar())
                 .ps_startDate(planSetDTO.getPs_startDate())
-
                 .build();
 
         return planSet;
@@ -55,6 +56,7 @@ public interface PlanService {
     default PlanSetDTO entityToDTO(PlanSet planSet) {
 
         PlanSetDTO planSetDTO = PlanSetDTO.builder()
+                .title(planSet.getTitle())
                 .planNo(planSet.getPlanNo())
                 .writer(planSet.getWriter())
                 .isCar(planSet.getIsCar())
@@ -62,47 +64,5 @@ public interface PlanService {
                 .build();
 
         return planSetDTO;
-    }
-
-    default PlanPlaceDTO entityToDTOPP(PlanPlace planplace) {
-
-        PlanPlaceDTO planplaceDTO = PlanPlaceDTO.builder()
-                .ppOrd(planplace.getPpOrd())
-                .pp_startAddress(planplace.getPp_startAddress())
-                .pp_takeDate(planplace.getPp_takeDate())
-                .pp_mapx(planplace.getPp_mapx())
-                .pp_mapy(planplace.getPp_mapy())
-                .planNo(planplace.getPlanSet())
-                .build();
-
-        return planplaceDTO;
-    }
-
-    default TransportParentDTO entityToDTOTP(TransportParent transportParent) {
-
-        TransportParentDTO transportParentDTO = TransportParentDTO.builder()
-                .tno(transportParent.getTno())
-                .ppOrd(transportParent.getPlanPlace().getPpOrd())
-                .isCar(transportParent.getIsCar())
-                .t_method(transportParent.getT_method())
-                .t_startDateTime(transportParent.getT_startDateTime())
-                .t_takeTime(transportParent.getT_takeTime())
-                .t_goalDateTime(transportParent.getT_goalDateTime())
-                .writer(transportParent.getWriter())
-                .build();
-
-        return transportParentDTO;
-    }
-
-    default TransportChildDTO entityToDTOTP(TransportChild transportChild) {
-
-        TransportChildDTO transportChildDTO = TransportChildDTO.builder()
-                .tord(transportChild.getTord())
-                .tno(transportChild.getTransportParent().getTno())
-                .c_method(transportChild.getC_method())
-                .c_takeTime(transportChild.getC_takeTime())
-                .build();
-
-        return transportChildDTO;
     }
 }

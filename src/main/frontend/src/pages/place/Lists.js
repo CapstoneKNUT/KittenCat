@@ -128,7 +128,6 @@ function Lists() {
       alert('처리 중 오류가 발생했습니다.');
     }
   };
-
   const filteredSubArea = selectedArea
       ? area.find((a) => a.name === selectedArea)?.subArea || []
       : [];

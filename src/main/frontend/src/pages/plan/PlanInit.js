@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {Link, useNavigate} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import { useUser } from '../member/UserContext.js'; // UserContext에서 유저 정보를 가져오기
 import carAvif from './components/car.avif';
 import subwayPng from './components/subway.png';
@@ -15,17 +15,17 @@ function PlanInit() {
     const [ps_startDate, setPsStartDate] = useState(''); // 출발 날짜
     const [readOnly, setReadOnly] = useState(false); // 출발 날짜
     const [planSet, setPlanSet] = useState({planNo: null});
-    const [takeTime, setTakeTime] = useState({ hours: '00', minutes: '00' }); // 시간과 분을 각각 관리
+    const [takeTime, setTakeTime] = useState(''); // 시간과 분을 각각 관리
+    const [takeHourTime, setTakeHourTime] = useState(''); // 시간과 분을 각각 관리
+    const [takeMinuteTime, setTakeMinuteTime] = useState(''); // 시간과 분을 각각 관리
+    const [duration, setDuration] = useState(null); //몇일 차인가?
+    const [planPlaces, setPlanPlaces] = useState([]); //일정표의 장소
+    const [planPlaceAlls, setPlanPlaceAlls] = useState([]); //일정표의 장소
+    const [LatestDate, setLatestDate] = useState(''); //장소 중 제일 마지막 일차
+    const [transportParents, setTransportParents] = useState([]); //일정표의 장소
+    const [transportChilds, setTransportChilds] = useState([]); //일정표의 장소
 
-
-
-    const handleTimeChange = (e) => {
-        const { name, value } = e.target;
-        setTakeTime((prev) => ({
-            ...prev,
-            [name]: value, // 시간 또는 분 값을 업데이트
-        }));
-    };
+    const ps_startDatePart = ps_startDate.split('T')[0];
 
     const [pageRequest, setPageRequest] = useState({
         size: 12,
@@ -39,6 +39,18 @@ function PlanInit() {
         end: 0,
         page: 1,
     });
+
+    //Axios------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //로그인 확인
+    useEffect(() => {
+        if (user) {
+
+        } else {
+            alert("로그인 후 이용해주세요.");
+            navigate('/member/login');
+        }
+    }, [user, navigate]);
 
     // 일정 저장
     const savePlan = async () => {
@@ -68,7 +80,6 @@ function PlanInit() {
             console.error('Error saving plan:', error);
         }
     };
-
 
     // 저장된 일정 정보 가져오기(일정표 번호)
     const fetchPSData = async () => {
@@ -108,97 +119,171 @@ function PlanInit() {
         }
     };
 
-    //로그인 확인
-    useEffect(() => {
-        if (user) {
-            fetchData(user.mid);
-        } else {
-            alert("로그인 후 이용해주세요.");
-            navigate('/member/login');
-        }
-    }, [user, navigate]);
-
-    // 장소 추가 시 교통 정보 계산
+    // 장소를 데이터베이스에 추가 + 장소 추가 시 교통 정보 계산
     const addPlace = async (sno) => {
-        if (takeTime) {
-            const formattedTakeTime = `${takeTime.hours}:${takeTime.minutes}`; // "HH:mm" 형식으로 변환
+        if(takeTime){
             try {
                 await axios.post(`http://localhost:8080/api/plan/${planSet.planNo}/add`, {
                     sno,
-                    takeTime: formattedTakeTime // 문자열 형식으로 전송
+                    takeTime: takeTime
                 });
+
+                const updatedPlanPlaces = await fetchPPDataAll();
+                const latest = getLatestDate(planPlaceAlls);
+                setLatestDate(latest);
+
+                const gapDate = compareDates(ps_startDatePart, LatestDate)
+                setDuration(gapDate);
             } catch (error) {
                 console.log(error);
             }
-        } else {
-            alert("머물 시간을 입력하세요");
+        }else{
+            alert("머물 시간을 입력하세요")
         }
     };
 
-    //mock 데이터
+    //내 일정 여행장소 모두 가져오기
+    const fetchPPDataAll = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/plan/${planSet.planNo}/planplaceAll`);
+            if (response.data) {
+                console.log(response.data);
+                const data = Array.isArray(response.data) ? response.data : [response.data];
+                setPlanPlaceAlls(data); // 상태 업데이트
+                return data;
+            } else {
+                console.error('Invalid data structure received from API.');
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    //내 일정 여행장소 가져오기
+    const fetchPPData = async (day) => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/plan/${planSet.planNo}/planplace`, {
+                params: {
+                    day,
+                },
+            });
+            if (response.data) {
+                console.log(response.data);
+                const data = Array.isArray(response.data) ? response.data : [response.data];
+                setPlanPlaces(data); // 상태 업데이트
+                return data;
+            } else {
+                console.error('Invalid data structure received from API.');
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+/*
+    //내 일정 교통정보 가져오기
+    const fetchTPData = async (planNo) => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/plan/${planSet.planNo}/TransportParent/${ppOrd}`, {
+                params: {
+                    day,
+                },
+            });
+            if (response.data?.dtoList) {
+                setTransportParents(response.data);
+            } else {
+                console.error('Invalid data structure received from API.');
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    //내 일정 자식 교통정보 가져오기
+    const fetchTCData = async (planNo) => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/plan/${planSet.planNo}/TransportParent/${tno}`);
+            if (response.data?.dtoList) {
+                setTransportChilds(response.data);
+            } else {
+                console.error('Invalid data structure received from API.');
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+*/
+
+    //데이터 다루기------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //날짜 비교해서 며칠차인지 구하기
+    function compareDates(date1, date2) {
+        // Date 객체를 생성하거나 받은 값이 Date 형식인지 확인
+        const d1 = new Date(date1);
+        const d2 = new Date(date2);
+
+        // 두 날짜를 비교하기 위해 시간 부분 제거 (UTC 기준으로 비교)
+        d1.setHours(0, 0, 0, 0);
+        d2.setHours(0, 0, 0, 0);
+
+        // 날짜 차이 계산 (밀리초 단위 차이 계산 후 일 단위로 변환)
+        const timeDiff = Math.abs(d1 - d2);
+        const dayDiff = timeDiff / (1000 * 60 * 60 * 24);
+
+        // 날짜 차이 + 1 반환 (0일 차이 -> 1, 1일 차이 -> 2, 2일 차이 -> 3, ...)
+        return dayDiff + 1;
+    }
+
+    //최신날짜 구하기
+    const getLatestDate = (planPlaceAlls) => {
+        // planPlaceAlls 배열이 비어 있으면 빈 문자열 반환
+        if (!planPlaceAlls || planPlaceAlls.length === 0) {
+            return "";
+        }
+
+        // pp_startDate 값을 기준으로 최신 날짜 찾기
+        const latestDate = planPlaceAlls.reduce((latest, current) => {
+            // current.pp_startDate가 존재하고 Date 형식으로 변환 가능하다면
+            if (current.pp_startDate) {
+                const [year, month, day, hour = 0, minute = 0] = current.pp_startDate;
+                const currentDate = new Date(year, month - 1, day, hour, minute); // 월은 0부터 시작하므로 -1
+
+                // 최신 날짜를 비교하여 반환
+                return currentDate > latest ? currentDate : latest;
+            }
+            return latest; // pp_startDate가 없는 경우, 기존 최신 날짜 반환
+        }, new Date(0)); // 기본값으로 아주 오래된 날짜 설정
+
+        // 최신 날짜의 년, 월, 일만 반환 (YYYY-MM-DD 형식)
+        const year = latestDate.getFullYear();
+        const month = String(latestDate.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작해서 1을 더함
+        const day = String(latestDate.getDate()).padStart(2, '0'); // 일도 두 자리로 맞추기
+
+        return `${year}-${month}-${day}`; // "YYYY-MM-DD" 형식으로 반환
+    }
+
+    //리액트 기능------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    const handleTabClick = (tabNumber) => {
+        setActiveTab(tabNumber); // 클릭된 탭으로 상태 업데이트
+    };
+
+    //css기능
+    const [activeTab, setActiveTab] = useState(1); // 기본 활성화된 탭
+    //mock 데이터------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+    //동적 데이터 호출 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //찜 목록
     useEffect(() => {
         // API에서 받은 데이터가 없을 경우 확인용 기본 데이터 설정
         if (responseData.dtoList && responseData.dtoList.length > 0) {
             setStore(responseData.dtoList); // API에서 받아온 데이터 설정
-        } else {
-            // 임시 데이터 설정
-            const tempData = [
-                {
-                    sno: 1,
-                    p_name: "예시 장소 1",
-                    p_category: "음식점",
-                    p_address: "서울시 강남구 임시 주소 1",
-                    p_image: "https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fvideo-phinf.pstatic.net%2F20240920_40%2F1726792574994KnzQC_JPEG%2F46o3j90jLU_03.jpg",
-                    p_star: 4.5,
-                },
-                {
-                    sno: 2,
-                    p_name: "예시 장소 2",
-                    p_category: "카페",
-                    p_address: "서울시 강남구 임시 주소 2",
-                    p_image: "https://search.pstatic.net/common/?autoRotate=true&type=w560_sharpen&src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20240220_241%2F1708398564214Rqc5U_JPEG%2F%25C6%25BC%25BA%25BB.jpg",
-                    p_star: 4.0,
-                },
-            ];
-            setStore(tempData); // 임시 데이터를 설정
         }
     }, [responseData]);
 
-
-    const generateHourOptions = () => {
-        const options = [];
-        for (let i = 0; i < 24; i++) {
-            const hours = i < 10 ? `0${i}` : i; // 2자리 형식으로 시간 표시
-            options.push(
-                <option key={hours} value={hours}>
-                    {hours}
-                </option>
-            );
-        }
-        return options;
-    };
-
-    // 0분부터 59분까지의 분 옵션 생성 함수
-    const generateMinuteOptions = () => {
-        const options = [];
-        for (let i = 0; i < 60; i++) {
-            const minutes = i < 10 ? `0${i}` : i; // 2자리 형식으로 분 표시
-            options.push(
-                <option key={minutes} value={minutes}>
-                    {minutes}
-                </option>
-            );
-        }
-        return options;
-    };
-
-
-    // useEffect(() => {
-    //     if (responseData.dtoList) {
-    //         setStore(responseData.dtoList); // API에서 받아온 데이터 설정
-    //     }
-    // }, [responseData.dtoList]);
-
+    //html------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     return (
         <div className="container">
@@ -254,37 +339,21 @@ function PlanInit() {
                 </div>
 
                 <button onClick={() => {
+                    fetchData(user.mid);
                     savePlan();
                     fetchPSData();
-                }} className="save-button" disabled={readOnly}>저장하기
+                }} className="save-button" disabled={readOnly}>시작하기
                 </button>
 
                 {/* 시간 입력 필드 추가 */}
                 <div className="input-field">
                     <label>머물 시간:</label>
-                    <div style={{ display: 'inline-block', marginRight: '10px' }}>
-                        <select
-                            name="hours"
-                            value={takeTime.hours} // 상태에 저장된 시간 값
-                            onChange={handleTimeChange} // 시간 선택 시 상태 업데이트
-                            disabled={!readOnly} // readOnly일 경우 비활성화
-                        >
-                            {generateHourOptions()} {/* 시간 옵션 렌더링 */}
-                        </select>
-                    </div>
-                    <div style={{ display: 'inline-block', marginRight: '10px' }}>
-                        <span>:</span>
-                    </div>
-                    <div style={{ display: 'inline-block' }}>
-                        <select
-                            name="minutes"
-                            value={takeTime.minutes} // 상태에 저장된 분 값
-                            onChange={handleTimeChange} // 분 선택 시 상태 업데이트
-                            disabled={!readOnly} // readOnly일 경우 비활성화
-                        >
-                            {generateMinuteOptions()} {/* 분 옵션 렌더링 */}
-                        </select>
-                    </div>
+                    <input
+                        type="time" // HTML5의 time input 사용
+                        value={takeTime} // 상태에 저장된 시간 값
+                        onChange={(e) => setTakeTime(e.target.value)}
+                        disabled={!readOnly} // readOnly일 경우 비활성화
+                    />
                 </div>
 
                 {/* 카드 형태로 저장된 store 정보 표시 */}
@@ -295,7 +364,7 @@ function PlanInit() {
                                 <div key={storeItem.sno}
                                      onClick={() => {
                                          if (readOnly) {
-                                             addPlace(storeItem.sno);
+                                             addPlace(storeItem.sno); //장소를 데이터에 넣기
                                          }
                                      }}
                                      className="place-item" className="store-card"
@@ -317,10 +386,64 @@ function PlanInit() {
             </div>
             <div className="plan-details">
                 <h3>일정표</h3>
-                <div className="details-content">
-                    {/* 일정표 세부 내용을 여기에 추가 */}
-                    <p>여기에 일정표를 작성하세요.</p>
+                <div className="tab-buttons">
+                    {Array.from({length: duration}).map((_, index) => (
+                        <div
+                            key={index + 1} // key는 1부터 시작하는 값을 사용
+                            className={`tab-button ${activeTab === index + 1 ? 'active' : ''}`}
+                            onClick={() => {
+                                handleTabClick(index + 1);
+                                fetchPPData(index+1)
+                            }} // 클릭 시 해당 일차로 설정
+                        >
+                            {index + 1}일차
+                        </div>
+                    ))}
                 </div>
+                <div className="schedule-content">
+                    {planPlaces.map((item, index) => (
+                        <div className="schedule-item" key={index}>
+                            <span className="schedule-time">
+    {item.pp_startDate && (
+        item.pp_startDate.length === 6
+            ? `${item.pp_startDate[0]}-${(item.pp_startDate[1]).toString().padStart(2, '0')}-${item.pp_startDate[2].toString().padStart(2, '0')} 
+           ${item.pp_startDate[3].toString().padStart(2, '0')}:${item.pp_startDate[4].toString().padStart(2, '0')}:${item.pp_startDate[5].toString().padStart(2, '0')}`
+            : `${item.pp_startDate[0]}-${(item.pp_startDate[1]).toString().padStart(2, '0')}-${item.pp_startDate[2].toString().padStart(2, '0')} 
+           ${item.pp_startDate[3].toString().padStart(2, '0')}:${item.pp_startDate[4].toString().padStart(2, '0')}:00`
+    )}
+</span>
+                            <span>{item.pp_title}</span>
+                            <span>{item.pp_takeDate && (
+                                `${item.pp_takeDate[0].toString().padStart(2, '0')}:${item.pp_takeDate[1].toString().padStart(2, '0')}`
+                            )}</span>
+                            <div className="schedule-actions">
+                                <button>수정</button>
+                                <button>삭제</button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/*<div className="schedule-content">
+                    {planPlaceAlls[activeTab] && Array.isArray(planPlaceAlls[activeTab]) && planPlaceAlls[activeTab].map((item, index) => (
+                        <div className="schedule-item" key={item.ppOrd}>
+            <span className="schedule-time">
+                 pp_startDate는 배열이므로 첫 번째 요소로 날짜 추출
+                {item.pp_startDate && new Date(item.pp_startDate[0], item.pp_startDate[1] - 1, item.pp_startDate[2], item.pp_startDate[3], item.pp_startDate[4]).toLocaleString()}
+            </span>
+                            <span>{item.pp_title}</span>
+                            <span>
+                 pp_takeDate도 배열이라서 첫 번째 값만 추출
+                                {item.pp_takeDate && `${item.pp_takeDate[0]}분 ${item.pp_takeDate[1]}초`}
+            </span>
+                            <span>{item.pp_startAddress}</span>
+                            <div className="schedule-actions">
+                                <button>수정</button>
+                                <button>삭제</button>
+                            </div>
+                        </div>
+                    ))}
+                </div>*/}
             </div>
         </div>
     );
