@@ -48,7 +48,6 @@ public interface PlanService {
                 .writer(planSetDTO.getWriter())
                 .isCar(planSetDTO.getIsCar())
                 .ps_startDate(planSetDTO.getPs_startDate())
-
                 .build();
 
         return planSet;

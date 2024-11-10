@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {Link, useNavigate} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import { useUser } from '../member/UserContext.js'; // UserContext에서 유저 정보를 가져오기
 import carAvif from './components/car.avif';
 import subwayPng from './components/subway.png';

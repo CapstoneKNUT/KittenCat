@@ -1,14 +1,10 @@
 package org.zerock.b01.repository;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.zerock.b01.domain.PlanPlace;
-import org.zerock.b01.dto.DateRequestDTO;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PlanPlaceRepository extends JpaRepository<PlanPlace, Long> {

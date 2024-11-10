@@ -76,12 +76,6 @@ public class PlanController {
         return ResponseEntity.ok(planSetDTO);
     }
 
-    // 게시물 등록 화면
-    @GetMapping("/register/{planNo}")
-    public ResponseEntity<Void> registerGET(@PathVariable Long planNo) {
-        return ResponseEntity.ok().build();
-    }
-
     // 찜목록에서 가져와 일정표에 넣기
     @Transactional(isolation = Isolation.READ_COMMITTED)
     @PostMapping(value = "/{planNo}/add", consumes = MediaType.APPLICATION_JSON_VALUE)
