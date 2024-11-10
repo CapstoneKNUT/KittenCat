@@ -26,6 +26,8 @@ public interface PlanService {
 
     Map<String, Object> startTime(Long planNo, String Address, Double mapx, Double mapy, String writer);
 
+    List<PlanPlaceDTO> listOfPlanPlaceAll(Long planNo);
+
     List<PlanPlaceDTO> listOfPlanPlace(Long planNo, Integer day);
 
     List<TransportParentDTO> listOfTransportParent(Long planNo, Long ppOrd, Integer day);
@@ -55,6 +57,7 @@ public interface PlanService {
     default PlanSetDTO entityToDTO(PlanSet planSet) {
 
         PlanSetDTO planSetDTO = PlanSetDTO.builder()
+                .title(planSet.getTitle())
                 .planNo(planSet.getPlanNo())
                 .writer(planSet.getWriter())
                 .isCar(planSet.getIsCar())
@@ -72,7 +75,7 @@ public interface PlanService {
                 .pp_takeDate(planplace.getPp_takeDate())
                 .pp_mapx(planplace.getPp_mapx())
                 .pp_mapy(planplace.getPp_mapy())
-                .planNo(planplace.getPlanSet())
+                .planNo(planplace.getPlanSet().getPlanNo())
                 .build();
 
         return planplaceDTO;

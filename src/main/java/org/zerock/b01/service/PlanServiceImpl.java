@@ -127,6 +127,17 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
+    public List<PlanPlaceDTO> listOfPlanPlaceAll(Long planNo) {
+
+        List<PlanPlace> result = planPlaceRepository.findAllPlanNo(planNo);
+
+        List<PlanPlaceDTO> dtoList = result.stream()
+                .map(planPlace -> modelMapper.map(planPlace, PlanPlaceDTO.class)).collect(Collectors.toList());
+
+        return dtoList;
+    }
+
+    @Override
     public List<PlanPlaceDTO> listOfPlanPlace(Long planNo, Integer day) {
 
         LocalDate specificDate = planRepository.findById(planNo).get().getPs_startDate().plusDays(day - 1)
@@ -350,7 +361,7 @@ public class PlanServiceImpl implements PlanService {
                 .pp_takeDate(LastPlanPlace.getPp_takeDate())
                 .pp_mapx(LastPlanPlace.getPp_mapx())
                 .pp_mapy(LastPlanPlace.getPp_mapy())
-                .planNo(LastPlanPlace.getPlanSet())
+                .planNo(LastPlanPlace.getPlanSet().getPlanNo())
                 .pp_NightToNight(LastPlanPlace.getPp_NightToNight())
                 .build();
         if (!LastPlanPlace.getPp_startAddress().equals(Address)) {
@@ -738,7 +749,7 @@ public class PlanServiceImpl implements PlanService {
                 // 이전 장소의 출발 날짜 == 다음 장소의 출발 날짜
                 if (planPlaceDTO.getPp_startDate().toLocalDate()
                         .isEqual(planPlaceDTON.getPp_startDate().toLocalDate())) {
-                    PlanSet planSet = planRepository.findById(planPlaceDTO.getPlanNo().getPlanNo()).get();
+                    PlanSet planSet = planRepository.findById(planPlaceDTO.getPlanNo()).get();
 
                     PlanPlace planPlaced = PlanPlace.builder()
                             .ppOrd(planPlaceDTO.getPpOrd())
@@ -773,7 +784,7 @@ public class PlanServiceImpl implements PlanService {
 
         planPlaceDTO1.setPp_takeDate(takeTime);
 
-        PlanSet planSet1 = planRepository.findById(planPlaceDTO1.getPlanNo().getPlanNo()).get();
+        PlanSet planSet1 = planRepository.findById(planPlaceDTO1.getPlanNo()).get();
 
         PlanPlace updatePlanPlace = PlanPlace.builder()
                 .ppOrd(planPlaceDTO1.getPpOrd())
@@ -933,7 +944,7 @@ public class PlanServiceImpl implements PlanService {
                 // 이전 장소의 출발 날짜 == 다음 장소의 출발 날짜
                 if (planPlaceDTO.getPp_startDate().toLocalDate()
                         .isEqual(planPlaceDTON.getPp_startDate().toLocalDate())) {
-                    PlanSet planSet = planRepository.findById(planPlaceDTO.getPlanNo().getPlanNo()).get();
+                    PlanSet planSet = planRepository.findById(planPlaceDTO.getPlanNo()).get();
 
                     PlanPlace planPlaced = PlanPlace.builder()
                             .ppOrd(planPlaceDTO.getPpOrd() + j)
@@ -954,7 +965,7 @@ public class PlanServiceImpl implements PlanService {
                 }
             } else {
                 // 다음 요소가 하나뿐일 경우
-                PlanSet planSet = planRepository.findById(planPlaceDTO.getPlanNo().getPlanNo()).get();
+                PlanSet planSet = planRepository.findById(planPlaceDTO.getPlanNo()).get();
 
                 PlanPlace planPlaced = PlanPlace.builder()
                         .ppOrd(planPlaceDTO.getPpOrd() + j)

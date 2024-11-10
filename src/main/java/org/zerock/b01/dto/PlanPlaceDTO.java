@@ -34,6 +34,6 @@ public class PlanPlaceDTO {
 
     private Byte pp_NightToNight;
 
-    private PlanSet planNo;
+    private Long planNo;
 
 }

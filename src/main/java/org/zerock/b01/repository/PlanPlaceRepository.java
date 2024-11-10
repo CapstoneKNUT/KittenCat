@@ -25,4 +25,7 @@ public interface PlanPlaceRepository extends JpaRepository<PlanPlace, Long> {
     @Query(value = "SELECT * FROM plan_place WHERE plan_no = :planNo AND pp_ord < :ppOrd ORDER BY pp_ord DESC LIMIT 1", nativeQuery = true)
     PlanPlace findPrevId(@Param("planNo") Long planNo, @Param("ppOrd") Long ppOrd);
 
+    @Query(value = "SELECT * FROM plan_place WHERE plan_no = :planNo", nativeQuery = true)
+    List<PlanPlace> findAllPlanNo(@Param("planNo") Long planNo);
+
 }

@@ -278,8 +278,16 @@ public class PlanController {
 
     // 일정표에서 등록된 장소 조회
     @ApiOperation(value = "Read PlanPlace", notes = "Get 방식으로 등록 장소 조회")
+    @GetMapping("/{planNo}/planplaceAll")
+    public ResponseEntity<List<PlanPlaceDTO>> getPlanPlaceList(@PathVariable Long planNo) {
+        List<PlanPlaceDTO> planPlaceDTO = planService.listOfPlanPlaceAll(planNo);
+        return ResponseEntity.ok(planPlaceDTO);
+    }
+
+    // 일정표에서 등록된 장소 조회
+    @ApiOperation(value = "Read PlanPlace", notes = "Get 방식으로 등록 장소 조회")
     @GetMapping("/{planNo}/planplace")
-    public ResponseEntity<List<PlanPlaceDTO>> getPlanPlaceList(@PathVariable Long planNo, @RequestParam Integer day) {
+    public ResponseEntity<List<PlanPlaceDTO>> getPlanPlace(@PathVariable Long planNo, @RequestParam Integer day) {
         List<PlanPlaceDTO> planPlaceDTO = planService.listOfPlanPlace(planNo, day);
         return ResponseEntity.ok(planPlaceDTO);
     }
