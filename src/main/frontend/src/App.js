@@ -14,9 +14,7 @@ import BoardList from './pages/board/BoardList.js'; // BoardList 컴포넌트
 import BoardRegister from "./pages/board/BoardRegister.js";
 import BoardModify  from "./pages/board/BoardModify.js";
 import BoardRead from "./pages/board/BoardRead";
-import Plan from "./pages/plan/plan";
-import PlanInit from "./pages/plan/PlanInit";
-import PlanRegister from "./pages/plan/PlanRegister";
+import Plan from "./pages/plan/PlanInit";
 import Main from './pages/Main/main.js';
 
 function App() {
@@ -44,12 +42,6 @@ function App() {
                     <Route path="/board/modify/:bno" element={<BoardModify />} />
                     <Route path="/board/read/:bno" element={<BoardRead />} />
                     <Route path="/plan" element={<Plan />} />
-                    <Route path="/plan/init" element={<PlanInit />} />
-
-                    {/*<Route path="/about" element={<Plan />} />*/}
-                    <Route path="/plan" element={<Plan />} />
-                    <Route path="/plan/init" element={<PlanInit />} />
-                    <Route path="/plan/register" element={<PlanRegister />} />
 
                 </Routes>
             </Router>
