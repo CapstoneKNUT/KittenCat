@@ -53,15 +53,41 @@ function PlanInit() {
     }, [user, navigate]);
 
     // 일정 저장
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return {
+            year: date.getFullYear(),
+            month: date.getMonth() + 1,
+            day: date.getDate(),
+            hour: date.getHours(),
+            minute: date.getMinutes(),
+            second: 0
+        };
+    };
+
+    // 날짜 형식 변환 함수 추가
+    const formatDateForServer = (dateTimeString) => {
+        const date = new Date(dateTimeString);
+        return [
+            date.getFullYear(),
+            date.getMonth() + 1,
+            date.getDate(),
+            date.getHours(),
+            date.getMinutes(),
+            date.getSeconds()
+        ];
+    };
+
+    // savePlan 함수 수정
     const savePlan = async () => {
         // 필수 입력값 확인
         if (!title) {
-            alert("일정표 제목을 입력하세요."); // 제목이 비어있을 때 경고
+            alert("일정표 제목을 입력하세요.");
             return;
         }
 
         if (!ps_startDate) {
-            alert("출발 날짜를 선택하세요."); // 출발 날짜가 비어있을 때 경고
+            alert("출발 날짜를 선택하세요.");
             return;
         }
 
@@ -70,12 +96,16 @@ function PlanInit() {
                 title,
                 isCar,
                 writer: user.mid,
-                ps_startDate,
+                ps_startDate: formatDateForServer(ps_startDate),
             };
 
-            await axios.post('http://localhost:8080/api/plan/register/init', planData);
-
-            setReadOnly(true);
+            console.log("Sending plan data:", planData);
+            const response = await axios.post('http://localhost:8080/api/plan/register/init', planData);
+            if (response.data) {
+                setReadOnly(true);
+                // 새로운 일정 생성 후 바로 planNo를 설정
+                setPlanSet({planNo: response.data.planNo});
+            }
         } catch (error) {
             console.error('Error saving plan:', error);
         }
@@ -277,13 +307,35 @@ function PlanInit() {
 
     //찜 목록
     useEffect(() => {
-        // API에서 받은 데이터가 없을 경우 확인용 기본 데이터 설정
+        // API에서 받은 데이터가 없을 경�� 확인용 기본 데이터 설정
         if (responseData.dtoList && responseData.dtoList.length > 0) {
             setStore(responseData.dtoList); // API에서 받아온 데이터 설정
         }
     }, [responseData]);
 
     //html------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    // 날짜 입력 핸들러 추가
+    const handleDateChange = (e) => {
+        const selectedDate = e.target.value;
+        setPsStartDate(selectedDate);
+        console.log("Selected date:", selectedDate); // 디버깅용
+    };
+
+    // 페이지 로드 시 초기화를 위한 useEffect 추가
+    useEffect(() => {
+        // 페이지 진입 시 상태 초기화
+        setTitle('');
+        setPsStartDate('');
+        setIsCar(true);
+        setReadOnly(false);
+        setPlanSet({planNo: null});
+        setTakeTime('');
+        setPlanPlaces([]);
+        setPlanPlaceAlls([]);
+        setLatestDate('');
+        setDuration(null);
+    }, []); // 빈 배열을 넣어 컴포넌트 마운트 시에만 실행
 
     return (
         <div className="container">
@@ -332,18 +384,17 @@ function PlanInit() {
                         <input
                             type="datetime-local"
                             value={ps_startDate}
-                            onChange={(e) => setPsStartDate(e.target.value)}
+                            onChange={handleDateChange}
                             disabled={readOnly}
+                            min={new Date().toISOString().slice(0, 16)} // 현재 시간 이후만 선택 가능
                         />
                     </div>
                 </div>
 
-                <button onClick={() => {
+                <button onClick={async () => {
+                    await savePlan(); // savePlan이 완료될 때까지 대기
                     fetchData(user.mid);
-                    savePlan();
-                    fetchPSData();
-                }} className="save-button" disabled={readOnly}>시작하기
-                </button>
+                }} className="save-button" disabled={readOnly}>시작하기</button>
 
                 {/* 시간 입력 필드 추가 */}
                 <div className="input-field">
