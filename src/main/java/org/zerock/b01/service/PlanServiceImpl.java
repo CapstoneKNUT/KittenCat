@@ -447,8 +447,9 @@ public class PlanServiceImpl implements PlanService {
                 } catch (Exception e) {
                     try {
                         System.out.println("오류메세지 : " + e);
+                        String formattedDate = pp_startDate.toString();
                         TransTimeDTO transTimeDTO = TransTimeDTO.builder()
-                                .t_startdatetime(pp_startDate)
+                                .t_startdatetime(formattedDate)
                                 .start_location(LastPlanPlace.getPp_startAddress())
                                 .arrive_location(Address)
                                 .isCar(true)
@@ -471,8 +472,9 @@ public class PlanServiceImpl implements PlanService {
                         }
                     } catch (Exception ex) {
                         System.out.println("오류메세지 : " + ex);
+                        String formattedDate = pp_startDate.toString();
                         TransTimeDTO transTimeDTO = TransTimeDTO.builder()
-                                .t_startdatetime(pp_startDate)
+                                .t_startdatetime(formattedDate)
                                 .start_location(LastPlanPlace.getPp_startAddress())
                                 .arrive_location(Address)
                                 .isCar(false)
@@ -497,9 +499,10 @@ public class PlanServiceImpl implements PlanService {
                 }
             } else {
                 log.info("출발시간 : " + pp_startDate);
+                String formattedDate = pp_startDate.toString();
                 TransTimeDTO transTimeDTO = TransTimeDTO.builder()
                         .writer(writer)
-                        .t_startdatetime(pp_startDate)
+                        .t_startdatetime(formattedDate)
                         .start_location(LastPlanPlace.getPp_startAddress())
                         .arrive_location(Address)
                         .isCar(false)

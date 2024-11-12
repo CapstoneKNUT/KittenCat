@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {useNavigate} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import { useUser } from '../member/UserContext.js'; // UserContext에서 유저 정보를 가져오기
 import carAvif from './components/car.avif';
 import subwayPng from './components/subway.png';
@@ -8,6 +8,7 @@ import './PlanInit.css';
 
 function PlanInit() {
     const navigate = useNavigate();
+    const [takePutTime, setTakePutTime] = useState('');
     const { user } = useUser(); // 로그인한 유저 정보 가져오기
     const [store, setStore] = useState([]);
     const [title, setTitle] = useState(''); // 여행지 제목
@@ -22,8 +23,9 @@ function PlanInit() {
     const [planPlaces, setPlanPlaces] = useState([]); //일정표의 장소
     const [planPlaceAlls, setPlanPlaceAlls] = useState([]); //일정표의 장소
     const [LatestDate, setLatestDate] = useState(''); //장소 중 제일 마지막 일차
-    const [transportParents, setTransportParents] = useState([]); //일정표의 장소
+    const [transportParents, setTransportParents] = useState({}); //일정표의 장소
     const [transportChilds, setTransportChilds] = useState([]); //일정표의 장소
+    const [dayTT, setDayTT] = useState(null);
 
     const ps_startDatePart = ps_startDate.split('T')[0];
 
@@ -39,6 +41,9 @@ function PlanInit() {
         end: 0,
         page: 1,
     });
+    const handleTimeChange = (e) => {
+        setTakeTime(e.target.value); // 시간 필드 값이 변경되면 상태를 업데이트
+    };
 
     //Axios------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -51,19 +56,6 @@ function PlanInit() {
             navigate('/member/login');
         }
     }, [user, navigate]);
-
-    // 일정 저장
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        return {
-            year: date.getFullYear(),
-            month: date.getMonth() + 1,
-            day: date.getDate(),
-            hour: date.getHours(),
-            minute: date.getMinutes(),
-            second: 0
-        };
-    };
 
     // 날짜 형식 변환 함수 추가
     const formatDateForServer = (dateTimeString) => {
@@ -149,15 +141,46 @@ function PlanInit() {
         }
     };
 
+    // updatePlanPlaceTime 함수
+    const updatePlanPlaceTime = async (ppOrd, takePutTime) => {
+        try {
+            const response = await axios.put(
+                `http://localhost:8080/api/plan/${planSet.planNo}/planplace/${ppOrd}`,
+                { takeTime: takePutTime },
+                { headers: { 'Content-Type': 'application/json' } }
+            );
+
+            if (response.status === 200) {
+                console.log('업데이트 성공:', response.data);
+                // 업데이트 성공 후 추가 처리 (예: UI 업데이트)
+            }
+        } catch (error) {
+            console.error('업데이트 중 오류 발생:', error);
+        }
+    };
+
+    const fetchDeleteData = async (ppOrd) => {
+        try {
+            await axios.delete(`http://localhost:8080/api/plan/${planSet.planNo}/planplace/${ppOrd}`);
+            // 성공적으로 삭제된 경우 상태를 업데이트하거나 UI를 갱신할 수 있습니다.
+            console.log(`Plan place with ppOrd: ${ppOrd} has been deleted.`);
+            // 예: 리스트에서 삭제된 항목을 제거
+            setPlanPlaces((prev) => prev.filter((place) => place.ppOrd !== ppOrd));
+        } catch (error) {
+            console.error('Failed to delete plan place:', error);
+        }
+    };
+
     // 장소를 데이터베이스에 추가 + 장소 추가 시 교통 정보 계산
     const addPlace = async (sno) => {
+
         if(takeTime){
             try {
                 await axios.post(`http://localhost:8080/api/plan/${planSet.planNo}/add`, {
                     sno,
                     takeTime: takeTime
                 });
-
+                console.log(takeTime);
                 const updatedPlanPlaces = await fetchPPDataAll();
                 const latest = getLatestDate(planPlaceAlls);
                 setLatestDate(latest);
@@ -210,25 +233,26 @@ function PlanInit() {
         }
     };
 
-/*
     //내 일정 교통정보 가져오기
-    const fetchTPData = async (planNo) => {
+    const fetchTPData = async (ppOrd, day) => {
         try {
             const response = await axios.get(`http://localhost:8080/api/plan/${planSet.planNo}/TransportParent/${ppOrd}`, {
                 params: {
                     day,
                 },
             });
-            if (response.data?.dtoList) {
-                setTransportParents(response.data);
-            } else {
-                console.error('Invalid data structure received from API.');
+            if (response.data) {
+                const data = Array.isArray(response.data) ? response.data : [response.data];
+                setTransportParents(prev => ({
+                    ...prev,
+                    [ppOrd]: data
+                }));
             }
         } catch (error) {
             console.log(error);
         }
     };
-
+/*
     //내 일정 자식 교통정보 가져오기
     const fetchTCData = async (planNo) => {
         try {
@@ -297,6 +321,11 @@ function PlanInit() {
         setActiveTab(tabNumber); // 클릭된 탭으로 상태 업데이트
     };
 
+    const handleUpdateClick = (item) => {
+        updatePlanPlaceTime(item, takeTime); // 버튼 클릭 시 시간 값 업데이트
+    };
+
+
     //css기능
     const [activeTab, setActiveTab] = useState(1); // 기본 활성화된 탭
     //mock 데이터------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -307,13 +336,11 @@ function PlanInit() {
 
     //찜 목록
     useEffect(() => {
-        // API에서 받은 데이터가 없을 경�� 확인용 기본 데이터 설정
+        // API에서 받은 데이터가 없을 경우 확인용 기본 데이터 설정
         if (responseData.dtoList && responseData.dtoList.length > 0) {
             setStore(responseData.dtoList); // API에서 받아온 데이터 설정
         }
     }, [responseData]);
-
-    //html------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     // 날짜 입력 핸들러 추가
     const handleDateChange = (e) => {
@@ -322,20 +349,7 @@ function PlanInit() {
         console.log("Selected date:", selectedDate); // 디버깅용
     };
 
-    // 페이지 로드 시 초기화를 위한 useEffect 추가
-    useEffect(() => {
-        // 페이지 진입 시 상태 초기화
-        setTitle('');
-        setPsStartDate('');
-        setIsCar(true);
-        setReadOnly(false);
-        setPlanSet({planNo: null});
-        setTakeTime('');
-        setPlanPlaces([]);
-        setPlanPlaceAlls([]);
-        setLatestDate('');
-        setDuration(null);
-    }, []); // 빈 배열을 넣어 컴포넌트 마운트 시에만 실행
+    //html------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     return (
         <div className="container">
@@ -445,6 +459,7 @@ function PlanInit() {
                             onClick={() => {
                                 handleTabClick(index + 1);
                                 fetchPPData(index+1)
+                                setDayTT(index +1)
                             }} // 클릭 시 해당 일차로 설정
                         >
                             {index + 1}일차
@@ -454,22 +469,64 @@ function PlanInit() {
                 <div className="schedule-content">
                     {planPlaces.map((item, index) => (
                         <div className="schedule-item" key={index}>
+                            {/* 교통 정보를 먼저 표시 */}
+                            <div className="transport-info">
+                                <h4>교통 정보</h4>
+                                <button onClick={() => fetchTPData(item.ppOrd, dayTT)}>교통 정보 가져오기</button>
+                                {transportParents[item.ppOrd]?.map((transport) => (
+                                    <div key={transport.tno}>
+                                        <p>교통 수단: {transport.t_method}</p>
+                                        <p>출발 시간:
+                                        {transport.t_startDateTime && (
+                                            transport.t_startDateTime.length === 6
+                                                ? `${transport.t_startDateTime[0]}-${(transport.t_startDateTime[1]).toString().padStart(2, '0')}-${transport.t_startDateTime[2].toString().padStart(2, '0')} 
+                                               ${transport.t_startDateTime[3].toString().padStart(2, '0')}:${transport.t_startDateTime[4].toString().padStart(2, '0')}:${transport.t_startDateTime[5].toString().padStart(2, '0')}`
+                                                : `${transport.t_startDateTime[0]}-${(transport.t_startDateTime[1]).toString().padStart(2, '0')}-${transport.t_startDateTime[2].toString().padStart(2, '0')} 
+                                               ${transport.t_startDateTime[3].toString().padStart(2, '0')}:${transport.t_startDateTime[4].toString().padStart(2, '0')}:00`
+                                        )}</p>
+                                        <p>이동 시간: {transport.t_takeTime && (
+                                            transport.t_takeTime.length === 3
+                                                ? `${transport.t_takeTime[0]}:${(transport.t_takeTime[1]).toString().padStart(2, '0')}:${transport.t_takeTime[2].toString().padStart(2, '0')}`
+                                                : `${transport.t_takeTime[0]}-${(transport.t_takeTime[1]).toString().padStart(2, '0')}-${transport.t_takeTime[2].toString().padStart(2, '0')}:00`
+                                        )}</p>
+                                        <p>도착 시간: {transport.t_goalDateTime && (
+                                            transport.t_goalDateTime.length === 6
+                                                ? `${transport.t_goalDateTime[0]}-${(transport.t_goalDateTime[1]).toString().padStart(2, '0')}-${transport.t_goalDateTime[2].toString().padStart(2, '0')} 
+                                               ${transport.t_goalDateTime[3].toString().padStart(2, '0')}:${transport.t_goalDateTime[4].toString().padStart(2, '0')}:${transport.t_goalDateTime[5].toString().padStart(2, '0')}`
+                                                : `${transport.t_goalDateTime[0]}-${(transport.t_goalDateTime[1]).toString().padStart(2, '0')}-${transport.t_goalDateTime[2].toString().padStart(2, '0')} 
+                                               ${transport.t_goalDateTime[3].toString().padStart(2, '0')}:${transport.t_goalDateTime[4].toString().padStart(2, '0')}:00`
+                                        )}</p>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* 장소 정보 표시 */}
                             <span className="schedule-time">
-    {item.pp_startDate && (
-        item.pp_startDate.length === 6
-            ? `${item.pp_startDate[0]}-${(item.pp_startDate[1]).toString().padStart(2, '0')}-${item.pp_startDate[2].toString().padStart(2, '0')} 
-           ${item.pp_startDate[3].toString().padStart(2, '0')}:${item.pp_startDate[4].toString().padStart(2, '0')}:${item.pp_startDate[5].toString().padStart(2, '0')}`
-            : `${item.pp_startDate[0]}-${(item.pp_startDate[1]).toString().padStart(2, '0')}-${item.pp_startDate[2].toString().padStart(2, '0')} 
-           ${item.pp_startDate[3].toString().padStart(2, '0')}:${item.pp_startDate[4].toString().padStart(2, '0')}:00`
-    )}
-</span>
+                                {item.pp_startDate && (
+                                    item.pp_startDate.length === 6
+                                        ? `${item.pp_startDate[0]}-${(item.pp_startDate[1]).toString().padStart(2, '0')}-${item.pp_startDate[2].toString().padStart(2, '0')} 
+                                           ${item.pp_startDate[3].toString().padStart(2, '0')}:${item.pp_startDate[4].toString().padStart(2, '0')}:${item.pp_startDate[5].toString().padStart(2, '0')}`
+                                        : `${item.pp_startDate[0]}-${(item.pp_startDate[1]).toString().padStart(2, '0')}-${item.pp_startDate[2].toString().padStart(2, '0')} 
+                                           ${item.pp_startDate[3].toString().padStart(2, '0')}:${item.pp_startDate[4].toString().padStart(2, '0')}:00`
+                                )}
+                            </span>
                             <span>{item.pp_title}</span>
                             <span>{item.pp_takeDate && (
                                 `${item.pp_takeDate[0].toString().padStart(2, '0')}:${item.pp_takeDate[1].toString().padStart(2, '0')}`
                             )}</span>
                             <div className="schedule-actions">
-                                <button>수정</button>
-                                <button>삭제</button>
+                                <div>
+                                    <h3>시간 수정</h3>
+                                    <div>
+                                        <label>이동 시간:</label>
+                                        <input
+                                            type="time"
+                                            value={takePutTime}
+                                            onChange={handleTimeChange} // 시간 필드 변경 시 상태 업데이트
+                                        />
+                                    </div>
+                                    <button onClick={() => fetchDeleteData(item.ppOrd)}>삭제</button>
+                                </div>
                             </div>
                         </div>
                     ))}
@@ -495,6 +552,11 @@ function PlanInit() {
                         </div>
                     ))}
                 </div>*/}
+                <div>
+                    <Link to={`/plan/list`}>
+                    <button>저장하기</button>
+                    </Link>
+                </div>
             </div>
         </div>
     );

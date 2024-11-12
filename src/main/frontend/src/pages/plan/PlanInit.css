@@ -12,13 +12,22 @@ body {
   margin: 0; /* 부모 요소의 마진 제거 */
 }
 
-.plan-init, .plan-details {
+.plan-init {
   margin-top: 55px;
   background-color: #fff;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   width: 100%; /* 너비를 100%로 설정하여 전체 공간 차지 */
+}
+
+.plan-details {
+  margin-top: 55px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 50%; /* 너비를 100%로 설정하여 전체 공간 차지 */
 }
 
 .input-card {
@@ -193,15 +202,14 @@ body {
   background-color: #f0f0f0; /* Hover 시 색상 변화 */
 }
 
-
 .schedule-item {
   display: flex;
   align-items: center;
   justify-content: space-between; /* 양쪽에 정렬 */
-  padding: 10px;
+  padding: 1px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   background-color: #f8f9fa; /* 일정 항목 배경색 */
 }
 
