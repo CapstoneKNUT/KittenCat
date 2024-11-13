@@ -14,7 +14,7 @@ function PlanRead() {
     const [ps_startDate, setPsStartDate] = useState(''); // 출발 날짜
     const [readOnly, setReadOnly] = useState(false); // 출발 날짜
     const [duration, setDuration] = useState(null); //몇일 차인가?
-    const [planData, setPlanData] = useState([]); //일정표의 장소
+    const [planData, setPlanData] = useState({}); //일정표의 장소
     const [planPlaces, setPlanPlaces] = useState([]); //일정표의 장소
     const [planPlaceAlls, setPlanPlaceAlls] = useState([]); //일정표의 장소
     const [LatestDate, setLatestDate] = useState(''); //장소 중 제일 마지막 일차
@@ -32,8 +32,13 @@ function PlanRead() {
             try {
                 const response = await axios.get(`http://localhost:8080/api/plan/${planNo}`);
                 setPlanData(response.data); // 단일 맵 형식의 데이터 설정
+
                 console.log(response.data);
-                setPsStartDate(formatDate(planData.ps_startDate))
+                console.log("제발"+response.data);
+                console.log('제젲발'+response.data.ps_startDate);
+                const dt = formatDate(response.data.ps_startDate)
+                console.log("wpqkf" + dt);
+                setPsStartDate(dt)
                 console.log(ps_startDate);
             } catch (err) {
                 console.error('Error fetching plan data:', err);
@@ -147,13 +152,16 @@ function PlanRead() {
     }
 
     function formatDate(dateArray) {
-        if (!Array.isArray(dateArray) || dateArray.length < 3) return '';
-
+        console.log("if 전");
+        // if (!Array.isArray(dateArray) || dateArray.length < 3) return '';
+        console.log("1111111");
         // 날짜 부분만 추출
         const [year, month, day] = dateArray.slice(0, 3);
+        console.log("222222");
 
         // 두 자리 형식으로 맞추기 (예: 1 -> "01")
         const formattedMonth = String(month).padStart(2, '0');
+        console.log("33333");
         const formattedDay = String(day).padStart(2, '0');
         console.log(`시작 날짜${year}-${formattedMonth}-${formattedDay}`)
 
@@ -263,7 +271,7 @@ function PlanRead() {
                     console.log(latest);
                     setLatestDate(latest);
 
-                    const gapDate = compareDates(ps_startDatePart, LatestDate)
+                    const gapDate = compareDates(ps_startDate, LatestDate)
                     console.log(gapDate);
                     setDuration(gapDate);
                 }} className="save-button">일정표 보기

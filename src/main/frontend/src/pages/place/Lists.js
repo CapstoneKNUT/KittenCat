@@ -74,8 +74,14 @@ function Lists() {
         p_count: 15,
         p_keyword,
       });
+      // setResponseData(response.data);
+
+      localStorage.removeItem('bookmarks');
+      setBookmarks([]);
+
       setResponseData(response.data);
-      window.location.reload()
+      setPlaces(response.data.dtoList || []);
+
     } catch (error) {
       console.error('Error during search:', error);
     }
