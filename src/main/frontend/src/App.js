@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HeaderPage from '../src/components/menus/Header.js';
 import Lists from './pages/place/Lists.js';
 import PlanLists from './pages/plan/Lists.js';
+import PlanRead from './pages/plan/PlanRead.js';
 import Read from './pages/place/Read.js';
 import StoreLists from './pages/Store/StoreLists.js';
 import StoreRead from './pages/Store/StoreRead.js';
@@ -42,8 +43,10 @@ function App() {
                     <Route path="/board/register" element={<BoardRegister />} />
                     <Route path="/board/modify/:bno" element={<BoardModify />} />
                     <Route path="/board/read/:bno" element={<BoardRead />} />
+
                     <Route path="/plan" element={<Plan />} />
                     <Route path="/plan/list" element={<PlanLists />} />
+                    <Route path="/plan/read/:planNo" element={<PlanRead />} />
 
                 </Routes>
             </Router>
